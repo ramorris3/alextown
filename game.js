@@ -11,6 +11,7 @@ var GameState = function(game) {
 // Load images and sounds
 GameState.prototype.preload = function() {
 	this.game.load.image('ground', 'assets/ground.png');
+	this.game.load.spritesheet('player', 'assets/warrior.png', 8, 12);
 };
 
 // Set up game canvas
@@ -46,7 +47,34 @@ GameState.prototype.create = function() {
 
 	// dimensional constants
 	this.GROUND_SPRITE_SIZE = 16;
-	// all sprites are square tiles ??
+	this.PLAYER_SPRITE_HEIGHT = 12;
+	this.PLAYER_SPRITE_WIDTH = 8;
+
+	// movement constants
+	this.MAX_SPEED = 75;
+	this.ACCELERATION = 500;
+	this.DRAG = 350;
+
+	// create player sprite
+	this.player = this.game.add.sprite(
+		this.PLAYER_SPRITE_WIDTH * 2,
+		(this.game.height / 2) + (this.PLAYER_SPRITE_HEIGHT / 2),
+		'player'
+	);
+
+	this.player.animations.add('run', [0,1,2,3], 10, true);
+
+	// enable physics for player
+	this.game.physics.enable(this.player, Phaser.Physics.ARCADE);
+
+	// make player stay in screen
+	this.player.body.collideWorldBounds = true;
+
+	// set up min and max mvt speed
+	this.player.body.maxVelocity.setTo(this.MAX_SPEED, this.MAX_SPEED); // x, y
+
+	// add drag to the player
+	this.player.body.drag.setTo(this.DRAG, this.DRAG); // x, y
 
 	// create ground
 	this.ground = this.game.add.group();
@@ -66,10 +94,33 @@ GameState.prototype.create = function() {
 		Phaser.Keyboard.UP,
 		Phaser.Keyboard.DOWN
 	]);
+
+	// set up keyboard input
+	this.cursors = game.input.keyboard.createCursorKeys();
 };
 
 GameState.prototype.update = function() {
 	//object collision and movement logic
+	this.game.physics.arcade.collide(this.player, this.ground);
+
+	/** PLAYER LOGIC **/
+	this.player.animations.play('run');
+
+	if (this.cursors.left.isDown) {
+		this.player.body.acceleration.x = -this.ACCELERATION;
+	} else if (this.cursors.right.isDown) {
+		this.player.body.acceleration.x = this.ACCELERATION;
+	} else {
+		this.player.body.acceleration.x = 0;
+	}
+
+	if (this.cursors.up.isDown) {
+		this.player.body.acceleration.y = -this.ACCELERATION;
+	} else if (this.cursors.down.isDown) {
+		this.player.body.acceleration.y = this.ACCELERATION;
+	} else {
+		this.player.body.acceleration.y = 0;
+	}
 };
 
 GameState.prototype.render = function() {
@@ -78,10 +129,10 @@ GameState.prototype.render = function() {
 };
 
 // Create game canvas
-var game = new Phaser.Game(200, 165, Phaser.CANVAS, '');
+var game = new Phaser.Game(400, 330, Phaser.CANVAS, '');
 
 // Create reference to scaled game canvas
-var pixel = { scale: 4, canvas: null, context: null, width: 0, height: 0};
+var pixel = { scale: 2, canvas: null, context: null, width: 0, height: 0};
 
 // Create game state
 game.state.add('game', GameState, true);

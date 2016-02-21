@@ -21,6 +21,18 @@ GameState.prototype.preload = function() {
     this.game.load.spritesheet('zombie', 'assets/zombie.png',
         this.ZOMBIE_SPRITE_WIDTH,
         this.ZOMBIE_SPRITE_HEIGHT);
+
+    this.ROOK_SPRITE_WIDTH = 24;
+    this.ROOK_SPRITE_HEIGHT = 36;
+    this.game.load.spritesheet('rook', 'assets/rook.png',
+        this.ROOK_SPRITE_WIDTH,
+        this.ROOK_SPRITE_HEIGHT);
+
+    this.ARROW_SPRITE_WIDTH = 24;
+    this.ARROW_SPRITE_HEIGHT = 3;
+    this.game.load.spritesheet('arrow', 'assets/arrow.png',
+        this.ARROW_SPRITE_WIDTH,
+        this.ARROW_SPRITE_HEIGHT);
 };
 
 
@@ -46,27 +58,40 @@ GameState.prototype.create = function() {
 	this.player.animations.add('run', [0,1,2,3], 10, true);
     this.player.smoothed = false;
 
+    // create arrow group
+    this.arrowpool = this.game.add.group();
+    for (var i = 0; i<100; i++){
+        var arrow = this.game.add.existing(
+            new Arrow(this.game, 0, 0)
+        );
+        arrow.kill();
+        this.arrowpool.add(arrow);
+    }
 
-    // create zombie sprite
+    //create rook sprites
+    this.rook_troop = this.game.add.group();
+    for (var z = 0; z < this.game.height; z += this.ROOK_SPRITE_HEIGHT) {
+        var rook = this.game.add.existing(
+            new Rook(this.game, this.game.width - this.ROOK_SPRITE_WIDTH, z, this.player, this.arrowpool)
+        );
+        rook.animations.add('hop', [0,1,2,3], 10, true);
+        rook.smoothed = false;
+        this.rook_troop.add(rook);
+    }
+
+
+    // create zombie sprites
     this.chomper_swarm = this.game.add.group();
     for (var y = 0; y < this.game.height; y += this.ZOMBIE_SPRITE_HEIGHT) {
         var chomper = this.game.add.existing(
-            new Follower(this.game, this.game.width, y, this.player)
-            )
+            new Follower(this.game, this.game.width - 5 * this.ZOMBIE_SPRITE_WIDTH, y, this.player)
+        );
         chomper.animations.add('chomp', [0,1,2,3], 10, true);
         chomper.smoothed = false;
         this.chomper_swarm.add(chomper)
     }
 
-    this.charger_swarm = this.game.add.group();
-    for (var y = 0; y < this.game.height; y += this.ZOMBIE_SPRITE_HEIGHT) {
-        var charger = this.game.add.existing(
-            new Charger(this.game, this.game.width, y)
-            )
-        charger.animations.add('chomp', [0,1,2,3], 10, true);
-        charger.smoothed = false;
-        this.charger_swarm.add(charger)
-    }
+
 
 
 	// enable physics for player
@@ -105,6 +130,7 @@ GameState.prototype.update = function() {
 	//object collision and movement logic
 	this.game.physics.arcade.collide(this.player, this.ground);
     this.game.physics.arcade.collide(this.chomper_swarm, this.chomper_swarm);
+    this.game.physics.arcade.collide(this.rook_troop, this.rook_troop);
 
     /** PLAYER LOGIC **/
     this.player.animations.play('run');
@@ -134,6 +160,7 @@ GameState.prototype.update = function() {
       this.player.body.acceleration.y = 0;
   }
 };
+
 
 // Create game canvas
 var game = new Phaser.Game(800, 600, Phaser.CANVAS, '');

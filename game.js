@@ -15,13 +15,20 @@ GameState.prototype.preload = function() {
 	this.game.load.spritesheet('player', 'assets/warrior.png',
 		this.PLAYER_SPRITE_WIDTH,
 		this.PLAYER_SPRITE_HEIGHT);
+
+    this.ZOMBIE_SPRITE_WIDTH = 24;
+    this.ZOMBIE_SPRITE_HEIGHT = 36;
+    this.game.load.spritesheet('zombie', 'assets/zombie.png',
+        this.ZOMBIE_SPRITE_WIDTH,
+        this.ZOMBIE_SPRITE_HEIGHT);
 };
+
 
 // Set up gameplay
 GameState.prototype.create = function() {
 
 	// set stage background to sky color
-	this.game.stage.backgroundColor = 0xF1CE86;
+	this.game.stage.backgroundColor = 0x444444;
 
 	// movement constants
 	this.MAX_SPEED = 280;
@@ -37,8 +44,17 @@ GameState.prototype.create = function() {
 	);
 
 	this.player.animations.add('run', [0,1,2,3], 10, true);
+    this.player.smoothed = false;
 
-	this.player.smoothed = false;
+
+    // create zombie sprite
+    this.zombie = this.game.add.existing(
+        new Follower(this.game, this.game.width, this.game.height/2, this.player)
+    );
+
+    this.zombie.animations.add('run', [0,1,2,3], 10, true);
+    this.zombie.smoothed = false
+
 
 	// enable physics for player
 	this.game.physics.enable(this.player, Phaser.Physics.ARCADE);
@@ -70,6 +86,10 @@ GameState.prototype.create = function() {
 
 	// set up keyboard input
 	this.cursors = game.input.keyboard.createCursorKeys();
+
+
+
+
 };
 
 GameState.prototype.update = function() {
@@ -103,6 +123,45 @@ GameState.prototype.update = function() {
 	} else {
 		this.player.body.acceleration.y = 0;
 	}
+};
+
+var Follower = function(game, x, y, target) {
+    Phaser.Sprite.call(this, game, x, y, 'zombie');
+
+    // Save the target that this Follower will follow
+    // The target is any object with x and y properties
+    this.target = target;
+
+    // Set the pivot point for this sprite to the center
+    this.anchor.setTo(0.5, 0.5);
+
+    // Enable physics on this object
+    this.game.physics.enable(this, Phaser.Physics.ARCADE);
+
+    // Define constants that affect motion
+    this.MAX_SPEED = 100; // pixels/second
+    this.MIN_DISTANCE = 4; // pixels
+};
+
+// Followers are a type of Phaser.Sprite
+Follower.prototype = Object.create(Phaser.Sprite.prototype);
+Follower.prototype.constructor = Follower;
+
+Follower.prototype.update = function() {
+    // Calculate distance to target
+    var distance = this.game.math.distance(this.x, this.y, this.target.x, this.target.y);
+
+    // If the distance > MIN_DISTANCE then move
+    if (distance > this.MIN_DISTANCE) {
+        // Calculate the angle to the target
+        var rotation = this.game.math.angleBetween(this.x, this.y, this.target.x, this.target.y);
+
+        // Calculate velocity vector based on rotation and this.MAX_SPEED
+        this.body.velocity.x = Math.cos(rotation) * this.MAX_SPEED;
+        this.body.velocity.y = Math.sin(rotation) * this.MAX_SPEED;
+    } else {
+        this.body.velocity.setTo(0, 0);
+    }
 };
 
 // Create game canvas

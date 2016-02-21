@@ -25,6 +25,7 @@ GameState.prototype.create = function() {
 
 	// movement constants
 	this.MAX_SPEED = 280;
+    this.DIAG_SPEED = this.MAX_SPEED / Math.sqrt(2);
 	this.ACCELERATION = 1500;
 	this.DRAG = 1450;
 
@@ -44,9 +45,6 @@ GameState.prototype.create = function() {
 
 	// make player stay in screen
 	this.player.body.collideWorldBounds = true;
-
-	// set up min and max mvt speed
-	this.player.body.maxVelocity.setTo(this.MAX_SPEED, this.MAX_SPEED); // x, y
 
 	// add drag to the player
 	this.player.body.drag.setTo(this.DRAG, this.DRAG); // x, y
@@ -80,6 +78,15 @@ GameState.prototype.update = function() {
 
 	/** PLAYER LOGIC **/
 	this.player.animations.play('run');
+
+    // set up min and max mvt speed
+    if ((this.cursors.left.isDown || this.cursors.right.isDown) &&
+        (this.cursors.up.isDown || this.cursors.down.isDown)) {
+        this.player.body.maxVelocity.setTo(this.DIAG_SPEED, this.DIAG_SPEED); // x, y
+    } else {
+        this.player.body.maxVelocity.setTo(this.MAX_SPEED, this.MAX_SPEED); // x, y
+    }
+
 
 	if (this.cursors.left.isDown) {
 		this.player.body.acceleration.x = -this.ACCELERATION;

@@ -1,8 +1,5 @@
 /** 
 Main game definition
-
-Scaling comes from tutorial found at:
-	http://www.photonstorm.com/phaser/pixel-perfect-scaling-a-phaser-game
 **/
 
 var GameState = function(game) {
@@ -10,34 +7,15 @@ var GameState = function(game) {
 
 // Load images and sounds
 GameState.prototype.preload = function() {
-	this.game.load.image('ground', 'assets/ground.png');
-	this.game.load.spritesheet('player', 'assets/warrior.png', 8, 12);
+	this.GROUND_SPRITE_SIZE = 48;
+	this.game.load.image('ground', 'assets/ground1.png');
+
+	this.PLAYER_SPRITE_WIDTH = 24;
+	this.PLAYER_SPRITE_HEIGHT = 36;
+	this.game.load.spritesheet('player', 'assets/warrior.png',
+		this.PLAYER_SPRITE_WIDTH,
+		this.PLAYER_SPRITE_HEIGHT);
 };
-
-// Set up game canvas
-GameState.prototype.init = function() {
-	//physics
-	this.physics.startSystem(Phaser.Physics.ARCADE);
-
-	//  Hide the un-scaled game canvas
-	game.canvas.style['display'] = 'none';
-
-	//  Create our scaled canvas. It will be the size of the game * whatever scale value you've set
-	pixel.canvas = Phaser.Canvas.create(game.width * pixel.scale, game.height * pixel.scale);
-
-	//  Store a reference to the Canvas Context
-	pixel.context = pixel.canvas.getContext('2d');
-
-	//  Add the scaled canvas to the DOM
-	Phaser.Canvas.addToDOM(pixel.canvas);
-
-	//  Disable smoothing on the scaled canvas
-	Phaser.Canvas.setSmoothingEnabled(pixel.context, false);
-
-	//  Cache the width/height to avoid looking it up every render
-	pixel.width = pixel.canvas.width;
-	pixel.height = pixel.canvas.height;
-}
 
 // Set up gameplay
 GameState.prototype.create = function() {
@@ -45,15 +23,10 @@ GameState.prototype.create = function() {
 	// set stage background to sky color
 	this.game.stage.backgroundColor = 0xF1CE86;
 
-	// dimensional constants
-	this.GROUND_SPRITE_SIZE = 16;
-	this.PLAYER_SPRITE_HEIGHT = 12;
-	this.PLAYER_SPRITE_WIDTH = 8;
-
 	// movement constants
-	this.MAX_SPEED = 75;
-	this.ACCELERATION = 500;
-	this.DRAG = 350;
+	this.MAX_SPEED = 280;
+	this.ACCELERATION = 1500;
+	this.DRAG = 1450;
 
 	// create player sprite
 	this.player = this.game.add.sprite(
@@ -63,6 +36,8 @@ GameState.prototype.create = function() {
 	);
 
 	this.player.animations.add('run', [0,1,2,3], 10, true);
+
+	this.player.smoothed = false;
 
 	// enable physics for player
 	this.game.physics.enable(this.player, Phaser.Physics.ARCADE);
@@ -123,16 +98,8 @@ GameState.prototype.update = function() {
 	}
 };
 
-GameState.prototype.render = function() {
-	// Every loop render the un-scaled game canvas to the displayed scaled canvas:
-	pixel.context.drawImage(game.canvas, 0, 0, game.width, game.height, 0, 0, pixel.width, pixel.height);
-};
-
 // Create game canvas
-var game = new Phaser.Game(400, 330, Phaser.CANVAS, '');
-
-// Create reference to scaled game canvas
-var pixel = { scale: 2, canvas: null, context: null, width: 0, height: 0};
+var game = new Phaser.Game(800, 600, Phaser.CANVAS, '');
 
 // Create game state
 game.state.add('game', GameState, true);

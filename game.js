@@ -58,6 +58,16 @@ GameState.prototype.create = function() {
         this.chomper_swarm.add(chomper)
     }
 
+    this.charger_swarm = this.game.add.group();
+    for (var y = 0; y < this.game.height; y += this.ZOMBIE_SPRITE_HEIGHT) {
+        var charger = this.game.add.existing(
+            new Charger(this.game, this.game.width, y)
+        )
+        charger.animations.add('chomp', [0,1,2,3], 10, true);
+        charger.smoothed = false;
+        this.charger_swarm.add(charger)
+    }
+
 
 	// enable physics for player
 	this.game.physics.enable(this.player, Phaser.Physics.ARCADE);
@@ -89,10 +99,6 @@ GameState.prototype.create = function() {
 
 	// set up keyboard input
 	this.cursors = game.input.keyboard.createCursorKeys();
-
-
-
-
 };
 
 GameState.prototype.update = function() {
@@ -169,6 +175,31 @@ Follower.prototype.update = function() {
     } else {
         this.body.velocity.setTo(0, 0);
     }
+};
+
+var Charger = function(game, x, y) {
+    Phaser.Sprite.call(this, game, x, y, 'zombie');
+
+    // Set the pivot point for this sprite to the center
+    this.anchor.setTo(0.5, 0.5);
+
+    // Enable physics on this object
+    this.game.physics.enable(this, Phaser.Physics.ARCADE);
+
+    // Define constants that affect motion
+    this.MAX_SPEED = 100; // pixels/second
+    this.MIN_DISTANCE = 4; // pixels
+};
+
+Charger.prototype = Object.create(Phaser.Sprite.prototype);
+Charger.prototype.constructor = Charger;
+
+Charger.prototype.update = function() {
+    // play zombie animation
+    this.animations.play('chomp');
+
+    // If the distance > MIN_DISTANCE then move
+    this.body.velocity.setTo(-100, 0);
 };
 
 // Create game canvas

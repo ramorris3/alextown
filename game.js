@@ -21,6 +21,12 @@ GameState.prototype.preload = function() {
     this.game.load.spritesheet('zombie', 'assets/zombie.png',
         this.ZOMBIE_SPRITE_WIDTH,
         this.ZOMBIE_SPRITE_HEIGHT);
+
+    this.ROOK_SPRITE_WIDTH = 24;
+    this.ROOK_SPRITE_HEIGHT = 36;
+    this.game.load.spritesheet('rook', 'assets/rook.png',
+        this.ROOK_SPRITE_WIDTH,
+        this.ROOK_SPRITE_HEIGHT);
 };
 
 
@@ -47,12 +53,24 @@ GameState.prototype.create = function() {
     this.player.smoothed = false;
 
 
-    // create zombie sprite
+    //create rook sprites
+    this.rook_troop = this.game.add.group();
+    for (var z = 0; z < this.game.height; z += this.ROOK_SPRITE_HEIGHT) {
+        var rook = this.game.add.existing(
+            new Rook(this.game, this.game.width - this.ROOK_SPRITE_WIDTH, z, this.player)
+        );
+        rook.animations.add('hop', [0,1,2,3], 10, true);
+        rook.smoothed = false;
+        this.rook_troop.add(rook);
+    }
+
+
+    // create zombie sprites
     this.chomper_swarm = this.game.add.group();
     for (var y = 0; y < this.game.height; y += this.ZOMBIE_SPRITE_HEIGHT) {
         var chomper = this.game.add.existing(
-            new Follower(this.game, this.game.width, y, this.player)
-        )
+            new Follower(this.game, this.game.width - 5 * this.ZOMBIE_SPRITE_WIDTH, y, this.player)
+        );
         chomper.animations.add('chomp', [0,1,2,3], 10, true);
         chomper.smoothed = false;
         this.chomper_swarm.add(chomper)
@@ -99,6 +117,7 @@ GameState.prototype.update = function() {
 	//object collision and movement logic
 	this.game.physics.arcade.collide(this.player, this.ground);
     this.game.physics.arcade.collide(this.chomper_swarm, this.chomper_swarm);
+    this.game.physics.arcade.collide(this.rook_troop, this.rook_troop);
 
 	/** PLAYER LOGIC **/
 	this.player.animations.play('run');
@@ -170,6 +189,51 @@ Follower.prototype.update = function() {
         this.body.velocity.setTo(0, 0);
     }
 };
+
+
+// rook class definition
+var Rook = function(game, x, y, target) {
+    Phaser.Sprite.call(this, game, x, y, 'rook');
+
+    // Save the target that this Follower will follow
+    // The target is any object with x and y properties
+    this.target = target;
+
+    // Set the pivot point for this sprite to the center
+    this.anchor.setTo(0.5, 0.5);
+
+    // Enable physics on this object
+    this.game.physics.enable(this, Phaser.Physics.ARCADE);
+
+    // Define constants that affect motion
+    this.MAX_SPEED = 100; // pixels/second
+    this.MIN_DISTANCE = 300; // pixels
+};
+
+// Followers are a type of Phaser.Sprite
+Rook.prototype = Object.create(Phaser.Sprite.prototype);
+Rook.prototype.constructor = Follower;
+
+Rook.prototype.update = function() {
+    // play zombie animation
+    this.animations.play('hop');
+
+    // Calculate distance to target
+    var distance = this.game.math.distance(this.x, this.y, this.target.x, this.target.y);
+
+    // If the distance > MIN_DISTANCE then move
+    if (distance > this.MIN_DISTANCE) {
+        // Calculate the angle to the target
+        var rotation = this.game.math.angleBetween(this.x, this.y, this.target.x, this.target.y);
+
+        // Calculate velocity vector based on rotation and this.MAX_SPEED
+        this.body.velocity.x = Math.cos(rotation) * this.MAX_SPEED;
+        this.body.velocity.y = Math.sin(rotation) * this.MAX_SPEED;
+    } else {
+        this.body.velocity.setTo(0, 0);
+    }
+};
+
 
 // Create game canvas
 var game = new Phaser.Game(800, 600, Phaser.CANVAS, '');

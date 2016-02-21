@@ -27,6 +27,12 @@ GameState.prototype.preload = function() {
     this.game.load.spritesheet('rook', 'assets/rook.png',
         this.ROOK_SPRITE_WIDTH,
         this.ROOK_SPRITE_HEIGHT);
+
+    this.ARROW_SPRITE_WIDTH = 24;
+    this.ARROW_SPRITE_HEIGHT = 3;
+    this.game.load.spritesheet('arrow', 'assets/arrow.png',
+        this.ARROW_SPRITE_WIDTH,
+        this.ARROW_SPRITE_HEIGHT);
 };
 
 
@@ -52,12 +58,21 @@ GameState.prototype.create = function() {
 	this.player.animations.add('run', [0,1,2,3], 10, true);
     this.player.smoothed = false;
 
+    // create arrow group
+    this.arrowpool = this.game.add.group();
+    for (var i = 0; i<100; i++){
+        var arrow = this.game.add.existing(
+            new Arrow(this.game, 0, 0)
+        );
+        arrow.kill();
+        this.arrowpool.add(arrow);
+    }
 
     //create rook sprites
     this.rook_troop = this.game.add.group();
     for (var z = 0; z < this.game.height; z += this.ROOK_SPRITE_HEIGHT) {
         var rook = this.game.add.existing(
-            new Rook(this.game, this.game.width - this.ROOK_SPRITE_WIDTH, z, this.player)
+            new Rook(this.game, this.game.width - this.ROOK_SPRITE_WIDTH, z, this.player, this.arrowpool)
         );
         rook.animations.add('hop', [0,1,2,3], 10, true);
         rook.smoothed = false;
@@ -75,6 +90,10 @@ GameState.prototype.create = function() {
         chomper.smoothed = false;
         this.chomper_swarm.add(chomper)
     }
+
+
+
+
 
 
 	// enable physics for player
@@ -192,7 +211,7 @@ Follower.prototype.update = function() {
 
 
 // rook class definition
-var Rook = function(game, x, y, target) {
+var Rook = function(game, x, y, target, ammo) {
     Phaser.Sprite.call(this, game, x, y, 'rook');
 
     // Save the target that this Follower will follow
@@ -208,31 +227,60 @@ var Rook = function(game, x, y, target) {
     // Define constants that affect motion
     this.MAX_SPEED = 100; // pixels/second
     this.MIN_DISTANCE = 300; // pixels
+
+    // Weapon
+    this.reload_stat = 50;
+    this.reload_count = 50;
+    this.ammo = ammo;
+
 };
 
 // Followers are a type of Phaser.Sprite
 Rook.prototype = Object.create(Phaser.Sprite.prototype);
-Rook.prototype.constructor = Follower;
+Rook.prototype.constructor = Rook;
 
 Rook.prototype.update = function() {
-    // play zombie animation
+    // play rook animation
     this.animations.play('hop');
+
 
     // Calculate distance to target
     var distance = this.game.math.distance(this.x, this.y, this.target.x, this.target.y);
-
+    // Calculate the angle to the target
+    var rotation = this.game.math.angleBetween(this.x, this.y, this.target.x, this.target.y);
     // If the distance > MIN_DISTANCE then move
     if (distance > this.MIN_DISTANCE) {
-        // Calculate the angle to the target
-        var rotation = this.game.math.angleBetween(this.x, this.y, this.target.x, this.target.y);
-
         // Calculate velocity vector based on rotation and this.MAX_SPEED
         this.body.velocity.x = Math.cos(rotation) * this.MAX_SPEED;
         this.body.velocity.y = Math.sin(rotation) * this.MAX_SPEED;
+        // otherwise shoot arrow
     } else {
         this.body.velocity.setTo(0, 0);
     }
+    if (this.reload_count >= this.reload_stat) {
+        var arrow = this.ammo.getFirstDead();
+        if (arrow === null || arrow === undefined) return;
+        arrow.revive();
+        arrow.checkWorldBounds = true;
+        arrow.outOfBoundsKill = true;
+        arrow.reset(this.x, this.y);
+        arrow.body.velocity.x = Math.cos(rotation) * arrow.SPEED;
+        arrow.body.velocity.y = Math.sin(rotation) * arrow.SPEED;
+        this.reload_count = 0;
+    } else {
+        this.reload_count++;
+    }
 };
+
+// arrow class definition
+var Arrow = function(game, x, y) {
+    Phaser.Sprite.call(this, game, x, y, 'arrow');
+    this.game.physics.enable(this, Phaser.Physics.ARCADE);
+    this.SPEED = 300;
+};
+
+Arrow.prototype = Object.create(Phaser.Sprite.prototype);
+Arrow.prototype.constructor = Arrow;
 
 
 // Create game canvas

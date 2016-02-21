@@ -1,6 +1,9 @@
 var Charger = function(game, x, y) {
     Phaser.Sprite.call(this, game, x, y, 'zombie');
 
+    this.animations.add('chomp', [0,1,2,3], 10, true);
+    this.smoothed = false;
+
     // Set the pivot point for this sprite to the center
     this.anchor.setTo(0.5, 0.5);
 

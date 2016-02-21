@@ -12,7 +12,7 @@ GameState.prototype.preload = function() {
 
 	this.PLAYER_SPRITE_WIDTH = 24;
 	this.PLAYER_SPRITE_HEIGHT = 36;
-	this.game.load.spritesheet('player', 'assets/warrior.png',
+	this.game.load.spritesheet('warrior', 'assets/warrior.png',
 		this.PLAYER_SPRITE_WIDTH,
 		this.PLAYER_SPRITE_HEIGHT);
 
@@ -42,66 +42,29 @@ GameState.prototype.create = function() {
 	// set stage background to sky color
 	this.game.stage.backgroundColor = 0x444444;
 
-	// movement constants
-	this.MAX_SPEED = 280;
-    this.DIAG_SPEED = this.MAX_SPEED / Math.sqrt(2);
-    this.ACCELERATION = 1500;
-    this.DRAG = 1450;
-
 	// create player sprite
-	this.player = this.game.add.sprite(
-		this.PLAYER_SPRITE_WIDTH * 2,
-		(this.game.height / 2) + (this.PLAYER_SPRITE_HEIGHT / 2),
-		'player'
+	this.player = this.game.add.existing(
+		new WarriorPlayer(this.game,
+            this.PLAYER_SPRITE_WIDTH * 2,
+            (this.game.height / 2) + (this.PLAYER_SPRITE_HEIGHT / 2))
     );
 
-	this.player.animations.add('run', [0,1,2,3], 10, true);
-    this.player.smoothed = false;
-
-    // create arrow group
-    this.arrowpool = this.game.add.group();
-    for (var i = 0; i<100; i++){
-        var arrow = this.game.add.existing(
-            new Arrow(this.game, 0, 0)
-        );
-        arrow.kill();
-        this.arrowpool.add(arrow);
-    }
-
-    //create rook sprites
-    this.rook_troop = this.game.add.group();
-    for (var z = 0; z < this.game.height; z += this.ROOK_SPRITE_HEIGHT) {
-        var rook = this.game.add.existing(
-            new Rook(this.game, this.game.width - this.ROOK_SPRITE_WIDTH, z, this.player, this.arrowpool)
-        );
-        rook.animations.add('hop', [0,1,2,3], 10, true);
-        rook.smoothed = false;
-        this.rook_troop.add(rook);
-    }
-
-
-    // create zombie sprites
+    // create zombie sprite
     this.chomper_swarm = this.game.add.group();
     for (var y = 0; y < this.game.height; y += this.ZOMBIE_SPRITE_HEIGHT) {
         var chomper = this.game.add.existing(
-            new Follower(this.game, this.game.width - 5 * this.ZOMBIE_SPRITE_WIDTH, y, this.player)
-        );
-        chomper.animations.add('chomp', [0,1,2,3], 10, true);
-        chomper.smoothed = false;
-        this.chomper_swarm.add(chomper)
+            new Follower(this.game, this.game.width, y, this.player)
+            );
+        this.chomper_swarm.add(chomper);
     }
 
-
-
-
-	// enable physics for player
-	this.game.physics.enable(this.player, Phaser.Physics.ARCADE);
-
-	// make player stay in screen
-	this.player.body.collideWorldBounds = true;
-
-	// add drag to the player
-	this.player.body.drag.setTo(this.DRAG, this.DRAG); // x, y
+    this.charger_swarm = this.game.add.group();
+    for (var y = 0; y < this.game.height; y += this.ZOMBIE_SPRITE_HEIGHT) {
+        var charger = this.game.add.existing(
+            new Charger(this.game, this.game.width, y)
+            );
+        this.charger_swarm.add(charger)
+    }
 
 	// create ground
 	this.ground = this.game.add.group();
@@ -121,15 +84,13 @@ GameState.prototype.create = function() {
 		Phaser.Keyboard.UP,
 		Phaser.Keyboard.DOWN
        ]);
-
-	// set up keyboard input
-	this.cursors = game.input.keyboard.createCursorKeys();
 };
 
 GameState.prototype.update = function() {
 	//object collision and movement logic
 	this.game.physics.arcade.collide(this.player, this.ground);
     this.game.physics.arcade.collide(this.chomper_swarm, this.chomper_swarm);
+<<<<<<< HEAD
     this.game.physics.arcade.collide(this.rook_troop, this.rook_troop);
 
     /** PLAYER LOGIC **/
@@ -159,6 +120,8 @@ GameState.prototype.update = function() {
   } else {
       this.player.body.acceleration.y = 0;
   }
+=======
+>>>>>>> refactored player to warriorPlayer.js
 };
 
 

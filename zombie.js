@@ -1,6 +1,9 @@
 var Follower = function(game, x, y, target) {
     Phaser.Sprite.call(this, game, x, y, 'zombie');
 
+    this.animations.add('chomp', [0,1,2,3], 10, true);
+    this.smoothed = false;
+
     // Save the target that this Follower will follow
     // The target is any object with x and y properties
     this.target = target;

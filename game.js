@@ -16,8 +16,8 @@ GameState.prototype.preload = function() {
 		this.PLAYER_SPRITE_WIDTH,
 		this.PLAYER_SPRITE_HEIGHT);
 
-    this.ZOMBIE_SPRITE_WIDTH = 24;
-    this.ZOMBIE_SPRITE_HEIGHT = 36;
+    this.ZOMBIE_SPRITE_WIDTH = 18;
+    this.ZOMBIE_SPRITE_HEIGHT = 27;
     this.game.load.spritesheet('zombie', 'assets/zombie.png',
         this.ZOMBIE_SPRITE_WIDTH,
         this.ZOMBIE_SPRITE_HEIGHT);
@@ -48,12 +48,15 @@ GameState.prototype.create = function() {
 
 
     // create zombie sprite
-    this.zombie = this.game.add.existing(
-        new Follower(this.game, this.game.width, this.game.height/2, this.player)
-    );
-
-    this.zombie.animations.add('run', [0,1,2,3], 10, true);
-    this.zombie.smoothed = false
+    this.chomper_swarm = this.game.add.group();
+    for (var y = 0; y < this.game.height; y += this.ZOMBIE_SPRITE_HEIGHT) {
+        var chomper = this.game.add.existing(
+            new Follower(this.game, this.game.width, y, this.player)
+        )
+        chomper.animations.add('chomp', [0,1,2,3], 10, true);
+        chomper.smoothed = false;
+        this.chomper_swarm.add(chomper)
+    }
 
 
 	// enable physics for player
@@ -95,6 +98,7 @@ GameState.prototype.create = function() {
 GameState.prototype.update = function() {
 	//object collision and movement logic
 	this.game.physics.arcade.collide(this.player, this.ground);
+    this.game.physics.arcade.collide(this.chomper_swarm, this.chomper_swarm);
 
 	/** PLAYER LOGIC **/
 	this.player.animations.play('run');
@@ -148,6 +152,9 @@ Follower.prototype = Object.create(Phaser.Sprite.prototype);
 Follower.prototype.constructor = Follower;
 
 Follower.prototype.update = function() {
+    // play zombie animation
+    this.animations.play('chomp');
+
     // Calculate distance to target
     var distance = this.game.math.distance(this.x, this.y, this.target.x, this.target.y);
 

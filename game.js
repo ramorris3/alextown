@@ -33,15 +33,15 @@ GameState.prototype.create = function() {
 	// movement constants
 	this.MAX_SPEED = 280;
     this.DIAG_SPEED = this.MAX_SPEED / Math.sqrt(2);
-	this.ACCELERATION = 1500;
-	this.DRAG = 1450;
+    this.ACCELERATION = 1500;
+    this.DRAG = 1450;
 
 	// create player sprite
 	this.player = this.game.add.sprite(
 		this.PLAYER_SPRITE_WIDTH * 2,
 		(this.game.height / 2) + (this.PLAYER_SPRITE_HEIGHT / 2),
 		'player'
-	);
+    );
 
 	this.player.animations.add('run', [0,1,2,3], 10, true);
     this.player.smoothed = false;
@@ -52,7 +52,7 @@ GameState.prototype.create = function() {
     for (var y = 0; y < this.game.height; y += this.ZOMBIE_SPRITE_HEIGHT) {
         var chomper = this.game.add.existing(
             new Follower(this.game, this.game.width, y, this.player)
-        )
+            )
         chomper.animations.add('chomp', [0,1,2,3], 10, true);
         chomper.smoothed = false;
         this.chomper_swarm.add(chomper)
@@ -62,7 +62,7 @@ GameState.prototype.create = function() {
     for (var y = 0; y < this.game.height; y += this.ZOMBIE_SPRITE_HEIGHT) {
         var charger = this.game.add.existing(
             new Charger(this.game, this.game.width, y)
-        )
+            )
         charger.animations.add('chomp', [0,1,2,3], 10, true);
         charger.smoothed = false;
         this.charger_swarm.add(charger)
@@ -95,7 +95,7 @@ GameState.prototype.create = function() {
 		Phaser.Keyboard.RIGHT,
 		Phaser.Keyboard.UP,
 		Phaser.Keyboard.DOWN
-	]);
+       ]);
 
 	// set up keyboard input
 	this.cursors = game.input.keyboard.createCursorKeys();
@@ -106,8 +106,8 @@ GameState.prototype.update = function() {
 	this.game.physics.arcade.collide(this.player, this.ground);
     this.game.physics.arcade.collide(this.chomper_swarm, this.chomper_swarm);
 
-	/** PLAYER LOGIC **/
-	this.player.animations.play('run');
+    /** PLAYER LOGIC **/
+    this.player.animations.play('run');
 
     // set up min and max mvt speed
     if ((this.cursors.left.isDown || this.cursors.right.isDown) &&
@@ -118,21 +118,21 @@ GameState.prototype.update = function() {
     }
 
 
-	if (this.cursors.left.isDown) {
-		this.player.body.acceleration.x = -this.ACCELERATION;
-	} else if (this.cursors.right.isDown) {
-		this.player.body.acceleration.x = this.ACCELERATION;
-	} else {
-		this.player.body.acceleration.x = 0;
-	}
+    if (this.cursors.left.isDown) {
+      this.player.body.acceleration.x = -this.ACCELERATION;
+  } else if (this.cursors.right.isDown) {
+      this.player.body.acceleration.x = this.ACCELERATION;
+  } else {
+      this.player.body.acceleration.x = 0;
+  }
 
-	if (this.cursors.up.isDown) {
-		this.player.body.acceleration.y = -this.ACCELERATION;
-	} else if (this.cursors.down.isDown) {
-		this.player.body.acceleration.y = this.ACCELERATION;
-	} else {
-		this.player.body.acceleration.y = 0;
-	}
+  if (this.cursors.up.isDown) {
+      this.player.body.acceleration.y = -this.ACCELERATION;
+  } else if (this.cursors.down.isDown) {
+      this.player.body.acceleration.y = this.ACCELERATION;
+  } else {
+      this.player.body.acceleration.y = 0;
+  }
 };
 
 var Follower = function(game, x, y, target) {

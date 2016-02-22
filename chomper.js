@@ -1,7 +1,10 @@
-var Follower = function(game, x, y, target) {
-    Phaser.Sprite.call(this, game, x, y, 'zombie');
+var Chomper = function(game, x, y, target) {
+    Phaser.Sprite.call(this, game, x, y, 'chomper');
 
-    // Save the target that this Follower will follow
+    this.animations.add('chomp', [0,1,2,3], 10, true);
+    this.smoothed = false;
+
+    // Save the target that this Chomper will follow
     // The target is any object with x and y properties
     this.target = target;
 
@@ -16,12 +19,12 @@ var Follower = function(game, x, y, target) {
     this.MIN_DISTANCE = 4; // pixels
 };
 
-// Followers are a type of Phaser.Sprite
-Follower.prototype = Object.create(Phaser.Sprite.prototype);
-Follower.prototype.constructor = Follower;
+// Chompers are a type of Phaser.Sprite
+Chomper.prototype = Object.create(Phaser.Sprite.prototype);
+Chomper.prototype.constructor = Chomper;
 
-Follower.prototype.update = function() {
-    // play zombie animation
+Chomper.prototype.update = function() {
+    // play chomper animation
     this.animations.play('chomp');
 
     // Calculate distance to target

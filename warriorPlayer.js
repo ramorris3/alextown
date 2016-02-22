@@ -5,6 +5,12 @@ var WarriorPlayer = function(game, x, y) {
     this.animations.add('run', [0,1,2,3], 10, true);
     this.smoothed = false;
 
+    // add player sword
+    this.sword = game.add.sprite(0, 0, this);
+    this.sword.animations.add('swing', [0,1,2,3,4,5,6], 25, false);
+    this.sword.kill();
+    this.addChild(this.sword);
+
     // movement constants
     this.MAX_SPEED = 280;
     this.DIAG_SPEED = this.MAX_SPEED / Math.sqrt(2);
@@ -22,6 +28,7 @@ var WarriorPlayer = function(game, x, y) {
 
     // set up keyboard input
     this.cursors = game.input.keyboard.createCursorKeys();
+    this.keys = game.input.keyboard;
 };
 
 WarriorPlayer.prototype = Object.create(Phaser.Sprite.prototype);
@@ -30,6 +37,10 @@ WarriorPlayer.prototype.constructor = WarriorPlayer;
 WarriorPlayer.prototype.update = function() {
     /** PLAYER LOGIC **/
     this.animations.play('run');
+
+    if (this.keys.isDown(Phaser.Keyboard.D)) {
+        console.log('got input');
+    }
 
     // set up min and max mvt speed
     if ((this.cursors.left.isDown || this.cursors.right.isDown) &&

@@ -16,11 +16,17 @@ GameState.prototype.preload = function() {
 		this.PLAYER_SPRITE_WIDTH,
 		this.PLAYER_SPRITE_HEIGHT);
 
-    this.ZOMBIE_SPRITE_WIDTH = 18;
-    this.ZOMBIE_SPRITE_HEIGHT = 27;
-    this.game.load.spritesheet('zombie', 'assets/zombie.png',
-        this.ZOMBIE_SPRITE_WIDTH,
-        this.ZOMBIE_SPRITE_HEIGHT);
+    this.CHOMPER_SPRITE_WIDTH = 18;
+    this.CHOMPER_SPRITE_HEIGHT = 27;
+    this.game.load.spritesheet('chomper', 'assets/chomper.png',
+        this.CHOMPER_SPRITE_WIDTH,
+        this.CHOMPER_SPRITE_HEIGHT);
+
+    this.CHARGER_SPRITE_WIDTH = 18;
+    this.CHARGER_SPRITE_HEIGHT = 27;
+    this.game.load.spritesheet('charger', 'assets/charger.png',
+        this.CHARGER_SPRITE_WIDTH,
+        this.CHARGER_SPRITE_HEIGHT);
 
     this.ROOK_SPRITE_WIDTH = 24;
     this.ROOK_SPRITE_HEIGHT = 36;
@@ -49,17 +55,17 @@ GameState.prototype.create = function() {
             (this.game.height / 2) + (this.PLAYER_SPRITE_HEIGHT / 2))
     );
 
-    // create zombie sprite
+    // create chomper sprite
     this.chomper_swarm = this.game.add.group();
-    for (var y = 0; y < this.game.height; y += this.ZOMBIE_SPRITE_HEIGHT) {
+    for (var y = 0; y < this.game.height; y += this.CHOMPER_SPRITE_HEIGHT) {
         var chomper = this.game.add.existing(
-            new Follower(this.game, this.game.width, y, this.player)
+            new Chomper(this.game, this.game.width, y, this.player)
             );
         this.chomper_swarm.add(chomper);
     }
 
     this.charger_swarm = this.game.add.group();
-    for (var y = 0; y < this.game.height; y += this.ZOMBIE_SPRITE_HEIGHT) {
+    for (var y = 0; y < this.game.height; y += this.CHARGER_SPRITE_HEIGHT) {
         var charger = this.game.add.existing(
             new Charger(this.game, this.game.width, y)
             );
@@ -90,38 +96,6 @@ GameState.prototype.update = function() {
 	//object collision and movement logic
 	this.game.physics.arcade.collide(this.player, this.ground);
     this.game.physics.arcade.collide(this.chomper_swarm, this.chomper_swarm);
-<<<<<<< HEAD
-    this.game.physics.arcade.collide(this.rook_troop, this.rook_troop);
-
-    /** PLAYER LOGIC **/
-    this.player.animations.play('run');
-
-    // set up min and max mvt speed
-    if ((this.cursors.left.isDown || this.cursors.right.isDown) &&
-        (this.cursors.up.isDown || this.cursors.down.isDown)) {
-        this.player.body.maxVelocity.setTo(this.DIAG_SPEED, this.DIAG_SPEED); // x, y
-    } else {
-        this.player.body.maxVelocity.setTo(this.MAX_SPEED, this.MAX_SPEED); // x, y
-    }
-
-
-    if (this.cursors.left.isDown) {
-      this.player.body.acceleration.x = -this.ACCELERATION;
-  } else if (this.cursors.right.isDown) {
-      this.player.body.acceleration.x = this.ACCELERATION;
-  } else {
-      this.player.body.acceleration.x = 0;
-  }
-
-  if (this.cursors.up.isDown) {
-      this.player.body.acceleration.y = -this.ACCELERATION;
-  } else if (this.cursors.down.isDown) {
-      this.player.body.acceleration.y = this.ACCELERATION;
-  } else {
-      this.player.body.acceleration.y = 0;
-  }
-=======
->>>>>>> refactored player to warriorPlayer.js
 };
 
 

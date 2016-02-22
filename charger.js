@@ -1,7 +1,7 @@
 var Charger = function(game, x, y) {
-    Phaser.Sprite.call(this, game, x, y, 'zombie');
+    Phaser.Sprite.call(this, game, x, y, 'charger');
 
-    this.animations.add('chomp', [0,1,2,3], 10, true);
+    this.animations.add('charge', [0,1,2,3], 10, true);
     this.smoothed = false;
 
     // Set the pivot point for this sprite to the center
@@ -20,7 +20,7 @@ Charger.prototype.constructor = Charger;
 
 Charger.prototype.update = function() {
     // play zombie animation
-    this.animations.play('chomp');
+    this.animations.play('charge');
 
     // If the distance > MIN_DISTANCE then move
     this.body.velocity.setTo(-100, 0);

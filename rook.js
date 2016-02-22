@@ -1,6 +1,9 @@
 var Rook = function(game, x, y, target, ammo) {
     Phaser.Sprite.call(this, game, x, y, 'rook');
 
+    this.animations.add('hop', [0,1,2,3], 10, true);
+    this.smoothed = false;
+
     // Save the target that this Follower will follow
     // The target is any object with x and y properties
     this.target = target;
@@ -64,6 +67,8 @@ var Arrow = function(game, x, y) {
     Phaser.Sprite.call(this, game, x, y, 'arrow');
     this.game.physics.enable(this, Phaser.Physics.ARCADE);
     this.SPEED = 300;
+    this.kill();
+
 };
 
 Arrow.prototype = Object.create(Phaser.Sprite.prototype);

@@ -10,8 +10,8 @@ GameState.prototype.preload = function() {
     this.GROUND_SPRITE_SIZE = 48;
     this.game.load.image('ground', 'assets/ground1.png');
 
-    this.PLAYER_SPRITE_WIDTH = 24;
-    this.PLAYER_SPRITE_HEIGHT = 36;
+    this.PLAYER_SPRITE_WIDTH = 42;
+    this.PLAYER_SPRITE_HEIGHT = 42;
     this.game.load.spritesheet('warrior', 'assets/warrior.png',
         this.PLAYER_SPRITE_WIDTH,
         this.PLAYER_SPRITE_HEIGHT);

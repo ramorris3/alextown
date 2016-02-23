@@ -1,14 +1,15 @@
 var WarriorPlayer = function(game, x, y) {
+    this.game = game;
 
-    Phaser.Sprite.call(this, game, x, y, 'warrior');
+    Phaser.Sprite.call(this, this.game, x, y, 'warrior');
 
     this.animations.add('run', [0,1,2,3], 10, true);
     this.smoothed = false;
 
     // add player sword
-    this.sword = game.add.sprite(0, 0, this);
-    this.sword.animations.add('swing', [0,1,2,3,4,5,6], 25, false);
-    this.sword.kill();
+    this.sword = this.game.add.existing(
+            new WarriorSword(this.game)
+        );
     this.addChild(this.sword);
 
     // movement constants
@@ -18,7 +19,7 @@ var WarriorPlayer = function(game, x, y) {
     this.DRAG = 1450;
 
     // enable physics for player
-    game.physics.enable(this, Phaser.Physics.ARCADE);
+    this.game.physics.enable(this, Phaser.Physics.ARCADE);
 
     // make player stay in screen
     this.body.collideWorldBounds = true;
@@ -27,8 +28,8 @@ var WarriorPlayer = function(game, x, y) {
     this.body.drag.setTo(this.DRAG, this.DRAG); // x, y
 
     // set up keyboard input
-    this.cursors = game.input.keyboard.createCursorKeys();
-    this.keys = game.input.keyboard;
+    this.cursors = this.game.input.keyboard.createCursorKeys();
+    this.game.input.keyboard.addKeyCapture([Phaser.Keyboard.SPACEBAR]);
 };
 
 WarriorPlayer.prototype = Object.create(Phaser.Sprite.prototype);
@@ -38,10 +39,6 @@ WarriorPlayer.prototype.update = function() {
     /** PLAYER LOGIC **/
     this.animations.play('run');
 
-    if (this.keys.isDown(Phaser.Keyboard.D)) {
-        console.log('got input');
-    }
-
     // set up min and max mvt speed
     if ((this.cursors.left.isDown || this.cursors.right.isDown) &&
         (this.cursors.up.isDown || this.cursors.down.isDown)) {
@@ -49,7 +46,6 @@ WarriorPlayer.prototype.update = function() {
     } else {
         this.body.maxVelocity.setTo(this.MAX_SPEED, this.MAX_SPEED); // x, y
     }
-
 
     if (this.cursors.left.isDown) {
       this.body.acceleration.x = -this.ACCELERATION;
@@ -66,4 +62,39 @@ WarriorPlayer.prototype.update = function() {
     } else {
       this.body.acceleration.y = 0;
     }
+
+    if (this.game.input.keyboard.isDown(Phaser.Keyboard.SPACEBAR)) {
+        this.sword.swing();
+    }
+};
+
+// player sword class definition
+var WarriorSword = function(game) {
+    this.game = game;
+    Phaser.Sprite.call(this, game, 20, -20, 'warriorsword');
+    game.physics.enable(this, Phaser.Physics.ARCADE);
+    this.animations.add('swing', [0,1,2,3,4,5,6,7,8,9], 30, false);
+    this.smoothed = false;
+
+    // basic attack logic
+    this.nextSwing = 0;
+    this.swingRate = 150; // sword swing cool down
+    this.kill();
+};
+
+WarriorSword.prototype = Object.create(Phaser.Sprite.prototype);
+WarriorSword.prototype.constructor = WarriorSword;
+
+WarriorSword.prototype.swing = function() {
+    // return if cool down between sword swings still active
+    if (this.game.time.time < this.nextSwing) {
+        return;
+    }
+
+    // play sword animation
+    this.revive();
+    this.animations.play('swing', 30, false, true); // kill on animation complete
+
+    // set cooldown
+    this.nextSwing = this.game.time.time + this.swingRate;
 };

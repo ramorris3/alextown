@@ -48,30 +48,14 @@ GameState.prototype.create = function() {
     // set stage background to sky color
     this.game.stage.backgroundColor = 0x444444;
 
+    this.enemygroup = this.game.add.group();
+
     // create player sprite
     this.player = this.game.add.existing(
         new WarriorPlayer(this.game,
             this.PLAYER_SPRITE_WIDTH * 2,
             (this.game.height / 2) + (this.PLAYER_SPRITE_HEIGHT / 2))
     );
-
-    // create chomper sprites
-    this.chomper_swarm = this.game.add.group();
-    for (var y = 0; y < this.game.height; y += this.CHOMPER_SPRITE_HEIGHT) {
-        var chomper = this.game.add.existing(
-            new Chomper(this.game, this.game.width, y, this.player)
-            );
-        this.chomper_swarm.add(chomper);
-    }
-
-    // create charger sprites
-    this.charger_swarm = this.game.add.group();
-    for (var y = 0; y < this.game.height; y += this.CHARGER_SPRITE_HEIGHT) {
-        var charger = this.game.add.existing(
-            new Charger(this.game, this.game.width, y)
-            );
-        this.charger_swarm.add(charger);
-    }
 
     // create arrow pool for rooks
     this.arrowpool = this.game.add.group();
@@ -80,14 +64,6 @@ GameState.prototype.create = function() {
             new Arrow(this.game, 0, 0)
         );
         this.arrowpool.add(arrow);
-    }
-
-    // create rooks
-    this.rook_troop = this.game.add.group();
-    for (var z = 0; z < this.game.height; z += this.ROOK_SPRITE_HEIGHT) {
-        var rook = this.game.add.existing(
-            new Rook(this.game, this.game.width - this.ROOK_SPRITE_WIDTH, z, this.player, this.arrowpool)
-        );
     }
 
     // create ground
@@ -109,13 +85,45 @@ GameState.prototype.create = function() {
         Phaser.Keyboard.DOWN
        ]);
 
-    this.game.level = lvl0;
+    this.level = lvl0;
+    this.levelMap = lvl0.map.match(/\S+/g);
 };
 
 GameState.prototype.update = function() {
     //object collision and movement logic
+    this.game.step();
+    // every 25 frames send in a new wave of guys
+    if (!(this.game.stepCount % 25)) {
+        if (this.levelMap.length){
+            var wave = this.levelMap.shift().split('')
+            for (var i = 0; i < wave.length; ++i) {
+                var x = this.game.width + 50;
+                var y = i*50+25;
+                switch (wave[i]) {
+                    case 'Z':
+                        var chomper = this.game.add.existing(
+                            new Chomper(this.game, x, y, this.player)
+                        );
+                        this.enemygroup.add(chomper);
+                        break;
+                    case 'R':
+                        var rook = this.game.add.existing(
+                            new Rook(this.game, x, i*50+25, this.player, this.arrowpool)
+                        );
+                        this.enemygroup.add(rook);
+                        break;
+                    case 'C':
+                        var charger = this.game.add.existing(
+                            new Charger(this.game, x, i*50+25)
+                        );
+                        this.enemygroup.add(charger);
+                        break;
+                }
+            }
+        }
+    }
     this.game.physics.arcade.collide(this.player, this.ground);
-    this.game.physics.arcade.collide(this.chomper_swarm, this.chomper_swarm);
+    this.game.physics.arcade.collide(this.enemygroup, this.enemygroup);
 };
 
 

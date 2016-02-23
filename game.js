@@ -50,6 +50,23 @@ GameState.prototype.create = function() {
     // set stage background to sky color
     this.game.stage.backgroundColor = 0x444444;
 
+    // create walls
+    this.ground = this.game.add.group();
+    for (var x = 0; x < this.game.width; x += this.GROUND_SPRITE_SIZE) {
+        //add the ground blocks, enable physics on each, make immovable
+        var groundBlock = this.game.add.sprite(x, this.game.height - this.GROUND_SPRITE_SIZE / 2, 'ground');
+        var ceilingBlock = this.game.add.sprite(x, 0, 'ground');
+        this.game.physics.enable(groundBlock, Phaser.Physics.ARCADE);
+        this.game.physics.enable(ceilingBlock, Phaser.Physics.ARCADE);
+        ceilingBlock.body.setSize(this.GROUND_SPRITE_SIZE, this.GROUND_SPRITE_SIZE/2, 0, 0);
+        groundBlock.body.immovable = true;
+        ceilingBlock.body.immovable = true;
+        groundBlock.body.allowGravity = false;
+        ceilingBlock.body.allowGravity = false;
+        this.ground.add(groundBlock);
+        this.ground.add(ceilingBlock);
+    }
+
     this.enemygroup = this.game.add.group();
 
     // create player sprite
@@ -68,17 +85,6 @@ GameState.prototype.create = function() {
         this.arrowpool.add(arrow);
     }
 
-    // create walls
-    this.ground = this.game.add.group();
-    for (var x = 0; x < this.game.width; x += this.GROUND_SPRITE_SIZE) {
-        //add the ground blocks, enable physics on each, make immovable
-        var groundBlock = this.game.add.sprite(x, this.game.height - this.GROUND_SPRITE_SIZE / 2, 'ground');
-        var groundBlock = this.game.add.sprite(x, 0, 'ground');
-        this.game.physics.enable(groundBlock, Phaser.Physics.ARCADE);
-        groundBlock.body.immovable = true;
-        groundBlock.body.allowGravity = false;
-        this.ground.add(groundBlock);
-    }
 
     // capture certain keys to prevent default actions in browser (HTML 5 only)
     this.game.input.keyboard.addKeyCapture([
@@ -127,6 +133,7 @@ GameState.prototype.update = function() {
     }
     this.game.physics.arcade.collide(this.player, this.ground);
     this.game.physics.arcade.collide(this.enemygroup, this.enemygroup);
+    this.game.physics.arcade.collide(this.enemygroup, this.ground);
 };
 
 

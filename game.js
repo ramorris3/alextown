@@ -66,11 +66,12 @@ GameState.prototype.create = function() {
         this.arrowpool.add(arrow);
     }
 
-    // create ground
+    // create walls
     this.ground = this.game.add.group();
     for (var x = 0; x < this.game.width; x += this.GROUND_SPRITE_SIZE) {
         //add the ground blocks, enable physics on each, make immovable
-        var groundBlock = this.game.add.sprite(x, this.game.height - this.GROUND_SPRITE_SIZE, 'ground');
+        var groundBlock = this.game.add.sprite(x, this.game.height - this.GROUND_SPRITE_SIZE / 2, 'ground');
+        var groundBlock = this.game.add.sprite(x, 0, 'ground');
         this.game.physics.enable(groundBlock, Phaser.Physics.ARCADE);
         groundBlock.body.immovable = true;
         groundBlock.body.allowGravity = false;
@@ -95,10 +96,10 @@ GameState.prototype.update = function() {
     // every 25 frames send in a new wave of guys
     if (!(this.game.stepCount % 25)) {
         if (this.levelMap.length){
-            var wave = this.levelMap.shift().split('')
+            var wave = this.levelMap.shift();
             for (var i = 0; i < wave.length; ++i) {
                 var x = this.game.width + 50;
-                var y = i*50+25;
+                var y = i*39+65;
                 switch (wave[i]) {
                     case 'Z':
                         var chomper = this.game.add.existing(
@@ -108,13 +109,13 @@ GameState.prototype.update = function() {
                         break;
                     case 'R':
                         var rook = this.game.add.existing(
-                            new Rook(this.game, x, i*50+25, this.player, this.arrowpool)
+                            new Rook(this.game, x, y, this.player, this.arrowpool)
                         );
                         this.enemygroup.add(rook);
                         break;
                     case 'C':
                         var charger = this.game.add.existing(
-                            new Charger(this.game, x, i*50+25)
+                            new Charger(this.game, x, y)
                         );
                         this.enemygroup.add(charger);
                         break;
@@ -128,7 +129,7 @@ GameState.prototype.update = function() {
 
 
 // Create game canvas
-var game = new Phaser.Game(800, 600, Phaser.CANVAS, '');
+var game = new Phaser.Game(1000, 500, Phaser.CANVAS, '');
 
 // Create game state
 game.state.add('game', GameState, true);

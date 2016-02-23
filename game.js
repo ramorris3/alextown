@@ -7,14 +7,14 @@ var GameState = function(game) {
 
 // Load images and sounds
 GameState.prototype.preload = function() {
-	this.GROUND_SPRITE_SIZE = 48;
-	this.game.load.image('ground', 'assets/ground1.png');
+    this.GROUND_SPRITE_SIZE = 48;
+    this.game.load.image('ground', 'assets/ground1.png');
 
-	this.PLAYER_SPRITE_WIDTH = 24;
-	this.PLAYER_SPRITE_HEIGHT = 36;
-	this.game.load.spritesheet('warrior', 'assets/warrior.png',
-		this.PLAYER_SPRITE_WIDTH,
-		this.PLAYER_SPRITE_HEIGHT);
+    this.PLAYER_SPRITE_WIDTH = 24;
+    this.PLAYER_SPRITE_HEIGHT = 36;
+    this.game.load.spritesheet('warrior', 'assets/warrior.png',
+        this.PLAYER_SPRITE_WIDTH,
+        this.PLAYER_SPRITE_HEIGHT);
 
     this.CHOMPER_SPRITE_WIDTH = 18;
     this.CHOMPER_SPRITE_HEIGHT = 27;
@@ -45,33 +45,17 @@ GameState.prototype.preload = function() {
 // Set up gameplay
 GameState.prototype.create = function() {
 
-	// set stage background to sky color
-	this.game.stage.backgroundColor = 0x444444;
+    // set stage background to sky color
+    this.game.stage.backgroundColor = 0x444444;
 
-	// create player sprite
-	this.player = this.game.add.existing(
-		new WarriorPlayer(this.game,
+    this.enemygroup = this.game.add.group();
+
+    // create player sprite
+    this.player = this.game.add.existing(
+        new WarriorPlayer(this.game,
             this.PLAYER_SPRITE_WIDTH * 2,
             (this.game.height / 2) + (this.PLAYER_SPRITE_HEIGHT / 2))
     );
-
-    // create chomper sprites
-    this.chomper_swarm = this.game.add.group();
-    for (var y = 0; y < this.game.height; y += this.CHOMPER_SPRITE_HEIGHT) {
-        var chomper = this.game.add.existing(
-            new Chomper(this.game, this.game.width, y, this.player)
-            );
-        this.chomper_swarm.add(chomper);
-    }
-
-    // create charger sprites
-    this.charger_swarm = this.game.add.group();
-    for (var y = 0; y < this.game.height; y += this.CHARGER_SPRITE_HEIGHT) {
-        var charger = this.game.add.existing(
-            new Charger(this.game, this.game.width, y)
-            );
-        this.charger_swarm.add(charger);
-    }
 
     // create arrow pool for rooks
     this.arrowpool = this.game.add.group();
@@ -82,38 +66,64 @@ GameState.prototype.create = function() {
         this.arrowpool.add(arrow);
     }
 
-    // create rooks
-    this.rook_troop = this.game.add.group();
-    for (var z = 0; z < this.game.height; z += this.ROOK_SPRITE_HEIGHT) {
-        var rook = this.game.add.existing(
-            new Rook(this.game, this.game.width - this.ROOK_SPRITE_WIDTH, z, this.player, this.arrowpool)
-        );
+    // create ground
+    this.ground = this.game.add.group();
+    for (var x = 0; x < this.game.width; x += this.GROUND_SPRITE_SIZE) {
+        //add the ground blocks, enable physics on each, make immovable
+        var groundBlock = this.game.add.sprite(x, this.game.height - this.GROUND_SPRITE_SIZE, 'ground');
+        this.game.physics.enable(groundBlock, Phaser.Physics.ARCADE);
+        groundBlock.body.immovable = true;
+        groundBlock.body.allowGravity = false;
+        this.ground.add(groundBlock);
     }
 
-	// create ground
-	this.ground = this.game.add.group();
-	for (var x = 0; x < this.game.width; x += this.GROUND_SPRITE_SIZE) {
-		//add the ground blocks, enable physics on each, make immovable
-		var groundBlock = this.game.add.sprite(x, this.game.height - this.GROUND_SPRITE_SIZE, 'ground');
-		this.game.physics.enable(groundBlock, Phaser.Physics.ARCADE);
-		groundBlock.body.immovable = true;
-		groundBlock.body.allowGravity = false;
-		this.ground.add(groundBlock);
-	}
-
-	// capture certain keys to prevent default actions in browser (HTML 5 only)
-	this.game.input.keyboard.addKeyCapture([
-		Phaser.Keyboard.LEFT,
-		Phaser.Keyboard.RIGHT,
-		Phaser.Keyboard.UP,
-		Phaser.Keyboard.DOWN
+    // capture certain keys to prevent default actions in browser (HTML 5 only)
+    this.game.input.keyboard.addKeyCapture([
+        Phaser.Keyboard.LEFT,
+        Phaser.Keyboard.RIGHT,
+        Phaser.Keyboard.UP,
+        Phaser.Keyboard.DOWN
        ]);
+
+    this.level = lvl0;
+    this.levelMap = lvl0.map.match(/\S+/g);
 };
 
 GameState.prototype.update = function() {
-	//object collision and movement logic
-	this.game.physics.arcade.collide(this.player, this.ground);
-    this.game.physics.arcade.collide(this.chomper_swarm, this.chomper_swarm);
+    //object collision and movement logic
+    this.game.step();
+    // every 25 frames send in a new wave of guys
+    if (!(this.game.stepCount % 25)) {
+        if (this.levelMap.length){
+            var wave = this.levelMap.shift().split('')
+            for (var i = 0; i < wave.length; ++i) {
+                var x = this.game.width + 50;
+                var y = i*50+25;
+                switch (wave[i]) {
+                    case 'Z':
+                        var chomper = this.game.add.existing(
+                            new Chomper(this.game, x, y, this.player)
+                        );
+                        this.enemygroup.add(chomper);
+                        break;
+                    case 'R':
+                        var rook = this.game.add.existing(
+                            new Rook(this.game, x, i*50+25, this.player, this.arrowpool)
+                        );
+                        this.enemygroup.add(rook);
+                        break;
+                    case 'C':
+                        var charger = this.game.add.existing(
+                            new Charger(this.game, x, i*50+25)
+                        );
+                        this.enemygroup.add(charger);
+                        break;
+                }
+            }
+        }
+    }
+    this.game.physics.arcade.collide(this.player, this.ground);
+    this.game.physics.arcade.collide(this.enemygroup, this.enemygroup);
 };
 
 

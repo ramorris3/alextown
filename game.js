@@ -12,7 +12,8 @@ GameState.prototype.preload = function() {
         this.GROUND_SPRITE_SIZE,
         this.GROUND_SPRITE_SIZE);
 
-    this.RUG_TILE_SIZE = 192;
+    this.RUG_TILE_WIDTH = 192;
+    this.RUG_TILE_HEIGHT = 312;
     this.game.load.image('rug', 'assets/rugtile.png');
 
     this.PLAYER_SPRITE_WIDTH = 30;
@@ -55,12 +56,12 @@ GameState.prototype.create = function() {
     // set stage background to stone color
     this.game.stage.backgroundColor = 0x444444;
     // set scrolling rug on ground
-    for (var x = 0; x < this.game.width; x += this.RUG_TILE_SIZE) {
+    for (var x = 0; x < this.game.width; x += this.RUG_TILE_WIDTH) {
         // add a rug tile
         var rugTile = this.game.add.tileSprite(x,
-            (this.game.height / 2) - (this.RUG_TILE_SIZE / 2),
-            this.RUG_TILE_SIZE,
-            this.RUG_TILE_SIZE,
+            (this.game.height / 2) - (this.RUG_TILE_HEIGHT / 2),
+            this.RUG_TILE_WIDTH,
+            this.RUG_TILE_HEIGHT,
             'rug'
         );
         // animate rugtile

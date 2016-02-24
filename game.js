@@ -57,16 +57,16 @@ GameState.prototype.create = function() {
     for (var x = 0; x < this.game.width; x += this.GROUND_SPRITE_SIZE) {
         //add the ground blocks, enable physics on each, make immovable
         var groundBlock = this.game.add.sprite(x, this.game.height - this.GROUND_SPRITE_SIZE / 2, 'ground');
-        groundBlock.animations.add('scrollGround', null, 30, true);
+        groundBlock.animations.add('scroll', null, 50, true);
         groundBlock.update = function() {
-            this.animations.play('scrollGround');
+            this.animations.play('scroll');
         };
 
-        //ceiling inits
+        //ceiling init
         var ceilingBlock = this.game.add.sprite(x, 0, 'ground');
-        ceilingBlock.animations.add('scrollCeiling', null, 18, true);
+        ceilingBlock.animations.add('scroll', null, 35, true);
         ceilingBlock.update = function() {
-            this.animations.play('scrollCeiling')
+            this.animations.play('scroll')
         };
 
         //physics for ground/ceiling

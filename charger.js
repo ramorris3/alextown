@@ -19,6 +19,12 @@ Charger.prototype = Object.create(Phaser.Sprite.prototype);
 Charger.prototype.constructor = Charger;
 
 Charger.prototype.update = function() {
+    //Check if offscreen and destroy
+    if (this.x < -this.width){
+        this.destroy()
+        return;
+    }
+
     // play zombie animation
     this.animations.play('charge');
 

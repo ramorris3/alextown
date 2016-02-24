@@ -24,6 +24,11 @@ Chomper.prototype = Object.create(Phaser.Sprite.prototype);
 Chomper.prototype.constructor = Chomper;
 
 Chomper.prototype.update = function() {
+    //Check if offscreen and destroy
+    if (this.x < -this.width){
+        this.destroy()
+        return;
+    }
     // play chomper animation
     this.animations.play('chomp');
 

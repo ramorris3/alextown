@@ -144,10 +144,10 @@ GameState.prototype.update = function() {
 
 // custom collision handling
 var onSwordHit = function(weapon, enemy) {
-    enemy.takeDamage(weapon.damage);
+    enemy.takeDamage(enemy, weapon.damage, 200); //200 flinch for all for now
 };
 var onPlayerHit = function(player, enemy) {
-    player.takeDamage(); // only loses one HP for now
+    player.takeDamage(player, 1, 800); // only loses one HP for now
 };
 
 // Create game canvas

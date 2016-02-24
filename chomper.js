@@ -37,7 +37,7 @@ Chomper.prototype.update = function() {
     this.animations.play('chomp');
 
     // flash if invincible (after a hit)
-    this.flash();
+    this.flash(this);
 
     // Calculate distance to target
     var distance = this.game.math.distance(this.x, this.y, this.target.x, this.target.y);
@@ -55,37 +55,6 @@ Chomper.prototype.update = function() {
     }
 };
 
-Chomper.prototype.takeDamage = function(damage) {
-    if (!this.invincible) {
-        // only damage if not invincible
-        this.health -= damage;
+Chomper.prototype.takeDamage = alexTown.takeDamage;
 
-        if (this.health <= 0) {
-            // spawn a "dying corpse" sprite here before destroy
-            this.destroy();
-        }
-
-        //toggle invincibility
-        this.invincible = true;
-        // set timer to restore to vulerable state afterwards
-        var that = this;
-        game.time.events.add(200, function() { 
-            that.invincible = false;
-        }, this);
-    }
-};
-
-Chomper.prototype.flash = function() {
-    if (this.invincible) {
-        this.flashTimer++;
-        // if invincible, flash every 2 frames
-        if (!(this.flashTimer % 2)) {
-            this.tint = 0xFB0000;
-        } else {
-            this.tint = 0xffffff;
-        }
-    } else { // not hurt/invincible, reset tint to default
-        this.tint = 0xffffff;
-    }
-};
-
+Chomper.prototype.flash = alexTown.flash;

@@ -8,7 +8,9 @@ var GameState = function(game) {
 // Load images and sounds
 GameState.prototype.preload = function() {
     this.GROUND_SPRITE_SIZE = 48;
-    this.game.load.image('ground', 'assets/ground1.png');
+    this.game.load.spritesheet('ground', 'assets/ground.png',
+        this.GROUND_SPRITE_SIZE,
+        this.GROUND_SPRITE_SIZE);
 
     this.PLAYER_SPRITE_WIDTH = 30;
     this.PLAYER_SPRITE_HEIGHT = 42;
@@ -55,7 +57,19 @@ GameState.prototype.create = function() {
     for (var x = 0; x < this.game.width; x += this.GROUND_SPRITE_SIZE) {
         //add the ground blocks, enable physics on each, make immovable
         var groundBlock = this.game.add.sprite(x, this.game.height - this.GROUND_SPRITE_SIZE / 2, 'ground');
+        groundBlock.animations.add('scrollGround', null, 30, true);
+        groundBlock.update = function() {
+            this.animations.play('scrollGround');
+        };
+
+        //ceiling inits
         var ceilingBlock = this.game.add.sprite(x, 0, 'ground');
+        ceilingBlock.animations.add('scrollCeiling', null, 18, true);
+        ceilingBlock.update = function() {
+            this.animations.play('scrollCeiling')
+        };
+
+        //physics for ground/ceiling
         this.game.physics.enable(groundBlock, Phaser.Physics.ARCADE);
         this.game.physics.enable(ceilingBlock, Phaser.Physics.ARCADE);
         ceilingBlock.body.setSize(this.GROUND_SPRITE_SIZE, this.GROUND_SPRITE_SIZE/2, 0, 0);
@@ -131,6 +145,8 @@ GameState.prototype.update = function() {
             }
         }
     }
+
+    //ground collision s
     this.game.physics.arcade.collide(this.player, this.ground);
     this.game.physics.arcade.collide(this.enemygroup, this.enemygroup);
     this.game.physics.arcade.collide(this.enemygroup, this.ground);

@@ -18,6 +18,10 @@ var WarriorPlayer = function(game, x, y) {
     this.ACCELERATION = 1500;
     this.DRAG = 1450;
 
+    this.invincible = false;
+    this.flashTimer = 20;
+    this.health = 5;
+
     // enable physics for player
     this.game.physics.enable(this, Phaser.Physics.ARCADE);
 
@@ -38,6 +42,9 @@ WarriorPlayer.prototype.constructor = WarriorPlayer;
 WarriorPlayer.prototype.update = function() {
     /** PLAYER LOGIC **/
     this.animations.play('run');
+
+    // flash if invincible (after a hit)
+    this.flash(this);
 
     // set up min and max mvt speed
     if ((this.cursors.left.isDown || this.cursors.right.isDown) &&
@@ -68,6 +75,10 @@ WarriorPlayer.prototype.update = function() {
     }
 };
 
+WarriorPlayer.prototype.takeDamage = alexTown.takeDamage;
+
+WarriorPlayer.prototype.flash = alexTown.flash;
+
 // player sword class definition
 var WarriorSword = function(game) {
     this.game = game;
@@ -79,6 +90,8 @@ var WarriorSword = function(game) {
     // basic attack logic
     this.nextSwing = 0;
     this.swingRate = 150; // sword swing cool down
+    this.damage = 1;
+
     this.kill();
 };
 

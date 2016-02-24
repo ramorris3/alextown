@@ -1,4 +1,5 @@
 var Chomper = function(game, x, y, target) {
+    this.game = game;
     Phaser.Sprite.call(this, game, x, y, 'chomper');
 
     this.animations.add('chomp', [0,1,2,3], 10, true);
@@ -7,6 +8,9 @@ var Chomper = function(game, x, y, target) {
     // Save the target that this Chomper will follow
     // The target is any object with x and y properties
     this.target = target;
+    this.invincible = false;
+    this.flashTimer = 20;
+    this.health = 4;
 
     // Set the pivot point for this sprite to the center
     this.anchor.setTo(0.5, 0.5);
@@ -32,6 +36,9 @@ Chomper.prototype.update = function() {
     // play chomper animation
     this.animations.play('chomp');
 
+    // flash if invincible (after a hit)
+    this.flash(this);
+
     // Calculate distance to target
     var distance = this.game.math.distance(this.x, this.y, this.target.x, this.target.y);
 
@@ -47,3 +54,7 @@ Chomper.prototype.update = function() {
         this.body.velocity.setTo(0, 0);
     }
 };
+
+Chomper.prototype.takeDamage = alexTown.takeDamage;
+
+Chomper.prototype.flash = alexTown.flash;

@@ -7,6 +7,11 @@ var Charger = function(game, x, y) {
     // Set the pivot point for this sprite to the center
     this.anchor.setTo(0.5, 0.5);
 
+    //set up damage logic
+    this.invincible = false;
+    this.flashTimer = 20;
+    this.health = 4;
+
     // Enable physics on this object
     this.game.physics.enable(this, Phaser.Physics.ARCADE);
 
@@ -28,6 +33,13 @@ Charger.prototype.update = function() {
     // play zombie animation
     this.animations.play('charge');
 
+    // flash if invincible (after a hit)
+    this.flash(this);
+
     // If the distance > MIN_DISTANCE then move
     this.body.velocity.setTo(-100, 0);
 };
+
+Charger.prototype.takeDamage = alexTown.takeDamage;
+
+Charger.prototype.flash = alexTown.flash;

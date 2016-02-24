@@ -7,6 +7,9 @@ var Rook = function(game, x, y, target, ammo) {
     // Save the target that this Follower will follow
     // The target is any object with x and y properties
     this.target = target;
+    this.invincible = false;
+    this.flashTimer = 20;
+    this.health = 4;
 
     // Set the pivot point for this sprite to the center
     this.anchor.setTo(0.5, 0.5);
@@ -43,6 +46,8 @@ Rook.prototype.update = function() {
     // play rook animation
     this.animations.play('hop');
 
+    // flash if invincible (after a hit)
+    this.flash(this);
 
     // Calculate distance to target
     var distance = this.game.math.distance(this.x, this.y, this.target.x, this.target.y);
@@ -71,6 +76,10 @@ Rook.prototype.update = function() {
         this.reload_count++;
     }
 };
+
+Rook.prototype.takeDamage = alexTown.takeDamage;
+
+Rook.prototype.flash = alexTown.flash;
 
 // arrow class definition
 var Arrow = function(game, x, y) {

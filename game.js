@@ -12,6 +12,9 @@ GameState.prototype.preload = function() {
         this.GROUND_SPRITE_SIZE,
         this.GROUND_SPRITE_SIZE);
 
+    this.RUG_TILE_SIZE = 192;
+    this.game.load.image('rug', 'assets/rugtile.png');
+
     this.PLAYER_SPRITE_WIDTH = 30;
     this.PLAYER_SPRITE_HEIGHT = 42;
     this.game.load.spritesheet('warrior', 'assets/warrior.png',
@@ -49,22 +52,36 @@ GameState.prototype.preload = function() {
 // Set up gameplay
 GameState.prototype.create = function() {
 
-    // set stage background to sky color
+    // set stage background to stone color
     this.game.stage.backgroundColor = 0x444444;
+    // set scrolling rug on ground
+    for (var x = 0; x < this.game.width; x += this.RUG_TILE_SIZE) {
+        // add a rug tile
+        var rugTile = this.game.add.tileSprite(x,
+            (this.game.height / 2) - (this.RUG_TILE_SIZE / 2),
+            this.RUG_TILE_SIZE,
+            this.RUG_TILE_SIZE,
+            'rug'
+        );
+        // animate rugtile
+        rugTile.update = function() {
+            this.tilePosition.x -= 1.3;
+        };
+    }
 
     // create walls
     this.ground = this.game.add.group();
     for (var x = 0; x < this.game.width; x += this.GROUND_SPRITE_SIZE) {
         //add the ground blocks, enable physics on each, make immovable
         var groundBlock = this.game.add.sprite(x, this.game.height - this.GROUND_SPRITE_SIZE / 2, 'ground');
-        groundBlock.animations.add('scroll', null, 50, true);
+        groundBlock.animations.add('scroll', null, 40, true);
         groundBlock.update = function() {
             this.animations.play('scroll');
         };
 
         //ceiling init
         var ceilingBlock = this.game.add.sprite(x, 0, 'ground');
-        ceilingBlock.animations.add('scroll', null, 35, true);
+        ceilingBlock.animations.add('scroll', null, 25, true);
         ceilingBlock.update = function() {
             this.animations.play('scroll')
         };
@@ -87,7 +104,7 @@ GameState.prototype.create = function() {
     this.player = this.game.add.existing(
         new WarriorPlayer(this.game,
             this.PLAYER_SPRITE_WIDTH * 2,
-            (this.game.height / 2) + (this.PLAYER_SPRITE_HEIGHT / 2))
+            (this.game.height / 2) - (this.PLAYER_SPRITE_HEIGHT / 2))
     );
 
     // create arrow pool for rooks

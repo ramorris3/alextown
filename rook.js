@@ -23,6 +23,9 @@ var Rook = function(game, x, y, target, ammo) {
     this.reload_count = 50;
     this.ammo = ammo;
 
+    //this.checkWorldBounds = true;
+    //this.events.onOutOfBounds.add( function(obj){ obj.destroy(); }, this );
+
 };
 
 // Followers are a type of Phaser.Sprite
@@ -30,6 +33,12 @@ Rook.prototype = Object.create(Phaser.Sprite.prototype);
 Rook.prototype.constructor = Rook;
 
 Rook.prototype.update = function() {
+    //Check if offscreen and destroy
+    if (this.x < -this.width){
+        this.destroy()
+        return;
+    }
+
     // play rook animation
     this.animations.play('hop');
 

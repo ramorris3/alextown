@@ -21,6 +21,7 @@ var Rook = function(game, x, y, target, ammo) {
     // Weapon
     this.reload_stat = 50;
     this.reload_count = 50;
+    this.quiver = 6;
     this.ammo = ammo;
 
 };
@@ -39,15 +40,14 @@ Rook.prototype.update = function() {
     // Calculate the angle to the target
     var rotation = this.game.math.angleBetween(this.x, this.y, this.target.x, this.target.y);
     // If the distance > MIN_DISTANCE then move
-    if (distance > this.MIN_DISTANCE) {
+    if (distance > this.MIN_DISTANCE || this.quiver <= 0) {
         // Calculate velocity vector based on rotation and this.MAX_SPEED
-        this.body.velocity.x = Math.cos(rotation) * this.MAX_SPEED;
-        this.body.velocity.y = Math.sin(rotation) * this.MAX_SPEED;
+        this.body.velocity.x = -this.MAX_SPEED;
         // otherwise shoot arrow
     } else {
         this.body.velocity.setTo(0, 0);
     }
-    if (this.reload_count >= this.reload_stat) {
+    if (this.reload_count >= this.reload_stat && this.quiver > 0) {
         var arrow = this.ammo.getFirstDead();
         if (arrow === null || arrow === undefined) return;
         arrow.revive();
@@ -57,6 +57,7 @@ Rook.prototype.update = function() {
         arrow.body.velocity.x = Math.cos(rotation) * arrow.SPEED;
         arrow.body.velocity.y = Math.sin(rotation) * arrow.SPEED;
         this.reload_count = 0;
+        this.quiver--
     } else {
         this.reload_count++;
     }

@@ -18,6 +18,10 @@ var WarriorPlayer = function(game, x, y) {
     this.ACCELERATION = 1500;
     this.DRAG = 1450;
 
+    this.invincible = false;
+    this.flashTimer = 20;
+    this.health = 5;
+
     // enable physics for player
     this.game.physics.enable(this, Phaser.Physics.ARCADE);
 
@@ -38,6 +42,9 @@ WarriorPlayer.prototype.constructor = WarriorPlayer;
 WarriorPlayer.prototype.update = function() {
     /** PLAYER LOGIC **/
     this.animations.play('run');
+
+    // flash if invincible (after a hit)
+    this.flash();
 
     // set up min and max mvt speed
     if ((this.cursors.left.isDown || this.cursors.right.isDown) &&
@@ -65,6 +72,41 @@ WarriorPlayer.prototype.update = function() {
 
     if (this.game.input.keyboard.isDown(Phaser.Keyboard.SPACEBAR)) {
         this.sword.swing();
+    }
+};
+
+WarriorPlayer.prototype.takeDamage = function() {
+    if (!this.invincible) {
+        // only damage if not invincible
+        this.health -= 1;
+
+        if (this.health <= 0) {
+            // spawn a "dying corpse" sprite here before destroy
+            alert('You died');
+            this.destroy();
+        }
+
+        //toggle invincibility
+        this.invincible = true;
+        // set timer to restore to vulerable state afterwards
+        var that = this;
+        game.time.events.add(800, function() { 
+            that.invincible = false;
+        }, this);
+    }
+};
+
+WarriorPlayer.prototype.flash = function() {
+    if (this.invincible) {
+        this.flashTimer++;
+        // if invincible, flash every 2 frames
+        if (!(this.flashTimer % 2)) {
+            this.tint = 0xFB0000;
+        } else {
+            this.tint = 0xffffff;
+        }
+    } else { // not hurt/invincible, reset tint to default
+        this.tint = 0xffffff;
     }
 };
 

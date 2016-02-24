@@ -137,12 +137,17 @@ GameState.prototype.update = function() {
 
     // custom collision handling
     this.game.physics.arcade.overlap(this.player.sword, this.enemygroup, onSwordHit, null, this);
+    this.game.physics.arcade.overlap(this.player, this.enemygroup, onPlayerHit, null, this);
+    this.game.physics.arcade.overlap(this.player, this.arrowpool, onPlayerHit, null, this);
 
 };
 
 // custom collision handling
 var onSwordHit = function(weapon, enemy) {
     enemy.takeDamage(weapon.damage);
+};
+var onPlayerHit = function(player, enemy) {
+    player.takeDamage(); // only loses one HP for now
 };
 
 // Create game canvas

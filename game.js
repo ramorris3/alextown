@@ -10,13 +10,13 @@ GameState.prototype.preload = function() {
     this.GROUND_SPRITE_SIZE = 48;
     this.game.load.image('ground', 'assets/ground1.png');
 
-    this.PLAYER_SPRITE_WIDTH = 42;
+    this.PLAYER_SPRITE_WIDTH = 30;
     this.PLAYER_SPRITE_HEIGHT = 42;
     this.game.load.spritesheet('warrior', 'assets/warrior.png',
         this.PLAYER_SPRITE_WIDTH,
         this.PLAYER_SPRITE_HEIGHT);
     this.game.load.spritesheet('warriorsword', 'assets/warriorsword.png',
-        36, 54);
+        72, 63);
 
     this.CHOMPER_SPRITE_WIDTH = 18;
     this.CHOMPER_SPRITE_HEIGHT = 27;

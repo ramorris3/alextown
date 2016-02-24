@@ -134,8 +134,16 @@ GameState.prototype.update = function() {
     this.game.physics.arcade.collide(this.player, this.ground);
     this.game.physics.arcade.collide(this.enemygroup, this.enemygroup);
     this.game.physics.arcade.collide(this.enemygroup, this.ground);
+
+    // custom collision handling
+    this.game.physics.arcade.overlap(this.player.sword, this.enemygroup, onSwordHit, null, this);
+
 };
 
+// custom collision handling
+var onSwordHit = function(weapon, enemy) {
+    enemy.takeDamage(weapon.damage);
+};
 
 // Create game canvas
 var game = new Phaser.Game(1000, 500, Phaser.CANVAS, '');

@@ -79,6 +79,8 @@ var WarriorSword = function(game) {
     // basic attack logic
     this.nextSwing = 0;
     this.swingRate = 150; // sword swing cool down
+    this.damage = 1;
+
     this.kill();
 };
 

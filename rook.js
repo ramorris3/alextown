@@ -7,6 +7,9 @@ var Rook = function(game, x, y, target, ammo) {
     // Save the target that this Follower will follow
     // The target is any object with x and y properties
     this.target = target;
+    this.invincible = false;
+    this.flashTimer = 20;
+    this.health = 4;
 
     // Set the pivot point for this sprite to the center
     this.anchor.setTo(0.5, 0.5);
@@ -42,6 +45,8 @@ Rook.prototype.update = function() {
     // play rook animation
     this.animations.play('hop');
 
+    // flash if invincible (after a hit)
+    this.flash();
 
     // Calculate distance to target
     var distance = this.game.math.distance(this.x, this.y, this.target.x, this.target.y);
@@ -68,6 +73,40 @@ Rook.prototype.update = function() {
         this.reload_count = 0;
     } else {
         this.reload_count++;
+    }
+};
+
+Rook.prototype.takeDamage = function(damage) {
+    if (!this.invincible) {
+        // only damage if not invincible
+        this.health -= damage;
+
+        if (this.health <= 0) {
+            // spawn a "dying corpse" sprite here before destroy
+            this.destroy();
+        }
+
+        //toggle invincibility
+        this.invincible = true;
+        // set timer to restore to vulerable state afterwards
+        var that = this;
+        game.time.events.add(200, function() { 
+            that.invincible = false;
+        }, this);
+    }
+};
+
+Rook.prototype.flash = function() {
+    if (this.invincible) {
+        this.flashTimer++;
+        // if invincible, flash every 2 frames
+        if (!(this.flashTimer % 2)) {
+            this.tint = 0xFB0000;
+        } else {
+            this.tint = 0xffffff;
+        }
+    } else { // not hurt/invincible, reset tint to default
+        this.tint = 0xffffff;
     }
 };
 

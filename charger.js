@@ -37,7 +37,12 @@ Charger.prototype.update = function() {
     this.flash(this);
 
     // If the distance > MIN_DISTANCE then move
-    this.body.velocity.setTo(-100, 0);
+    if (this.body.velocity.x > this.MAX_SPEED || this.body.velocity.x < -this.MAX_SPEED) {
+        this.body.velocity.setTo(-100 + this.body.velocity.x, this.body.velocity.y);
+    }
+    else {
+        this.body.velocity.setTo(-100, 0);
+    }
 };
 
 Charger.prototype.takeDamage = alexTown.takeDamage;

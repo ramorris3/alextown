@@ -54,6 +54,26 @@ GameState.prototype.create = function() {
     // init enemies group
     this.enemygroup = this.game.add.group();
 
+    // set stage background to sky color
+    this.game.stage.backgroundColor = 0x444444;
+
+    // create walls
+    this.ground = this.game.add.group();
+    for (var x = 0; x < this.game.width; x += this.GROUND_SPRITE_SIZE) {
+        //add the ground blocks, enable physics on each, make immovable
+        var groundBlock = this.game.add.sprite(x, this.game.height - this.GROUND_SPRITE_SIZE / 2, 'ground');
+        var ceilingBlock = this.game.add.sprite(x, 0, 'ground');
+        this.game.physics.enable(groundBlock, Phaser.Physics.ARCADE);
+        this.game.physics.enable(ceilingBlock, Phaser.Physics.ARCADE);
+        ceilingBlock.body.setSize(this.GROUND_SPRITE_SIZE, this.GROUND_SPRITE_SIZE/2, 0, 0);
+        groundBlock.body.immovable = true;
+        ceilingBlock.body.immovable = true;
+        groundBlock.body.allowGravity = false;
+        ceilingBlock.body.allowGravity = false;
+        this.ground.add(groundBlock);
+        this.ground.add(ceilingBlock);
+    }
+
     // create player sprite
     this.player = this.game.add.existing(
         new WarriorPlayer(this.game,
@@ -98,19 +118,19 @@ GameState.prototype.update = function() {
                         var chomper = this.game.add.existing(
                             new Chomper(this.game, x, y, this.player)
                         );
-                        this.enemygroup.add(chomper);
+                        this.game.enemygroup.add(chomper);
                         break;
                     case 'R':
                         var rook = this.game.add.existing(
                             new Rook(this.game, x, y, this.player, this.arrowpool)
                         );
-                        this.enemygroup.add(rook);
+                        this.game.enemygroup.add(rook);
                         break;
                     case 'C':
                         var charger = this.game.add.existing(
                             new Charger(this.game, x, y)
                         );
-                        this.enemygroup.add(charger);
+                        this.game.enemygroup.add(charger);
                         break;
                 }
             }
@@ -126,7 +146,6 @@ GameState.prototype.update = function() {
     this.game.physics.arcade.overlap(this.player.sword, this.enemygroup, onSwordHit, null, this);
     this.game.physics.arcade.overlap(this.player, this.enemygroup, onPlayerHit, null, this);
     this.game.physics.arcade.overlap(this.player, this.arrowpool, onPlayerHit, null, this);
-
 };
 
 // custom collision handling

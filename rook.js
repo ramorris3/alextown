@@ -29,7 +29,7 @@ var Rook = function(game, x, y, target, ammo) {
 
     //this.checkWorldBounds = true;
     //this.events.onOutOfBounds.add( function(obj){ obj.destroy(); }, this );
-
+    this.POS_Y = this.y;
 };
 
 // Followers are a type of Phaser.Sprite

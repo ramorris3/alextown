@@ -7,15 +7,11 @@ var GameState = function(game) {
 
 // Load images and sounds
 GameState.prototype.preload = function() {
-    this.GROUND_SPRITE_SIZE = 48;
-    this.game.load.spritesheet('ground', 'assets/ground.png',
-        this.GROUND_SPRITE_SIZE,
-        this.GROUND_SPRITE_SIZE);
-
-    this.RUG_TILE_WIDTH = 192;
-    this.RUG_TILE_HEIGHT = 312;
+    // tiles
+    this.game.load.image('ground', 'assets/groundtile.png');
     this.game.load.image('rug', 'assets/rugtile.png');
 
+    // sprites/images
     this.PLAYER_SPRITE_WIDTH = 30;
     this.PLAYER_SPRITE_HEIGHT = 42;
     this.game.load.spritesheet('warrior', 'assets/warrior.png',
@@ -53,51 +49,52 @@ GameState.prototype.preload = function() {
 // Set up gameplay
 GameState.prototype.create = function() {
 
-    // set stage background to stone color
-    this.game.stage.backgroundColor = 0x444444;
-    // set scrolling rug on ground
-    for (var x = 0; x < this.game.width; x += this.RUG_TILE_WIDTH) {
-        // add a rug tile
-        var rugTile = this.game.add.tileSprite(x,
-            (this.game.height / 2) - (this.RUG_TILE_HEIGHT / 2),
-            this.RUG_TILE_WIDTH,
-            this.RUG_TILE_HEIGHT,
-            'rug'
-        );
-        // animate rugtile
-        rugTile.update = function() {
-            this.tilePosition.x -= 1.3;
-        };
-    }
+    this.castleStage = alexTown.makeCastleStage(this.game);
 
-    // create walls
-    this.ground = this.game.add.group();
-    for (var x = 0; x < this.game.width; x += this.GROUND_SPRITE_SIZE) {
-        //add the ground blocks, enable physics on each, make immovable
-        var groundBlock = this.game.add.sprite(x, this.game.height - this.GROUND_SPRITE_SIZE / 2, 'ground');
-        groundBlock.animations.add('scroll', null, 40, true);
-        groundBlock.update = function() {
-            this.animations.play('scroll');
-        };
 
-        //ceiling init
-        var ceilingBlock = this.game.add.sprite(x, 0, 'ground');
-        ceilingBlock.animations.add('scroll', null, 25, true);
-        ceilingBlock.update = function() {
-            this.animations.play('scroll')
-        };
+    // // set scrolling rug on ground
+    // for (var x = 0; x < this.game.width; x += this.RUG_TILE_WIDTH) {
+    //     // add a rug tile
+    //     var rugTile = this.game.add.tileSprite(x,
+    //         (this.game.height / 2) - (this.RUG_TILE_HEIGHT / 2),
+    //         this.RUG_TILE_WIDTH,
+    //         this.RUG_TILE_HEIGHT,
+    //         'rug'
+    //     );
+    //     // animate rugtile
+    //     rugTile.update = function() {
+    //         this.tilePosition.x -= 1.3;
+    //     };
+    // }
 
-        //physics for ground/ceiling
-        this.game.physics.enable(groundBlock, Phaser.Physics.ARCADE);
-        this.game.physics.enable(ceilingBlock, Phaser.Physics.ARCADE);
-        ceilingBlock.body.setSize(this.GROUND_SPRITE_SIZE, this.GROUND_SPRITE_SIZE/2, 0, 0);
-        groundBlock.body.immovable = true;
-        ceilingBlock.body.immovable = true;
-        groundBlock.body.allowGravity = false;
-        ceilingBlock.body.allowGravity = false;
-        this.ground.add(groundBlock);
-        this.ground.add(ceilingBlock);
-    }
+    // // create walls
+    // this.ground = this.game.add.group();
+    // for (var x = 0; x < this.game.width; x += this.GROUND_SPRITE_SIZE) {
+    //     //add the ground blocks, enable physics on each, make immovable
+    //     var groundBlock = this.game.add.sprite(x, this.game.height - this.GROUND_SPRITE_SIZE / 2, 'ground');
+    //     groundBlock.animations.add('scroll', null, 40, true);
+    //     groundBlock.update = function() {
+    //         this.animations.play('scroll');
+    //     };
+
+    //     //ceiling init
+    //     var ceilingBlock = this.game.add.sprite(x, 0, 'ground');
+    //     ceilingBlock.animations.add('scroll', null, 25, true);
+    //     ceilingBlock.update = function() {
+    //         this.animations.play('scroll')
+    //     };
+
+    //     //physics for ground/ceiling
+    //     this.game.physics.enable(groundBlock, Phaser.Physics.ARCADE);
+    //     this.game.physics.enable(ceilingBlock, Phaser.Physics.ARCADE);
+    //     ceilingBlock.body.setSize(this.GROUND_SPRITE_SIZE, this.GROUND_SPRITE_SIZE/2, 0, 0);
+    //     groundBlock.body.immovable = true;
+    //     ceilingBlock.body.immovable = true;
+    //     groundBlock.body.allowGravity = false;
+    //     ceilingBlock.body.allowGravity = false;
+    //     this.ground.add(groundBlock);
+    //     this.ground.add(ceilingBlock);
+    // }
 
     this.enemygroup = this.game.add.group();
 
@@ -164,12 +161,12 @@ GameState.prototype.update = function() {
         }
     }
 
-    //ground collision s
-    this.game.physics.arcade.collide(this.player, this.ground);
-    this.game.physics.arcade.collide(this.enemygroup, this.enemygroup);
-    this.game.physics.arcade.collide(this.enemygroup, this.ground);
+    //collisions with castle stage
+    this.game.physics.arcade.collide(this.player, this.castleStage);
+    this.game.physics.arcade.collide(this.enemygroup, this.castleStage);
 
-    // custom collision handling
+    // player/enemy, enemy/enemy collision handling
+    this.game.physics.arcade.collide(this.enemygroup, this.enemygroup);
     this.game.physics.arcade.overlap(this.player.sword, this.enemygroup, onSwordHit, null, this);
     this.game.physics.arcade.overlap(this.player, this.enemygroup, onPlayerHit, null, this);
     this.game.physics.arcade.overlap(this.player, this.arrowpool, onPlayerHit, null, this);

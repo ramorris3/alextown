@@ -36,7 +36,10 @@ Chomper.prototype.update = function() {
     var distance = this.game.math.distance(this.x, this.y, this.target.x, this.target.y);
 
     // If the distance > MIN_DISTANCE then move
-    if (distance > this.MIN_DISTANCE) {
+        //If player is using whirlpool then move towards them
+    if ((this.body.velocity.x > this.MAX_SPEED || this.body.velocity.x < -this.MAX_SPEED) && this.game.input.keyboard.isDown(Phaser.Keyboard.W)) {
+        this.body.velocity.setTo(this.body.velocity.x, this.body.velocity.y);
+    } else if (distance > this.MIN_DISTANCE) {
         // Calculate the angle to the target
         var rotation = this.game.math.angleBetween(this.x, this.y, this.target.x, this.target.y);
 

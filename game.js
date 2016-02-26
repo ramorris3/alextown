@@ -7,16 +7,18 @@ var GameState = function(game) {
 
 // Load images and sounds
 GameState.prototype.preload = function() {
-    this.GROUND_SPRITE_SIZE = 48;
-    this.game.load.image('ground', 'assets/ground1.png');
+    // tiles
+    this.game.load.image('ground', 'assets/groundtile.png');
+    this.game.load.image('rug', 'assets/rugtile.png');
 
-    this.PLAYER_SPRITE_WIDTH = 42;
+    // sprites/images
+    this.PLAYER_SPRITE_WIDTH = 30;
     this.PLAYER_SPRITE_HEIGHT = 42;
     this.game.load.spritesheet('warrior', 'assets/warrior.png',
         this.PLAYER_SPRITE_WIDTH,
         this.PLAYER_SPRITE_HEIGHT);
     this.game.load.spritesheet('warriorsword', 'assets/warriorsword.png',
-        36, 54);
+        72, 63);
 
     this.CHOMPER_SPRITE_WIDTH = 18;
     this.CHOMPER_SPRITE_HEIGHT = 27;
@@ -46,34 +48,17 @@ GameState.prototype.preload = function() {
 
 // Set up gameplay
 GameState.prototype.create = function() {
+    // make castle surroundings (lvl 1)
+    this.castleStage = alexTown.makeCastleStage(this.game);
 
-    // set stage background to sky color
-    this.game.stage.backgroundColor = 0x444444;
-
-    // create walls
-    this.ground = this.game.add.group();
-    for (var x = 0; x < this.game.width; x += this.GROUND_SPRITE_SIZE) {
-        //add the ground blocks, enable physics on each, make immovable
-        var groundBlock = this.game.add.sprite(x, this.game.height - this.GROUND_SPRITE_SIZE / 2, 'ground');
-        var ceilingBlock = this.game.add.sprite(x, 0, 'ground');
-        this.game.physics.enable(groundBlock, Phaser.Physics.ARCADE);
-        this.game.physics.enable(ceilingBlock, Phaser.Physics.ARCADE);
-        ceilingBlock.body.setSize(this.GROUND_SPRITE_SIZE, this.GROUND_SPRITE_SIZE/2, 0, 0);
-        groundBlock.body.immovable = true;
-        ceilingBlock.body.immovable = true;
-        groundBlock.body.allowGravity = false;
-        ceilingBlock.body.allowGravity = false;
-        this.ground.add(groundBlock);
-        this.ground.add(ceilingBlock);
-    }
-
+    // init enemies group
     this.enemygroup = this.game.add.group();
 
     // create player sprite
     this.player = this.game.add.existing(
         new WarriorPlayer(this.game,
             this.PLAYER_SPRITE_WIDTH * 2,
-            (this.game.height / 2) + (this.PLAYER_SPRITE_HEIGHT / 2))
+            (this.game.height / 2) - (this.PLAYER_SPRITE_HEIGHT / 2))
     );
 
     // create arrow pool for rooks
@@ -131,11 +116,13 @@ GameState.prototype.update = function() {
             }
         }
     }
-    this.game.physics.arcade.collide(this.player, this.ground);
-    this.game.physics.arcade.collide(this.enemygroup, this.enemygroup);
-    this.game.physics.arcade.collide(this.enemygroup, this.ground);
 
-    // custom collision handling
+    //collisions with castle stage tiles (walls, not rug)
+    this.game.physics.arcade.collide(this.player, this.castleStage);
+    this.game.physics.arcade.collide(this.enemygroup, this.castleStage);
+
+    // player/enemy, enemy/enemy collision handling
+    this.game.physics.arcade.collide(this.enemygroup, this.enemygroup);
     this.game.physics.arcade.overlap(this.player.sword, this.enemygroup, onSwordHit, null, this);
     this.game.physics.arcade.overlap(this.player, this.enemygroup, onPlayerHit, null, this);
     this.game.physics.arcade.overlap(this.player, this.arrowpool, onPlayerHit, null, this);

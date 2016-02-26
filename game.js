@@ -67,7 +67,7 @@ GameState.prototype.create = function() {
         this.ground.add(ceilingBlock);
     }
 
-    this.enemygroup = this.game.add.group();
+    this.game.enemygroup = this.game.add.group();
 
     // create player sprite
     this.player = this.game.add.existing(
@@ -113,26 +113,26 @@ GameState.prototype.update = function() {
                         var chomper = this.game.add.existing(
                             new Chomper(this.game, x, y, this.player)
                         );
-                        this.enemygroup.add(chomper);
+                        this.game.enemygroup.add(chomper);
                         break;
                     case 'R':
                         var rook = this.game.add.existing(
                             new Rook(this.game, x, y, this.player, this.arrowpool)
                         );
-                        this.enemygroup.add(rook);
+                        this.game.enemygroup.add(rook);
                         break;
                     case 'C':
                         var charger = this.game.add.existing(
                             new Charger(this.game, x, y)
                         );
-                        this.enemygroup.add(charger);
+                        this.game.enemygroup.add(charger);
                         break;
                 }
             }
         }
     }
     this.game.physics.arcade.collide(this.player, this.ground);
-    this.game.physics.arcade.collide(this.enemygroup, this.enemygroup);
+    this.game.physics.arcade.collide(this.game.enemygroup, this.game.enemygroup);
     this.game.physics.arcade.collide(this.enemygroup, this.ground);
 };
 

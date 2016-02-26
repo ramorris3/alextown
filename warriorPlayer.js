@@ -13,7 +13,7 @@ var WarriorPlayer = function(game, x, y) {
     this.addChild(this.sword);
 
     this.whirlPool = this.game.add.existing(
-            new magicWhirlpool(this.game)
+            new magicWhirlpool(this.game, this)
         );
     this.addChild(this.whirlPool);
 
@@ -80,7 +80,7 @@ WarriorPlayer.prototype.update = function() {
     }
 
     if (this.game.input.keyboard.isDown(Phaser.Keyboard.W)) {
-        this.whirlPool.cast(this.game);
+        this.whirlPool.cast(this.game, this);
     }
 };
 
@@ -138,7 +138,7 @@ var magicWhirlpool = function(game) {
 magicWhirlpool.prototype = Object.create(Phaser.Sprite.prototype);
 magicWhirlpool.prototype.constructor = magicWhirlpool;
 
-magicWhirlpool.prototype.cast = function(game) {
+magicWhirlpool.prototype.cast = function(game, target) {
     this.game = game;
     if (this.game.time.time < this.coolDown) {
         return;
@@ -148,18 +148,17 @@ magicWhirlpool.prototype.cast = function(game) {
     this.animations.play('swing', 30, false, true);
     //Animation for whirlpool
 
-    this.game.enemygroup.forEachExists(MoveEnemy, this);
+    this.game.enemygroup.forEachExists(MoveEnemy, this, target);
     // Cooldown
     this.nextAttack = this.game.time.time + this.coolDown;
 };
 
-var MoveEnemy = function(enemy) {
-
-    var rotation = this.game.math.angleBetween(enemy.x, enemy.y, this.x, this.y);
+var MoveEnemy = function(enemy, target) {
+    var rotation = this.game.math.angleBetween(enemy.x, enemy.y, target.x, target.y);
     const SPEED = 300;
     //tank.body.reset( game.world.centerX + (scale*tank_state.position.x), game.world.centerY + (scale*tank_state.position.y));
     //enemy.body.velocity.reset(enemy.body.velocity.x, enemy.body.velocity.y);
 
-    enemy.body.velocity.x += Math.cos(rotation) * SPEED;
-    enemy.body.velocity.y += Math.sin(rotation) * SPEED;
+    enemy.body.velocity.x = Math.cos(rotation) * SPEED;
+    enemy.body.velocity.y = Math.sin(rotation) * SPEED;
 };

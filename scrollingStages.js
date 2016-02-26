@@ -8,7 +8,7 @@ alexTown.makeCastleStage = function(game) {
     this.GROUND_TILE_SIZE = 48;
     this.RUG_TILE_WIDTH = 192;
     this.RUG_TILE_HEIGHT = 312;
-    this.SCROLL_SPEED = -100; // < 0 means scroll left
+    this.SCROLL_SPEED = -75; // < 0 means scroll left
 
     // physics init function
     function initPhysics(tile, game) {

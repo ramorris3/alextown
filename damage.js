@@ -5,7 +5,7 @@ alexTown.takeDamage = function(self, damage, flinch) {
 
         if (self.health <= 0) {
             // spawn a "dying corpse" sprite here before destroy
-            self.destroy();
+            self.pendingDestroy = true;
         }
 
         //toggle invincibility

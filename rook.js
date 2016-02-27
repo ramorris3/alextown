@@ -50,8 +50,8 @@ Rook.prototype.update = function() {
     var rotation = this.game.math.angleBetween(this.x, this.y, this.target.x, this.target.y);
 
     //If player is using whirlpool then move towards them
-    if ((this.body.velocity.x > this.MAX_SPEED || this.body.velocity.x < -this.MAX_SPEED) && this.game.input.keyboard.isDown(Phaser.Keyboard.W)) {
-        this.body.velocity.setTo(this.body.velocity.x, this.body.velocity.y);
+    if ((this.body.velocity.x > this.MAX_SPEED || this.body.velocity.x < -this.MAX_SPEED)) {
+        this.body.velocity.setTo((Math.cos(rotation) * this.MAX_SPEED) + this.body.velocity.x, Math.sin(rotation) * this.MAX_SPEED + this.body.velocity.y);
     }
     // If the distance > MIN_DISTANCE then move
     else if (distance > this.MIN_DISTANCE || this.quiver <= 0) {

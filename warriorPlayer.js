@@ -20,6 +20,7 @@ var WarriorPlayer = function(game, x, y) {
 
     this.invincible = false;
     this.flashTimer = 20;
+    this.maxHealth = 5;
     this.health = 5;
 
     // enable physics for player

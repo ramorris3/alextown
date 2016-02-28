@@ -52,7 +52,10 @@ GameState.prototype.create = function() {
     this.castleStage = alexTown.makeCastleStage(this.game);
 
     // init enemies group
-    this.enemygroup = this.game.add.group();
+    this.game.enemygroup = this.game.add.group();
+
+    // set stage background to sky color
+    this.game.stage.backgroundColor = 0x444444;
 
     // create player sprite
     this.player = this.game.add.existing(
@@ -98,19 +101,19 @@ GameState.prototype.update = function() {
                         var chomper = this.game.add.existing(
                             new Chomper(this.game, x, y, this.player)
                         );
-                        this.enemygroup.add(chomper);
+                        this.game.enemygroup.add(chomper);
                         break;
                     case 'R':
                         var rook = this.game.add.existing(
                             new Rook(this.game, x, y, this.player, this.arrowpool)
                         );
-                        this.enemygroup.add(rook);
+                        this.game.enemygroup.add(rook);
                         break;
                     case 'C':
                         var charger = this.game.add.existing(
-                            new Charger(this.game, x, y)
+                            new Charger(this.game, x, y, this.player)
                         );
-                        this.enemygroup.add(charger);
+                        this.game.enemygroup.add(charger);
                         break;
                 }
             }
@@ -119,14 +122,13 @@ GameState.prototype.update = function() {
 
     //collisions with castle stage tiles (walls, not rug)
     this.game.physics.arcade.collide(this.player, this.castleStage);
-    this.game.physics.arcade.collide(this.enemygroup, this.castleStage);
+    this.game.physics.arcade.collide(this.game.enemygroup, this.castleStage);
 
     // player/enemy, enemy/enemy collision handling
-    this.game.physics.arcade.collide(this.enemygroup, this.enemygroup);
-    this.game.physics.arcade.overlap(this.player.sword, this.enemygroup, onSwordHit, null, this);
-    this.game.physics.arcade.overlap(this.player, this.enemygroup, onPlayerHit, null, this);
+    this.game.physics.arcade.collide(this.game.enemygroup, this.game.enemygroup);
+    this.game.physics.arcade.overlap(this.player.sword, this.game.enemygroup, onSwordHit, null, this);
+    this.game.physics.arcade.overlap(this.player, this.game.enemygroup, onPlayerHit, null, this);
     this.game.physics.arcade.overlap(this.player, this.arrowpool, onPlayerHit, null, this);
-
 };
 
 // custom collision handling

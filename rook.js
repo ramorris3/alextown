@@ -29,7 +29,7 @@ var Rook = function(game, x, y, target, ammo) {
 
     //this.checkWorldBounds = true;
     //this.events.onOutOfBounds.add( function(obj){ obj.destroy(); }, this );
-
+    this.POS_Y = this.y;
 };
 
 // Followers are a type of Phaser.Sprite
@@ -53,8 +53,13 @@ Rook.prototype.update = function() {
     var distance = this.game.math.distance(this.x, this.y, this.target.x, this.target.y);
     // Calculate the angle to the target
     var rotation = this.game.math.angleBetween(this.x, this.y, this.target.x, this.target.y);
+
+    //If player is using whirlpool then move towards them
+    if ((this.body.velocity.x > this.MAX_SPEED || this.body.velocity.x < -this.MAX_SPEED)) {
+        this.body.velocity.setTo((Math.cos(rotation) * this.MAX_SPEED) + this.body.velocity.x, Math.sin(rotation) * this.MAX_SPEED + this.body.velocity.y);
+    }
     // If the distance > MIN_DISTANCE then move
-    if (distance > this.MIN_DISTANCE || this.quiver <= 0) {
+    else if (distance > this.MIN_DISTANCE || this.quiver <= 0) {
         // Calculate velocity vector based on rotation and this.MAX_SPEED
         this.body.velocity.x = -this.MAX_SPEED;
         // otherwise shoot arrow

@@ -43,8 +43,13 @@ Charger.prototype.update = function() {
 Charger.prototype.enemyWanderState = function() {
     // play animation
     this.animations.play('charge');
-    // Move
-    this.body.velocity.setTo(-100, 0);
+    // If the distance > MIN_DISTANCE then move
+    if ((this.body.velocity.x > this.MAX_SPEED || this.body.velocity.x < -this.MAX_SPEED) && this.game.input.keyboard.isDown(Phaser.Keyboard.W)) {
+        this.body.velocity.setTo(this.body.velocity.x, this.body.velocity.y);
+    }
+    else {
+        this.body.velocity.setTo(-100, 0);
+    }
     var distance = this.game.math.distance(this.x, this.y, this.target.x, this.target.y);
     if (distance < this.noticeTarget && this.x > this.target.x) {
         this.currentstate = this.enemyChargeState;
@@ -56,6 +61,12 @@ Charger.prototype.enemyChargeState = function() {
     this.animations.play('charge');
     // Move
     this.body.velocity.setTo(-200, 0);
+    if ((this.body.velocity.x > this.MAX_SPEED || this.body.velocity.x < -this.MAX_SPEED) && this.game.input.keyboard.isDown(Phaser.Keyboard.W)) {
+        this.body.velocity.setTo(this.body.velocity.x, this.body.velocity.y);
+    }
+    else {
+        this.body.velocity.setTo(-200, 0);
+    }
 };
 
 

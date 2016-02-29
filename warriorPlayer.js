@@ -12,6 +12,11 @@ var WarriorPlayer = function(game, x, y) {
         );
     this.addChild(this.sword);
 
+    this.whirlPool = this.game.add.existing(
+            new magicWhirlpool(this.game, this)
+        );
+    this.addChild(this.whirlPool);
+
     // movement constants
     this.MAX_SPEED = 280;
     this.DIAG_SPEED = this.MAX_SPEED / Math.sqrt(2);
@@ -20,6 +25,7 @@ var WarriorPlayer = function(game, x, y) {
 
     this.invincible = false;
     this.flashTimer = 20;
+    this.maxHealth = 5;
     this.health = 5;
 
     // enable physics for player
@@ -72,6 +78,10 @@ WarriorPlayer.prototype.update = function() {
 
     if (this.game.input.keyboard.isDown(Phaser.Keyboard.SPACEBAR)) {
         this.sword.swing();
+    }
+
+    if (this.game.input.keyboard.isDown(Phaser.Keyboard.W)) {
+        this.whirlPool.cast(this.game, this);
     }
 };
 

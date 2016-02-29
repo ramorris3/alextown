@@ -108,7 +108,7 @@ GameState.prototype.update = function() {
                         break;
                     case 'C':
                         var charger = this.game.add.existing(
-                            new Charger(this.game, x, y)
+                            new Charger(this.game, x, y, this.player)
                         );
                         this.enemygroup.add(charger);
                         break;

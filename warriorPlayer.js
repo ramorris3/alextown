@@ -13,7 +13,7 @@ var WarriorPlayer = function(game, x, y) {
     this.addChild(this.sword);
 
     this.whirlPool = this.game.add.existing(
-            new magicWhirlpool(this.game, this)
+            new magicWhirlpool(game)
         );
     this.addChild(this.whirlPool);
 

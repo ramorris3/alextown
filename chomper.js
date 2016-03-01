@@ -47,9 +47,7 @@ Chomper.prototype.update = function() {
 
     // If the distance > MIN_DISTANCE then move
         //If player is using whirlpool then move towards them
-    if ((this.body.velocity.x > this.MAX_SPEED || this.body.velocity.x < -this.MAX_SPEED) && this.game.input.keyboard.isDown(Phaser.Keyboard.W)) {
-        this.body.velocity.setTo(this.body.velocity.x, this.body.velocity.y);
-    } else if (distance > this.MIN_DISTANCE) {
+    if (distance > this.MIN_DISTANCE) {
         this.body.velocity.setTo((Math.cos(rotation) * this.MAX_SPEED), Math.sin(rotation) * this.MAX_SPEED);
     } else if (distance > this.MIN_DISTANCE) {
         // Calculate velocity vector based on rotation and this.MAX_SPEED

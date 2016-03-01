@@ -19,6 +19,7 @@ GameState.prototype.preload = function() {
         this.PLAYER_SPRITE_HEIGHT);
     this.game.load.spritesheet('warriorsword', 'assets/warriorsword.png',
         72, 63);
+    this.game.load.spritesheet('whirlpool', 'assets/whirlpoolsprite.png', 150, 150);
 
     this.CHOMPER_SPRITE_WIDTH = 18;
     this.CHOMPER_SPRITE_HEIGHT = 27;
@@ -57,13 +58,6 @@ GameState.prototype.create = function() {
     // set stage background to sky color
     this.game.stage.backgroundColor = 0x444444;
 
-    // create player sprite
-    this.player = this.game.add.existing(
-        new WarriorPlayer(this.game,
-            this.PLAYER_SPRITE_WIDTH * 2,
-            (this.game.height / 2) - (this.PLAYER_SPRITE_HEIGHT / 2))
-    );
-
     // create arrow pool for rooks
     this.arrowpool = this.game.add.group();
     for (var i = 0; i<100; i++) {
@@ -72,6 +66,13 @@ GameState.prototype.create = function() {
         );
         this.arrowpool.add(arrow);
     }
+
+    // create player sprite
+    this.player = this.game.add.existing(
+        new WarriorPlayer(this.game,
+            this.PLAYER_SPRITE_WIDTH * 2,
+            (this.game.height / 2) - (this.PLAYER_SPRITE_HEIGHT / 2))
+    );
 
 
     // capture certain keys to prevent default actions in browser (HTML 5 only)

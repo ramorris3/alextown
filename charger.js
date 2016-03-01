@@ -36,13 +36,7 @@ Charger.prototype.update = function() {
     // flash if invincible (after a hit)
     this.flash(this);
 
-    // If the distance > MIN_DISTANCE then move
-    if ((this.body.velocity.x > this.MAX_SPEED || this.body.velocity.x < -this.MAX_SPEED) && this.game.input.keyboard.isDown(Phaser.Keyboard.W)) {
-        this.body.velocity.setTo(this.body.velocity.x, this.body.velocity.y);
-    }
-    else {
-        this.body.velocity.setTo(-100, 0);
-    }
+    this.body.velocity.setTo(-100, 0);
 };
 
 Charger.prototype.takeDamage = alexTown.takeDamage;

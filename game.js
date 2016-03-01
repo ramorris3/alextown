@@ -26,8 +26,8 @@ GameState.prototype.preload = function() {
         this.CHOMPER_SPRITE_WIDTH,
         this.CHOMPER_SPRITE_HEIGHT);
 
-    this.CHARGER_SPRITE_WIDTH = 18;
-    this.CHARGER_SPRITE_HEIGHT = 27;
+    this.CHARGER_SPRITE_WIDTH = 36;
+    this.CHARGER_SPRITE_HEIGHT = 36;
     this.game.load.spritesheet('charger', 'assets/charger.png',
         this.CHARGER_SPRITE_WIDTH,
         this.CHARGER_SPRITE_HEIGHT);

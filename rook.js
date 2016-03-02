@@ -74,7 +74,6 @@ Rook.prototype.update = function() {
         arrow.outOfBoundsKill = true;
         arrow.reset(this.x, this.y);
         arrow.body.velocity.x = Math.cos(rotation) * arrow.SPEED;
-        arrow.body.velocity.y = Math.sin(rotation) * arrow.SPEED;
         this.reload_count = 0;
         this.quiver--
     } else {
@@ -90,7 +89,7 @@ Rook.prototype.flash = alexTown.flash;
 var Arrow = function(game, x, y) {
     Phaser.Sprite.call(this, game, x, y, 'arrow');
     this.game.physics.enable(this, Phaser.Physics.ARCADE);
-    this.SPEED = 300;
+    this.SPEED = 500;
     this.kill();
 
 };

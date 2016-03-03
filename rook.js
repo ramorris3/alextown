@@ -69,13 +69,8 @@ Rook.prototype.update = function() {
     if (this.reload_count >= this.reload_stat && this.quiver > 0) {
         var arrow = this.ammo.getFirstDead();
         if (arrow === null || arrow === undefined) return;
-        arrow.revive();
-        arrow.checkWorldBounds = true;
-        arrow.outOfBoundsKill = true;
-        arrow.reset(this.x, this.y);
-        arrow.body.velocity.x = Math.cos(rotation) * arrow.SPEED;
-        this.reload_count = 0;
-        this.quiver--
+        arrow.fire(this);
+
     } else {
         this.reload_count++;
     }
@@ -90,9 +85,20 @@ var Arrow = function(game, x, y) {
     Phaser.Sprite.call(this, game, x, y, 'arrow');
     this.game.physics.enable(this, Phaser.Physics.ARCADE);
     this.SPEED = 500;
+    this.checkWorldBounds = true;
+    this.outOfBoundsKill = true;
     this.kill();
-
 };
 
 Arrow.prototype = Object.create(Phaser.Sprite.prototype);
 Arrow.prototype.constructor = Arrow;
+
+// revives arrow and shoots to the left
+Arrow.prototype.fire = function(rook) {
+    this.revive();
+    this.reset(rook.x, rook.y);
+    this.body.velocity.x = -this.SPEED; // moving left
+    //modify rook stats accordingly
+    rook.reload_count = 0;
+    rook.quiver--;
+}

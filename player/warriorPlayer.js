@@ -12,10 +12,10 @@ var WarriorPlayer = function(game, x, y) {
         );
     this.addChild(this.sword);
 
+    // add a whirlpool - not a child of parent sprite (we don't want it to follow the player)
     this.whirlPool = this.game.add.existing(
-            new magicWhirlpool(this.game, this)
+            new Whirlpool(this.game)
         );
-    this.addChild(this.whirlPool);
 
     // movement constants
     this.MAX_SPEED = 280;
@@ -60,6 +60,7 @@ WarriorPlayer.prototype.update = function() {
         this.body.maxVelocity.setTo(this.MAX_SPEED, this.MAX_SPEED); // x, y
     }
 
+    // movement and controls
     if (this.cursors.left.isDown) {
       this.body.acceleration.x = -this.ACCELERATION;
     } else if (this.cursors.right.isDown) {
@@ -76,13 +77,18 @@ WarriorPlayer.prototype.update = function() {
       this.body.acceleration.y = 0;
     }
 
+    // attack/spell controls
     if (this.game.input.keyboard.isDown(Phaser.Keyboard.SPACEBAR)) {
         this.sword.swing();
     }
 
     if (this.game.input.keyboard.isDown(Phaser.Keyboard.W)) {
-        this.whirlPool.cast(this.game, this);
+        this.whirlPool.cast(this.x, this.y); // drop at current position
     }
+
+    //update weapons which require an update function (whirlpool, future spells)
+    this.whirlPool.update();
+
 };
 
 WarriorPlayer.prototype.takeDamage = alexTown.takeDamage;

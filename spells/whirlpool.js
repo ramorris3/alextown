@@ -29,7 +29,7 @@ magicWhirlpool.prototype.cast = function(game, target) {
     var movepool = pool.animations.add('spin');
 
     //Questionable decisions :S
-    for (i = 0; i < 3; i++) {
+    for (i = 0; i < 4; i++) {
         //Have to do this enough times to get the whirlpool beneath the enemies... I can't even.
         game.world.moveDown(pool);    
     }
@@ -48,6 +48,7 @@ function animateWhirlpool(game, enemy, posx, posy, startTime, pool) {
 
         // Holds enemies in place
         this.game.enemygroup.forEachExists(MoveEnemy, enemy, posx, posy, this);
+        this.game.chompergroup.forEachExists(MoveEnemy, enemy, posx, posy, this);
 }
 
 //Runs for each enemy

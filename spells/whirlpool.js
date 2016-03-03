@@ -1,65 +1,91 @@
-var magicWhirlpool = function(game) {
+var Whirlpool = function(game) {
+    // init sprite and animations
     this.game = game;
-    //Call a null sprite that is used for getting position
-    Phaser.Sprite.call(this, game, 0, 0, '');
+    Phaser.Sprite.call(this, this.game, 0, 0, 'whirlpool');
+    this.animations.add('spin');
 
-    //Cooldown 
+    //center anchor on middle of sprite (enemies will be sucked to center of sprite)
+    this.anchor.setTo(0.5, 0.5);
+
+    //cooldown and timing vars
     this.nextAttack = 0;
-    this.coolDown = 8000;
-    var endtime;
+    this.cooldown = 8000;
+    this.spinTime = 5000;
+    this.spinStart = 0;
+    this.spinning = false;
 
+    // attack effects
+    this.suckRadius = 150;
+    this.suckSpeed = .5; //px per frame
+
+    //initially inactive
     this.kill();
 };
 
-magicWhirlpool.prototype = Object.create(Phaser.Sprite.prototype);
-magicWhirlpool.prototype.constructor = magicWhirlpool;
+Whirlpool.prototype = Object.create(Phaser.Sprite.prototype);
+Whirlpool.prototype.constructor = Whirlpool;
 
-magicWhirlpool.prototype.cast = function(game, target) {
-    this.game = game;
+Whirlpool.prototype.cast = function(x, y) {
+    // cooldown still active
     if (this.game.time.time < this.nextAttack) {
         return;
     }
-        //Position constants 
-    const posx = target.x;
-    const posy = target.y;
-    // Cooldown
-    this.nextAttack = this.game.time.time + this.coolDown;
-    //Animation for whirlpool ++Needs to be updated to a whirlpool
-    var pool = game.add.sprite(posx - 50, posy - 50, 'whirlpool');
-    var movepool = pool.animations.add('spin');
 
-    //Questionable decisions :S
-    for (i = 0; i < 4; i++) {
-        //Have to do this enough times to get the whirlpool beneath the enemies... I can't even.
-        game.world.moveDown(pool);    
-    }
-    //add loop to hold enemies
-    game.time.events.loop(1, animateWhirlpool, this, this.game, this, posx, posy, this.game.time.time, pool);
+    // revive whirlpool and start spinning
+    this.revive();
+    this.spinStart = this.game.time.time;
+    this.spinning = true;
+
+    // place on the floor
+    this.x = x;
+    this.y = y;
+
+    // send to back so it will be drawn beneath stuff
+    for (var i = 0; i < 4; i++) {
+        this.moveDown();
+    } // send to back not working!!! Not sure why - http://phaser.io/docs/2.4.6/Phaser.Sprite.html#sendToBack
+
+    // set cooldown
+    this.nextAttack = this.game.time.time + this.cooldown;
 };
 
-function animateWhirlpool(game, enemy, posx, posy, startTime, pool) {
-        //Makes loop last 5 seconds
-        if (game.time.time >= startTime + 5000) {
-            pool.kill();
-            game.time.events.remove(this);
-            return;
-        }
-        pool.animations.play('spin', 4, true);
+Whirlpool.prototype.spin = function() {
+    // if cast is over, go inactive
+    if (this.game.time.time > this.spinStart + this.spinTime) {
+        this.kill();
+        this.spinning = false;
+        return;
+    }
 
-        // Holds enemies in place
-        this.game.enemygroup.forEachExists(MoveEnemy, enemy, posx, posy, this);
-        this.game.chompergroup.forEachExists(MoveEnemy, enemy, posx, posy, this);
+    // play animation
+    this.animations.play('spin', 4, true);
+
+    // suck in enemies without damaging them
+    for (var i = 0; i < this.game.allEnemies.length; i++) {
+        var that = this;
+        this.game.allEnemies[i].forEachExists(that.suck, this);
+    }
+};
+
+Whirlpool.prototype.suck = function(enemy) {
+    // get enemy distance from whirlpool
+    var dist = this.game.math.distance(enemy.x, enemy.y, this.x, this.y);
+    // if within distance, suck in enemy
+    if (dist < this.suckRadius) {
+        var rotation = this.game.math.angleBetween(
+            enemy.x, enemy.y,
+            this.x, this.y);
+
+        enemy.x += Math.cos(rotation) * this.suckSpeed;
+        enemy.y += Math.sin(rotation) * this.suckSpeed;
+    }
+
 }
 
-//Runs for each enemy
-var MoveEnemy = function(enemy, posx, posy) {
-    var distance = this.game.math.distance(enemy.x, enemy.y, posx, posy);
-    //If within distance hold enemy
-    if (distance < 150) {
-        var rotation = this.game.math.angleBetween(enemy.x, enemy.y, posx + 25, posy + 25);
-        const SPEED = 150;
-
-        enemy.body.velocity.x = Math.cos(rotation) * SPEED;
-        enemy.body.velocity.y = Math.sin(rotation) * SPEED;    
+Whirlpool.prototype.update = function() {
+    // if active, spin and suck enemies in
+    if (this.spinning) {
+        this.spin();
     }
 };
+

@@ -16,7 +16,7 @@ var Whirlpool = function(game) {
 
     // attack effects
     this.suckRadius = 150;
-    this.suckSpeed = .5; //px per frame
+    this.suckSpeed = 1; //px per frame
 
     //initially inactive
     this.kill();

@@ -2,6 +2,7 @@ var Charger = function(game, x, y, target) {
     Phaser.Sprite.call(this, game, x, y, 'charger');
 
     this.animations.add('charge', [0,1,2,3], 10, true);
+    this.animations.add('stunned', [4,5], 10, true);
     this.smoothed = false;
 
     // Set the pivot point for this sprite to the center
@@ -48,8 +49,7 @@ Charger.prototype.enemyWanderState = function() {
     this.animations.play('charge');
     // Standard movement
     this.body.velocity.setTo(-100, 0);
-    var distance = this.game.math.distance(this.x, this.y, this.target.x, this.target.y);
-    if (distance < this.noticeTarget && this.x > this.target.x) {
+    if (this.getDistToPlayer() < this.noticeTarget && this.x > this.target.x) {
         this.currentstate = this.enemyChargeState;
     }
 };
@@ -59,8 +59,38 @@ Charger.prototype.enemyChargeState = function() {
     this.animations.play('charge');
     // Move
     this.body.velocity.setTo(-200, 0);
+
+    // stop charging if past player
+    if (this.getDistToPlayer() > this.noticeTarget || this.x < this.target.x) {
+        this.currentState = this.enemyWanderState;
+    }
+
+    // Later, I think i'd like to do more of a special move where
+    // the charger stomps the ground for a second, and then charges
+    // straight towards the player and then has a cooldown where he
+    // maybe walks slow for a second.  So it gives the player a 
+    // minute to avoid the charge, and then hit them during the 
+    // cooldown.  We could increase the health of the charger
+    // so that it's more about timing, hit them during the cool-
+    // down, you know?
+};
+
+Charger.prototype.enemyStunnedState = function() {
+    this.animations.play('stunned');
 };
 
 Charger.prototype.takeDamage = alexTown.takeDamage;
 
+Charger.prototype.stun = function() {
+    this.currentstate = enemyStunnedState;
+};
+
+Charger.prototype.unStun = function() {
+    this.currentstate = enemyWanderState;
+};
+
 Charger.prototype.flash = alexTown.flash;
+
+Charger.prototype.getDistToPlayer = function() {
+    return this.game.math.distance(this.x, this.y, this.target.x, this.target.y);
+};

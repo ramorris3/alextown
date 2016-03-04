@@ -37,8 +37,7 @@ Whirlpool.prototype.cast = function(x, y) {
     this.spinning = true;
 
     // place on the floor
-    this.x = x;
-    this.y = y;
+    this.reset(x,y);
 
     // send to back so it will be drawn beneath stuff
     for (var i = 0; i < 4; i++) {
@@ -72,6 +71,11 @@ Whirlpool.prototype.suck = function(enemy) {
     var dist = this.game.math.distance(enemy.x, enemy.y, this.x, this.y);
     // if within distance, suck in enemy
     if (dist < this.suckRadius) {
+        //stun enemy so that they don't run out of whirlpool (chargers esp)
+        if (typeof enemy == Charger) {
+            console.log('sucked a charger');
+        }
+
         var rotation = this.game.math.angleBetween(
             enemy.x, enemy.y,
             this.x, this.y);

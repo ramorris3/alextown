@@ -76,6 +76,7 @@ Charger.prototype.enemyChargeState = function() {
 };
 
 Charger.prototype.enemyStunnedState = function() {
+    this.body.velocity.setTo(0, 0);
     this.animations.play('stunned');
 };
 

@@ -71,10 +71,7 @@ Whirlpool.prototype.suck = function(enemy) {
     var dist = this.game.math.distance(enemy.x, enemy.y, this.x, this.y);
     // if within distance, suck in enemy
     if (dist < this.suckRadius) {
-        //stun enemy so that they don't run out of whirlpool (chargers esp)
-        if (typeof enemy == Charger) {
-            console.log('sucked a charger');
-        }
+        // stun enemy?
 
         var rotation = this.game.math.angleBetween(
             enemy.x, enemy.y,

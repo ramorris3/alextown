@@ -5,9 +5,7 @@ var Chomper = function(game, x, y, target) {
     this.animations.add('chomp', [0,1,2,3], 10, true);
     this.smoothed = false;
 
-    // Save the target that this Chomper will follow
-    // The target is any object with x and y properties
-    this.target = target;
+    //set up damage logic
     this.invincible = false;
     this.flashTimer = 20;
     this.health = 4;
@@ -21,6 +19,9 @@ var Chomper = function(game, x, y, target) {
     // Define constants that affect motion
     this.MAX_SPEED = 100; // pixels/second
     this.MIN_DISTANCE = 4; // pixels
+
+    // Target
+    this.target = target;
 };
 
 // Chompers are a type of Phaser.Sprite
@@ -46,7 +47,6 @@ Chomper.prototype.update = function() {
     var rotation = this.game.math.angleBetween(this.x, this.y, this.target.x, this.target.y);
 
     // If the distance > MIN_DISTANCE then move
-        //If player is using whirlpool then move towards them
     if (distance > this.MIN_DISTANCE) {
         this.body.velocity.setTo((Math.cos(rotation) * this.MAX_SPEED), Math.sin(rotation) * this.MAX_SPEED);
     } else if (distance > this.MIN_DISTANCE) {

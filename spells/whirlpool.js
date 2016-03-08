@@ -60,10 +60,8 @@ Whirlpool.prototype.spin = function() {
     this.animations.play('spin', 4, true);
 
     // suck in enemies without damaging them
-    for (var i = 0; i < this.game.allEnemies.length; i++) {
-        var that = this;
-        this.game.allEnemies[i].forEachExists(that.suck, this);
-    }
+    var that = this;
+    this.game.enemyGroup.forEachExists(that.suck, this);
 };
 
 Whirlpool.prototype.suck = function(enemy) {

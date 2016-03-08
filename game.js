@@ -52,16 +52,8 @@ GameState.prototype.create = function() {
     // make castle surroundings (lvl 1)
     this.castleStage = alexTown.makeCastleStage(this.game);
 
-    // init enemies group - no collision checks with self
-    this.game.enemygroup = this.game.add.group();
-
-    // init chomper group - collisions with self
-    this.game.chompergroup = this.game.add.group();
-
-    // when you need to perform logic on ALL enemies
-    this.game.allEnemies = [];
-    this.game.allEnemies.push(this.game.enemygroup);
-    this.game.allEnemies.push(this.game.chompergroup);
+    //init enemies group
+    this.game.enemyGroup = game.add.physicsGroup(Phaser.Physics.ARCADE);;
 
     // set stage background to sky color
     this.game.stage.backgroundColor = 0x444444;
@@ -95,6 +87,23 @@ GameState.prototype.create = function() {
     this.levelMap = lvl0.map.match(/\S+/g);
 };
 
+//  Here we create a group, populate it with sprites, give them all a random velocity
+//  and then check the group against itself for collision
+
+// sprites = game.add.physicsGroup(Phaser.Physics.ARCADE);
+
+// for (var i = 0; i < 90; i++)
+// {
+//     var s = sprites.create(game.rnd.integerInRange(100, 700), game.rnd.integerInRange(32, 200), 'spinner');
+//     s.animations.add('spin', [0, 1, 2, 3]);
+//     s.play('spin', 20, true);
+//     s.body.velocity.set(game.rnd.integerInRange(-200, 200), game.rnd.integerInRange(-200, 200));
+// }
+
+// sprites.setAll('body.collideWorldBounds', true);
+// sprites.setAll('body.bounce.x', 1);
+// sprites.setAll('body.bounce.y', 1);
+
 GameState.prototype.update = function() {
     //object collision and movement logic
     this.game.step();
@@ -110,19 +119,22 @@ GameState.prototype.update = function() {
                         var chomper = this.game.add.existing(
                             new Chomper(this.game, x, y, this.player)
                         );
-                        this.game.chompergroup.add(chomper);
+                        chomper.body.bounce.setTo(10,10);
+                        this.game.enemyGroup.add(chomper);
                         break;
                     case 'R':
                         var rook = this.game.add.existing(
                             new Rook(this.game, x, y, this.player, this.arrowpool)
                         );
-                        this.game.enemygroup.add(rook);
+                        rook.body.bounce.setTo(10,10);
+                        this.game.enemyGroup.add(rook);
                         break;
                     case 'C':
                         var charger = this.game.add.existing(
                             new Charger(this.game, x, y, this.player)
                         );
-                        this.game.enemygroup.add(charger);
+                        charger.body.bounce.setTo(10,10);
+                        this.game.enemyGroup.add(charger);
                         break;
                 }
             }
@@ -131,19 +143,15 @@ GameState.prototype.update = function() {
 
     //collisions with castle stage tiles (walls, not rug)
     this.game.physics.arcade.collide(this.player, this.castleStage);
-    // apply to all enemies (include chompers)
-    for (var i = 0; i < this.game.allEnemies.length; i++) {
-        this.game.physics.arcade.collide(this.game.allEnemies[i], this.castleStage);
-    }
+    this.game.physics.arcade.collide(this.game.enemyGroup, this.castleStage);
 
     // player/enemy, enemy/enemy collision handling
-    // chompers are "solid"
-    this.game.physics.arcade.collide(this.game.chompergroup, this.game.chompergroup);
-    // all enemies damaged by sword (include chompers)
-    for (var i = 0; i < this.game.allEnemies.length; i++) {
-        this.game.physics.arcade.overlap(this.player.sword, this.game.allEnemies[i], onSwordHit, null, this);
-    }
-    // player damaged by enemies/arrows (not chompers)
+    // enemies are solid
+    this.game.physics.arcade.collide(this.game.enemyGroup);
+    this.game.physics.arcade.collide(this.game.enemyGroup, this.player);
+    // all enemies damaged by sword
+    this.game.physics.arcade.overlap(this.player.sword, this.game.enemyGroup, onSwordHit, null, this);
+    // player damaged by enemies/arrows
     this.game.physics.arcade.overlap(this.player, this.game.enemygroup, onPlayerHit, null, this);
     this.game.physics.arcade.overlap(this.player, this.arrowpool, onPlayerHit, null, this);
 };

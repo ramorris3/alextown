@@ -17,15 +17,18 @@ var Charger = function(game, x, y, target) {
 
     // Define constants that affect motion
     this.MAX_SPEED = 100; // pixels/second
-    this.MIN_DISTANCE = 4; // pixels\
+    this.MIN_DISTANCE = 4; // pixels
 
-        // State
+    // Target
+    this.target = target;
+
+    // State
     this.currentstate = this.enemyWanderState;
     this.noticeTarget = 500;
-    this.target = target;
 
 };
 
+// Chargers are a type of Phaser.Sprite
 Charger.prototype = Object.create(Phaser.Sprite.prototype);
 Charger.prototype.constructor = Charger;
 
@@ -57,7 +60,6 @@ Charger.prototype.enemyChargeState = function() {
     // Move
     this.body.velocity.setTo(-200, 0);
 };
-
 
 Charger.prototype.takeDamage = alexTown.takeDamage;
 

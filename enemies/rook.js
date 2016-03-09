@@ -4,9 +4,7 @@ var Rook = function(game, x, y, target, ammo) {
     this.animations.add('hop', [0,1,2,3], 10, true);
     this.smoothed = false;
 
-    // Save the target that this Follower will follow
-    // The target is any object with x and y properties
-    this.target = target;
+    //set up damage logic
     this.invincible = false;
     this.flashTimer = 20;
     this.health = 4;
@@ -21,18 +19,17 @@ var Rook = function(game, x, y, target, ammo) {
     this.MAX_SPEED = 100; // pixels/second
     this.MIN_DISTANCE = 300; // pixels
 
+    // Target
+    this.target = target;
+
     // Weapon
     this.reload_stat = 50;
     this.reload_count = 50;
     this.quiver = 6;
     this.ammo = ammo;
-
-    //this.checkWorldBounds = true;
-    //this.events.onOutOfBounds.add( function(obj){ obj.destroy(); }, this );
-    this.POS_Y = this.y;
 };
 
-// Followers are a type of Phaser.Sprite
+// Rooks are a type of Phaser.Sprite
 Rook.prototype = Object.create(Phaser.Sprite.prototype);
 Rook.prototype.constructor = Rook;
 
@@ -51,26 +48,21 @@ Rook.prototype.update = function() {
 
     // Calculate distance to target
     var distance = this.game.math.distance(this.x, this.y, this.target.x, this.target.y);
-    // Calculate the angle to the target
-    var rotation = this.game.math.angleBetween(this.x, this.y, this.target.x, this.target.y);
 
-    //If player is using whirlpool then move towards them
-    //if ((this.body.velocity.x > this.MAX_SPEED || this.body.velocity.x < -this.MAX_SPEED)) {
-    //    this.body.velocity.setTo((Math.cos(rotation) * this.MAX_SPEED) + this.body.velocity.x, Math.sin(rotation) * this.MAX_SPEED + this.body.velocity.y);
-    //}
-    // If the distance > MIN_DISTANCE then move
+    // If the distance > MIN_DISTANCE or is out of arrows then move
     if (distance > this.MIN_DISTANCE || this.quiver <= 0) {
-        // Calculate velocity vector based on rotation and this.MAX_SPEED
         this.body.velocity.x = -this.MAX_SPEED;
-        // otherwise shoot arrow
     } else {
         this.body.velocity.setTo(0, 0);
     }
+    // If there are arrows left in quiver and is reloaded, shoot
     if (this.reload_count >= this.reload_stat && this.quiver > 0) {
         var arrow = this.ammo.getFirstDead();
         if (arrow === null || arrow === undefined) return;
         arrow.fire(this);
-
+        //modify rook stats accordingly
+        this.reload_count = 0;
+        this.quiver--;
     } else {
         this.reload_count++;
     }
@@ -79,26 +71,3 @@ Rook.prototype.update = function() {
 Rook.prototype.takeDamage = alexTown.takeDamage;
 
 Rook.prototype.flash = alexTown.flash;
-
-// arrow class definition
-var Arrow = function(game, x, y) {
-    Phaser.Sprite.call(this, game, x, y, 'arrow');
-    this.game.physics.enable(this, Phaser.Physics.ARCADE);
-    this.SPEED = 500;
-    this.checkWorldBounds = true;
-    this.outOfBoundsKill = true;
-    this.kill();
-};
-
-Arrow.prototype = Object.create(Phaser.Sprite.prototype);
-Arrow.prototype.constructor = Arrow;
-
-// revives arrow and shoots to the left
-Arrow.prototype.fire = function(rook) {
-    this.revive();
-    this.reset(rook.x, rook.y);
-    this.body.velocity.x = -this.SPEED; // moving left
-    //modify rook stats accordingly
-    rook.reload_count = 0;
-    rook.quiver--;
-}

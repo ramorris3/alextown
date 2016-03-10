@@ -30,6 +30,16 @@ Chomper.prototype.enemyDefaultState = function() {
     }
 };
 
+// extends base state
+Chomper.prototype.enemyStunnedState = (function(_super) {
+    return function() {
+        /* add extension logic here */
+        this.animations.play('stunned');
+
+        return _super.apply(this, arguments);
+    };
+})(Enemy.prototype.enemyStunnedState);
+
 // overwrite damage player so that chomper slows player, and doesn't deal damage
 Chomper.prototype.damagePlayer = function(player) {
     //make player flash blue and then make them slower

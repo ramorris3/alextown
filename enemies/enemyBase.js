@@ -12,6 +12,8 @@ var Enemy = function(game, x, y, target, spriteKey) {
 	this.invincible = false;
 	this.flashTimer = 20;
 	this.health = 1;
+    this.maxHealth = 1;
+    this.attackPoints = 1;
 
 	//set pivot point for sprite to the center
 	this.anchor.setTo(0.5, 0.5);
@@ -37,13 +39,23 @@ Enemy.prototype.update = function() {
         this.destroy();
         return;
     }
+
+    //put cap on speed (fix scandash-esque issues)
+    if (this.body.velocity.x > this.MAX_SPEED) {
+        this.body.velocity.x = this.MAX_SPEED;
+    }
+    if (this.body.velocity.y > this.MAX_SPEED) {
+        this.body.velocity.y = this.MAX_SPEED;
+    }
+
     //run current state logic
     this.currentState();
     // flash if invincible (after a hit)
     this.flash(this);
 };
 
-/* ALL OF THE STATE FUNCTIONS **MUST** BE OVERRIDDEN BY CHILDREN */
+/* ALL OF THE STATE FUNCTIONS SHOULD BE OVERRIDDEN/EXTENDED BY CHILDREN */
+// these are just placeholders so we don't get reference errors
 // (you shouldn't have to change the update function)
 Enemy.prototype.enemyDefaultState = function() {
 	//override to play walking animation, make custom movement
@@ -57,8 +69,6 @@ Enemy.prototype.enemyStunnedState = function() {
 /* END STATE LOGIC */
 
 /* OTHER ENEMY FUNCTIONS */
-Enemy.prototype.takeDamage = alexTown.takeDamage;
-
 Enemy.prototype.stun = function() {
     this.currentState = this.enemyStunnedState;
 };
@@ -67,18 +77,24 @@ Enemy.prototype.unStun = function() {
     this.currentState = this.enemyDefaultState;
 };
 
-Enemy.prototype.flash = alexTown.flash;
-
 Enemy.prototype.getDistToPlayer = function() {
     return this.game.math.distance(this.x, this.y, this.target.x, this.target.y);
 };
 
-Enemy.prototype.pursuePlayer = function(speed) {
+Enemy.prototype.pursueTarget = function(speed) {
     // Calculate the angle to the target
     var rotation = this.game.math.angleBetween(this.x, this.y, this.target.x, this.target.y);
-
+    // set velocity vector based on rotation and speed
     this.body.velocity.setTo(
         Math.cos(rotation) * speed,
         Math.sin(rotation) * speed
     );
 };
+
+Enemy.prototype.damagePlayer = function(player) {
+    player.takeDamage(player, this.attackPoints, 800); //800 ms flinch
+};
+
+Enemy.prototype.takeDamage = alexTown.takeDamage;
+
+Enemy.prototype.flash = alexTown.flash;

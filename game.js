@@ -21,8 +21,8 @@ GameState.prototype.preload = function() {
         72, 63);
     this.game.load.spritesheet('whirlpool', 'assets/whirlpoolsprite.png', 150, 150);
 
-    this.CHOMPER_SPRITE_WIDTH = 18;
-    this.CHOMPER_SPRITE_HEIGHT = 27;
+    this.CHOMPER_SPRITE_WIDTH = 24;
+    this.CHOMPER_SPRITE_HEIGHT = 36;
     this.game.load.spritesheet('chomper', 'assets/chomper.png',
         this.CHOMPER_SPRITE_WIDTH,
         this.CHOMPER_SPRITE_HEIGHT);
@@ -87,23 +87,6 @@ GameState.prototype.create = function() {
     this.levelMap = lvl0.map.match(/\S+/g);
 };
 
-//  Here we create a group, populate it with sprites, give them all a random velocity
-//  and then check the group against itself for collision
-
-// sprites = game.add.physicsGroup(Phaser.Physics.ARCADE);
-
-// for (var i = 0; i < 90; i++)
-// {
-//     var s = sprites.create(game.rnd.integerInRange(100, 700), game.rnd.integerInRange(32, 200), 'spinner');
-//     s.animations.add('spin', [0, 1, 2, 3]);
-//     s.play('spin', 20, true);
-//     s.body.velocity.set(game.rnd.integerInRange(-200, 200), game.rnd.integerInRange(-200, 200));
-// }
-
-// sprites.setAll('body.collideWorldBounds', true);
-// sprites.setAll('body.bounce.x', 1);
-// sprites.setAll('body.bounce.y', 1);
-
 GameState.prototype.update = function() {
     //object collision and movement logic
     this.game.step();
@@ -119,21 +102,18 @@ GameState.prototype.update = function() {
                         var chomper = this.game.add.existing(
                             new Chomper(this.game, x, y, this.player)
                         );
-                        chomper.body.bounce.setTo(10,10);
                         this.game.enemyGroup.add(chomper);
                         break;
                     case 'R':
                         var rook = this.game.add.existing(
                             new Rook(this.game, x, y, this.player, this.arrowpool)
                         );
-                        rook.body.bounce.setTo(10,10);
                         this.game.enemyGroup.add(rook);
                         break;
                     case 'C':
                         var charger = this.game.add.existing(
                             new Charger(this.game, x, y, this.player)
                         );
-                        charger.body.bounce.setTo(10,10);
                         this.game.enemyGroup.add(charger);
                         break;
                 }
@@ -148,20 +128,23 @@ GameState.prototype.update = function() {
     // player/enemy, enemy/enemy collision handling
     // enemies are solid
     this.game.physics.arcade.collide(this.game.enemyGroup);
-    this.game.physics.arcade.collide(this.game.enemyGroup, this.player);
     // all enemies damaged by sword
-    this.game.physics.arcade.overlap(this.player.sword, this.game.enemyGroup, onSwordHit, null, this);
+    this.game.physics.arcade.overlap(this.player.sword, this.game.enemyGroup, onPlayerSwordHit, null, this);
     // player damaged by enemies/arrows
-    this.game.physics.arcade.overlap(this.player, this.game.enemygroup, onPlayerHit, null, this);
-    this.game.physics.arcade.overlap(this.player, this.arrowpool, onPlayerHit, null, this);
+    this.game.physics.arcade.overlap(this.player, this.game.enemyGroup, onPlayerHit, null, this);
+    this.game.physics.arcade.overlap(this.player, this.arrowpool, onEnemyWeaponHit, null, this);
 };
 
 // custom collision handling
-var onSwordHit = function(weapon, enemy) {
+var onPlayerSwordHit = function(weapon, enemy) {
     enemy.takeDamage(enemy, weapon.damage, 200); //200 flinch for all for now
 };
 var onPlayerHit = function(player, enemy) {
-    player.takeDamage(player, 1, 800); // only loses one HP for now
+    //player.takeDamage(player, 1, 800); // only loses one HP for now
+    enemy.damagePlayer(player);
+};
+var onEnemyWeaponHit = function(player, weapon) {
+    weapon.damageTarget(player);
 };
 
 // Create game canvas

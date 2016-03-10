@@ -1,63 +1,42 @@
 var Chomper = function(game, x, y, target) {
-    this.game = game;
-    Phaser.Sprite.call(this, game, x, y, 'chomper');
+    Enemy.call(this, game, x, y, target, 'chomper');
 
     this.animations.add('chomp', [0,1,2,3], 10, true);
-    this.smoothed = false;
+    this.animations.add('stunned', [4,5], 10, true);
 
-    //set up damage logic
-    this.invincible = false;
-    this.flashTimer = 20;
-    this.health = 4;
-
-    // Set the pivot point for this sprite to the center
-    this.anchor.setTo(0.5, 0.5);
-
-    // Enable physics on this object
-    this.game.physics.enable(this, Phaser.Physics.ARCADE);
+    //override health
+    this.health = 2;
 
     // Define constants that affect motion
-    this.MAX_SPEED = 100; // pixels/second
     this.MIN_DISTANCE = 4; // pixels
 
-    // Target
-    this.target = target;
+    //player slow effect
+    this.slowSpeed = 10;
 };
 
 // Chompers are a type of Phaser.Sprite
-Chomper.prototype = Object.create(Phaser.Sprite.prototype);
+Chomper.prototype = Object.create(Enemy.prototype);
 Chomper.prototype.constructor = Chomper;
 
-Chomper.prototype.update = function() {
-    //Check if offscreen and destroy
-    if (this.x < -this.width){
-        this.destroy()
-        return;
-    }
-    // play chomper animation
+// overwrite base state (not extend)
+Chomper.prototype.enemyDefaultState = function() {
     this.animations.play('chomp');
-
-    // flash if invincible (after a hit)
-    this.flash(this);
-
-    // Calculate distance to target
-    var distance = this.game.math.distance(this.x, this.y, this.target.x, this.target.y);
-
-    // Calculate the angle to the target
-    var rotation = this.game.math.angleBetween(this.x, this.y, this.target.x, this.target.y);
-
-    // If the distance > MIN_DISTANCE then move
+    // get distance to player, and if in sight, pursue
+    var distance = this.getDistToPlayer();
     if (distance > this.MIN_DISTANCE) {
-        this.body.velocity.setTo((Math.cos(rotation) * this.MAX_SPEED), Math.sin(rotation) * this.MAX_SPEED);
-    } else if (distance > this.MIN_DISTANCE) {
-        // Calculate velocity vector based on rotation and this.MAX_SPEED
-        this.body.velocity.x = Math.cos(rotation) * this.MAX_SPEED;
-        this.body.velocity.y = Math.sin(rotation) * this.MAX_SPEED;
+        this.pursueTarget(this.MAX_SPEED);
     } else {
-        this.body.velocity.setTo(0, 0);
+        this.body.velocity.setTo(-50, 0); // move towards left
     }
 };
 
-Chomper.prototype.takeDamage = alexTown.takeDamage;
-
-Chomper.prototype.flash = alexTown.flash;
+// overwrite damage player so that chomper slows player, and doesn't deal damage
+Chomper.prototype.damagePlayer = function(player) {
+    //make player flash blue and then make them slower
+    if (player.body.velocity.x >= this.slowSpeed) {
+        player.body.velocity.x = this.slowSpeed;
+    }    
+    if (player.body.velocity.y >= this.slowSpeed) {
+        player.body.velocity.y = this.slowSpeed;
+    }
+};

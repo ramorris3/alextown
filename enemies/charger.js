@@ -6,7 +6,7 @@ var Charger = function(game, x, y, target) {
     this.animations.add('stunned', [4,5], 10, true);
 
     //override health
-    this.health = 18;
+    this.health = 2;
 
     // set up sight vars    
     this.MIN_DISTANCE = 4; // pixels

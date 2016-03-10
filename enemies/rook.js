@@ -1,73 +1,46 @@
 var Rook = function(game, x, y, target, ammo) {
-    Phaser.Sprite.call(this, game, x, y, 'rook');
+    Enemy.call(this, game, x, y, target, 'rook');
 
     this.animations.add('hop', [0,1,2,3], 10, true);
-    this.smoothed = false;
+    this.animations.add('stunned', [4,5], 10, true);
 
-    //set up damage logic
-    this.invincible = false;
-    this.flashTimer = 20;
+    //override health
     this.health = 4;
 
-    // Set the pivot point for this sprite to the center
-    this.anchor.setTo(0.5, 0.5);
-
-    // Enable physics on this object
-    this.game.physics.enable(this, Phaser.Physics.ARCADE);
-
     // Define constants that affect motion
-    this.MAX_SPEED = 100; // pixels/second
     this.MIN_DISTANCE = 300; // pixels
 
-    // Target
-    this.target = target;
-
     // Weapon
-    this.reload_stat = 50;
-    this.reload_count = 50;
+    this.reloadStat = 50;
+    this.reloadCount = 50;
     this.quiver = 6;
     this.ammo = ammo;
 };
 
 // Rooks are a type of Phaser.Sprite
-Rook.prototype = Object.create(Phaser.Sprite.prototype);
+Rook.prototype = Object.create(Enemy.prototype);
 Rook.prototype.constructor = Rook;
 
-Rook.prototype.update = function() {
-    //Check if offscreen and destroy
-    if (this.x < -this.width){
-        this.destroy()
-        return;
-    }
-
-    // play rook animation
+// overwrite base state
+Rook.prototype.enemyDefaultState = function() {
     this.animations.play('hop');
-
-    // flash if invincible (after a hit)
-    this.flash(this);
-
-    // Calculate distance to target
-    var distance = this.game.math.distance(this.x, this.y, this.target.x, this.target.y);
-
-    // If the distance > MIN_DISTANCE or is out of arrows then move
+    // if too close or if out of arrows, then move
+    var distance = this.getDistToPlayer();
     if (distance > this.MIN_DISTANCE || this.quiver <= 0) {
-        this.body.velocity.x = -this.MAX_SPEED;
+        this.body.velocity.setTo(-this.MAX_SPEED, 0);
     } else {
         this.body.velocity.setTo(0, 0);
     }
-    // If there are arrows left in quiver and is reloaded, shoot
-    if (this.reload_count >= this.reload_stat && this.quiver > 0) {
+    // if there are arrows left and it's reloaded, shoot
+    if (this.reloadCount >= this.reloadStat && this.quiver > 0) {
         var arrow = this.ammo.getFirstDead();
         if (arrow === null || arrow === undefined) return;
         arrow.fire(this);
         //modify rook stats accordingly
-        this.reload_count = 0;
+        this.reloadCount = 0;
         this.quiver--;
     } else {
-        this.reload_count++;
+        this.reloadCount++;
     }
+
 };
-
-Rook.prototype.takeDamage = alexTown.takeDamage;
-
-Rook.prototype.flash = alexTown.flash;

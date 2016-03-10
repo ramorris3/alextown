@@ -5,6 +5,7 @@ var Arrow = function(game, x, y) {
     this.checkWorldBounds = true;
     this.outOfBoundsKill = true;
     this.kill();
+    this.attackPoints = 1;
 };
 
 Arrow.prototype = Object.create(Phaser.Sprite.prototype);
@@ -16,4 +17,8 @@ Arrow.prototype.fire = function(rook) {
     this.reset(rook.x, rook.y);
     this.body.velocity.x = -this.SPEED; // moving left
 
+};
+
+Arrow.prototype.damageTarget = function(target) {
+	target.takeDamage(target, this.attackPoints, target.flinch); 
 };

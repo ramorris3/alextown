@@ -23,6 +23,7 @@ var WarriorPlayer = function(game, x, y) {
     this.ACCELERATION = 1500;
     this.DRAG = 1450;
 
+    this.flinch = 800;
     this.invincible = false;
     this.flashTimer = 20;
     this.maxHealth = 5;

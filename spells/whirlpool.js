@@ -12,11 +12,11 @@ var Whirlpool = function(game) {
     this.cooldown = 8000;
     this.spinTime = 5000;
     this.spinStart = 0;
-    this.spinning = false;
 
     // attack effects
     this.suckRadius = 150;
-    this.suckSpeed = 1; //px per frame
+    this.suckSpeed = 180; //px per frame
+    this.currentEnemies = [];
 
     //initially inactive
     this.kill();
@@ -25,66 +25,60 @@ var Whirlpool = function(game) {
 Whirlpool.prototype = Object.create(Phaser.Sprite.prototype);
 Whirlpool.prototype.constructor = Whirlpool;
 
+Whirlpool.prototype.update = function() {
+    // if cast is over, go inactive
+    if (this.game.time.time > this.spinStart + this.spinTime) {
+        //"spit" enemies out ?
+
+        //unstun enemies that you sucked in
+        for (var enemy in this.currentEnemies) {
+            enemy.unstun();
+        }
+        this.currentEnemies = [];
+        
+        //go inactive
+        this.kill();
+        return;
+    }
+
+    // play animation
+    this.animations.play('spin', 4, true);
+};
+
 Whirlpool.prototype.cast = function(x, y) {
     // cooldown still active
     if (this.game.time.time < this.nextAttack) {
         return;
     }
 
-    // revive whirlpool and start spinning
-    this.revive();
-    this.spinStart = this.game.time.time;
-    this.spinning = true;
-
     // place on the floor
     this.reset(x,y);
 
-    // send to back so it will be drawn beneath stuff
-    for (var i = 0; i < 4; i++) {
-        this.moveDown();
-    } // send to back not working!!! Not sure why - http://phaser.io/docs/2.4.6/Phaser.Sprite.html#sendToBack
+    // revive whirlpool and start spinning
+    this.revive();
+    this.spinStart = this.game.time.time;
 
     // set cooldown
     this.nextAttack = this.game.time.time + this.cooldown;
 };
 
-Whirlpool.prototype.spin = function() {
-    // if cast is over, go inactive
-    if (this.game.time.time > this.spinStart + this.spinTime) {
-        this.kill();
-        this.spinning = false;
-        return;
-    }
-
-    // play animation
-    this.animations.play('spin', 4, true);
-
-    // suck in enemies without damaging them
-    var that = this;
-    this.game.enemyGroup.forEachExists(that.suck, this);
-};
-
 Whirlpool.prototype.suck = function(enemy) {
-    // get enemy distance from whirlpool
-    var dist = this.game.math.distance(enemy.x, enemy.y, this.x, this.y);
-    // if within distance, suck in enemy
-    if (dist < this.suckRadius) {
-        // stun enemy?
-
-        var rotation = this.game.math.angleBetween(
-            enemy.x, enemy.y,
-            this.x, this.y);
-
-        enemy.x += Math.cos(rotation) * this.suckSpeed;
-        enemy.y += Math.sin(rotation) * this.suckSpeed;
+    //stun enemy, and keep track of who you've stunned
+    if (!enemy.inWhirlpool) {
+        this.currentEnemies.push(enemy);
+        enemy.stun;
     }
+    enemy.inWhirlpool = true;
 
-}
+    //suck enemy in
+    var rotation = this.game.math.angleBetween(
+        enemy.x, enemy.y,
+        this.x, this.y);
 
-Whirlpool.prototype.update = function() {
-    // if active, spin and suck enemies in
-    if (this.spinning) {
-        this.spin();
-    }
+    enemy.body.velocity.setTo(
+        Math.cos(rotation) * this.suckSpeed,
+        Math.sin(rotation) * this.suckSpeed
+    );
+
 };
 

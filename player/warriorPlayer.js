@@ -13,7 +13,7 @@ var WarriorPlayer = function(game, x, y) {
     this.addChild(this.sword);
 
     // add a whirlpool - not a child of parent sprite (we don't want it to follow the player)
-    this.whirlPool = this.game.add.existing(
+    this.game.whirlpool = this.game.add.existing(
             new Whirlpool(this.game)
         );
 
@@ -84,11 +84,8 @@ WarriorPlayer.prototype.update = function() {
     }
 
     if (this.game.input.keyboard.isDown(Phaser.Keyboard.W)) {
-        this.whirlPool.cast(this.x, this.y); // drop at current position
+        this.game.whirlpool.cast(this.x, this.y); // drop at current position
     }
-
-    //update weapons which require an update function (whirlpool, future spells)
-    this.whirlPool.update();
 
 };
 

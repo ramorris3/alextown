@@ -130,9 +130,14 @@ GameState.prototype.update = function() {
     this.game.physics.arcade.collide(this.game.enemyGroup);
     // all enemies damaged by sword
     this.game.physics.arcade.overlap(this.player.sword, this.game.enemyGroup, onPlayerSwordHit, null, this);
+    // enemies sucked by whirlpool
+    this.game.physics.arcade.overlap(this.game.whirlpool, this.game.enemyGroup, onWhirlpoolHit, null, this);
     // player damaged by enemies/arrows
     this.game.physics.arcade.overlap(this.player, this.game.enemyGroup, onPlayerHit, null, this);
     this.game.physics.arcade.overlap(this.player, this.arrowpool, onEnemyWeaponHit, null, this);
+
+	console.log(this.game.whirlpool);
+	console.log(this.player);
 };
 
 // custom collision handling
@@ -145,6 +150,10 @@ var onPlayerHit = function(player, enemy) {
 };
 var onEnemyWeaponHit = function(player, weapon) {
     weapon.damageTarget(player);
+};
+var onWhirlpoolHit = function(whirlpool, enemy) {
+    console.log('sucking enemy in');
+    //whirlpool.suck(enemy);
 };
 
 // Create game canvas

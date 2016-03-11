@@ -63,17 +63,20 @@ Enemy.prototype.enemyDefaultState = function() {
 };
 
 Enemy.prototype.enemyStunnedState = function() {
-    //override to playstunned animation 
-    this.body.velocity.setTo(0, 0);
+    //override to play stunned animation 
 };
 /* END STATE LOGIC */
 
 /* OTHER ENEMY FUNCTIONS */
 Enemy.prototype.stun = function() {
+    // stop enemy movement
+    this.body.velocity.setTo(0, 0);
     this.currentState = this.enemyStunnedState;
 };
 
-Enemy.prototype.unStun = function() {
+Enemy.prototype.unstun = function() {
+    // reset enemy movement (will be updated in default state)
+    this.body.velocity.setTo(0, 0);
     this.currentState = this.enemyDefaultState;
 };
 

@@ -17,8 +17,8 @@ var Whirlpool = function(game) {
     this.spinStart = 0;
 
     // attack effects
-    this.suckRadius = 150;
-    this.suckSpeed = 180; //px per frame
+    /* NEED TO SET HITBOX */
+    this.suckSpeed = 120; //px per frame
     this.currentEnemies = [];
 
     //initially inactive
@@ -34,8 +34,10 @@ Whirlpool.prototype.update = function() {
         //"spit" enemies out ?
 
         //unstun enemies that you sucked in
-        for (var enemy in this.currentEnemies) {
-            enemy.unstun();
+        for (var i = 0; i < this.currentEnemies.length; i++) {
+            this.currentEnemies[i].unstun();
+            // reset inWhirlpool flag
+            this.currentEnemies[i].inWhirlpool = false;
         }
         this.currentEnemies = [];
         
@@ -67,11 +69,12 @@ Whirlpool.prototype.cast = function(x, y) {
 
 Whirlpool.prototype.suck = function(enemy) {
     //stun enemy, and keep track of who you've stunned
-    if (!enemy.inWhirlpool) {
+    if (!enemy.inWhirlpool) { // setting a new property in enemy as a flag
         this.currentEnemies.push(enemy);
-        enemy.stun;
+        enemy.stun();
+        // flag to make sure you don't constantly add enemies to this.currentEnemies
+        enemy.inWhirlpool = true; 
     }
-    enemy.inWhirlpool = true;
 
     //suck enemy in
     var rotation = this.game.math.angleBetween(

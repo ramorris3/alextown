@@ -155,8 +155,7 @@ var onEnemyWeaponHit = function(player, weapon) {
     weapon.damageTarget(player);
 };
 var onWhirlpoolHit = function(whirlpool, enemy) {
-    console.log('sucking enemy in');
-    //whirlpool.suck(enemy);
+    whirlpool.suck(enemy);
 };
 
 // Create game canvas

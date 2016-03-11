@@ -4,6 +4,9 @@ var Whirlpool = function(game) {
     Phaser.Sprite.call(this, this.game, 0, 0, 'whirlpool');
     this.animations.add('spin');
 
+    //set physics for collision handling
+    this.game.physics.enable(this, Phaser.Physics.ARCADE);
+
     //center anchor on middle of sprite (enemies will be sucked to center of sprite)
     this.anchor.setTo(0.5, 0.5);
 

@@ -12,11 +12,6 @@ var WarriorPlayer = function(game, x, y) {
         );
     this.addChild(this.sword);
 
-    // add a whirlpool - not a child of parent sprite (we don't want it to follow the player)
-    this.game.whirlpool = this.game.add.existing(
-            new Whirlpool(this.game)
-        );
-
     // movement constants
     this.MAX_SPEED = 280;
     this.DIAG_SPEED = this.MAX_SPEED / Math.sqrt(2);
@@ -84,7 +79,7 @@ WarriorPlayer.prototype.update = function() {
     }
 
     if (this.game.input.keyboard.isDown(Phaser.Keyboard.W)) {
-        this.game.whirlpool.cast(this.x, this.y); // drop at current position
+        PlayerSpells.whirlpool.cast(this.x, this.y); // drop at current position
     }
 
 };

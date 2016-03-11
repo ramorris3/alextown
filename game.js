@@ -136,8 +136,6 @@ GameState.prototype.update = function() {
     this.game.physics.arcade.overlap(this.player, this.game.enemyGroup, onPlayerHit, null, this);
     this.game.physics.arcade.overlap(this.player, this.arrowpool, onEnemyWeaponHit, null, this);
 
-	console.log(this.game.whirlpool);
-	console.log(this.player);
 };
 
 // custom collision handling

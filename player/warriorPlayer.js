@@ -6,16 +6,14 @@ var WarriorPlayer = function(game, x, y) {
     this.animations.add('run', [0,1,2,3], 9, true);
     this.smoothed = false;
 
+    // set pivot to center
+    this.anchor.setTo(0.5, 0.5);
+
     // add player sword
     this.sword = this.game.add.existing(
             new WarriorSword(this.game)
         );
     this.addChild(this.sword);
-
-    this.whirlPool = this.game.add.existing(
-            new magicWhirlpool(this.game, this)
-        );
-    this.addChild(this.whirlPool);
 
     // movement constants
     this.MAX_SPEED = 280;
@@ -23,6 +21,7 @@ var WarriorPlayer = function(game, x, y) {
     this.ACCELERATION = 1500;
     this.DRAG = 1450;
 
+    this.flinch = 800;
     this.invincible = false;
     this.flashTimer = 20;
     this.maxHealth = 5;
@@ -60,6 +59,7 @@ WarriorPlayer.prototype.update = function() {
         this.body.maxVelocity.setTo(this.MAX_SPEED, this.MAX_SPEED); // x, y
     }
 
+    // movement and controls
     if (this.cursors.left.isDown) {
       this.body.acceleration.x = -this.ACCELERATION;
     } else if (this.cursors.right.isDown) {
@@ -76,13 +76,15 @@ WarriorPlayer.prototype.update = function() {
       this.body.acceleration.y = 0;
     }
 
+    // attack/spell controls
     if (this.game.input.keyboard.isDown(Phaser.Keyboard.SPACEBAR)) {
         this.sword.swing();
     }
 
     if (this.game.input.keyboard.isDown(Phaser.Keyboard.W)) {
-        this.whirlPool.cast(this.game, this);
+        PlayerSpells.whirlpool.cast(this.x, this.y); // drop at current position
     }
+
 };
 
 WarriorPlayer.prototype.takeDamage = alexTown.takeDamage;
@@ -92,7 +94,7 @@ WarriorPlayer.prototype.flash = alexTown.flash;
 // player sword class definition
 var WarriorSword = function(game) {
     this.game = game;
-    Phaser.Sprite.call(this, game, 30, -15, 'warriorsword');
+    Phaser.Sprite.call(this, game, 20, -35, 'warriorsword');
     game.physics.enable(this, Phaser.Physics.ARCADE);
     this.animations.add('swing', [0,1,2,3,4,5,6,7,8,9], 30, false);
     this.smoothed = false;

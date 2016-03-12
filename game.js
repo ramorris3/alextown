@@ -21,8 +21,8 @@ GameState.prototype.preload = function() {
         72, 63);
     this.game.load.spritesheet('whirlpool', 'assets/whirlpoolsprite.png', 150, 150);
 
-    this.CHOMPER_SPRITE_WIDTH = 18;
-    this.CHOMPER_SPRITE_HEIGHT = 27;
+    this.CHOMPER_SPRITE_WIDTH = 24;
+    this.CHOMPER_SPRITE_HEIGHT = 36;
     this.game.load.spritesheet('chomper', 'assets/chomper.png',
         this.CHOMPER_SPRITE_WIDTH,
         this.CHOMPER_SPRITE_HEIGHT);
@@ -49,23 +49,21 @@ GameState.prototype.preload = function() {
 
 // Set up gameplay
 GameState.prototype.create = function() {
+    //GRAPHICS ARE RENDERED IN THE ORDER IN WHICH THEY ARE ADDED TO THE GAME */
+    /*
+        1. Surroundings
+        2. Whirlpool
+        3. Player
+        4. Enemies
+    */
+
     // make castle surroundings (lvl 1)
     this.castleStage = alexTown.makeCastleStage(this.game);
 
-    // init enemies group
-    this.game.enemygroup = this.game.add.group();
-
-    // set stage background to sky color
-    this.game.stage.backgroundColor = 0x444444;
-
-    // create arrow pool for rooks
-    this.arrowpool = this.game.add.group();
-    for (var i = 0; i<100; i++) {
-        var arrow = this.game.add.existing(
-            new Arrow(this.game, 0, 0)
+    // init player's spells
+    PlayerSpells.whirlpool = this.game.add.existing(
+            new Whirlpool(this.game)
         );
-        this.arrowpool.add(arrow);
-    }
 
     // create player sprite
     this.player = this.game.add.existing(
@@ -74,6 +72,20 @@ GameState.prototype.create = function() {
             (this.game.height / 2) - (this.PLAYER_SPRITE_HEIGHT / 2))
     );
 
+    //init enemies group
+    Enemies.enemyGroup = game.add.physicsGroup(Phaser.Physics.ARCADE);;
+
+    // set stage background to sky color
+    this.game.stage.backgroundColor = 0x444444;
+
+    // create arrow pool for rooks
+    EnemyWeapons.arrowPool = this.game.add.group();
+    for (var i = 0; i<100; i++) {
+        var arrow = this.game.add.existing(
+            new Arrow(this.game, 0, 0)
+        );
+        EnemyWeapons.arrowPool.add(arrow);
+    }
 
     // capture certain keys to prevent default actions in browser (HTML 5 only)
     this.game.input.keyboard.addKeyCapture([
@@ -102,19 +114,19 @@ GameState.prototype.update = function() {
                         var chomper = this.game.add.existing(
                             new Chomper(this.game, x, y, this.player)
                         );
-                        this.game.enemygroup.add(chomper);
+                        Enemies.enemyGroup.add(chomper);
                         break;
                     case 'R':
                         var rook = this.game.add.existing(
-                            new Rook(this.game, x, y, this.player, this.arrowpool)
+                            new Rook(this.game, x, y, this.player, EnemyWeapons.arrowPool)
                         );
-                        this.game.enemygroup.add(rook);
+                        Enemies.enemyGroup.add(rook);
                         break;
                     case 'C':
                         var charger = this.game.add.existing(
                             new Charger(this.game, x, y, this.player)
                         );
-                        this.game.enemygroup.add(charger);
+                        Enemies.enemyGroup.add(charger);
                         break;
                 }
             }
@@ -123,21 +135,34 @@ GameState.prototype.update = function() {
 
     //collisions with castle stage tiles (walls, not rug)
     this.game.physics.arcade.collide(this.player, this.castleStage);
-    this.game.physics.arcade.collide(this.game.enemygroup, this.castleStage);
+    this.game.physics.arcade.collide(Enemies.enemyGroup, this.castleStage);
 
     // player/enemy, enemy/enemy collision handling
-    this.game.physics.arcade.collide(this.game.enemygroup, this.game.enemygroup);
-    this.game.physics.arcade.overlap(this.player.sword, this.game.enemygroup, onSwordHit, null, this);
-    this.game.physics.arcade.overlap(this.player, this.game.enemygroup, onPlayerHit, null, this);
-    this.game.physics.arcade.overlap(this.player, this.arrowpool, onPlayerHit, null, this);
+    // enemies are solid
+    this.game.physics.arcade.collide(Enemies.enemyGroup);
+    // all enemies damaged by sword
+    this.game.physics.arcade.overlap(this.player.sword, Enemies.enemyGroup, onPlayerSwordHit, null, this);
+    // enemies sucked by whirlpool
+    this.game.physics.arcade.overlap(PlayerSpells.whirlpool, Enemies.enemyGroup, onWhirlpoolHit, null, this);
+    // player damaged by enemies/arrows
+    this.game.physics.arcade.overlap(this.player, Enemies.enemyGroup, onPlayerHit, null, this);
+    this.game.physics.arcade.overlap(this.player, EnemyWeapons.arrowPool, onEnemyWeaponHit, null, this);
+
 };
 
 // custom collision handling
-var onSwordHit = function(weapon, enemy) {
+var onPlayerSwordHit = function(weapon, enemy) {
     enemy.takeDamage(enemy, weapon.damage, 200); //200 flinch for all for now
 };
 var onPlayerHit = function(player, enemy) {
-    player.takeDamage(player, 1, 800); // only loses one HP for now
+    //player.takeDamage(player, 1, 800); // only loses one HP for now
+    enemy.damagePlayer(player);
+};
+var onEnemyWeaponHit = function(player, weapon) {
+    weapon.damageTarget(player);
+};
+var onWhirlpoolHit = function(whirlpool, enemy) {
+    whirlpool.suck(enemy);
 };
 
 // Create game canvas

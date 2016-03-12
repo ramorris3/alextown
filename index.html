@@ -3,18 +3,24 @@
 <head>
     <title>Alex Town</title>
 
-	<!-- Phaser CDN -->
-	<script src="//cdn.jsdelivr.net/phaser/2.4.6/phaser.min.js"></script>
+	<!-- Phaser src (in components folder) -->
+	<script src="components/phaser.min.js"></script>
 
     <!-- Base game code -->
     <script type="text/javascript">
+        // Globals
         var alexTown = {};
+        var PlayerSpells = {};
+        var Enemies = {};
+        var EnemyWeapons = {};
     </script>
     <script src="stages/lvl0.js"></script>
     <script src="components/scrollingStages.js"></script>
     <script src="components/damage.js"></script>
+    <script src="components/inheritance.js"></script>
     <script src="spells/whirlpool.js"></script>
     <script src="player/warriorPlayer.js"></script>
+    <script src="enemies/enemyBase.js"></script>
     <script src="enemies/charger.js"></script>
     <script src="enemies/chomper.js"></script>
     <script src="enemies/rook.js"></script>

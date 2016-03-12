@@ -6,6 +6,8 @@ var Whirlpool = function(game) {
 
     //set physics for collision handling
     this.game.physics.enable(this, Phaser.Physics.ARCADE);
+    //set hitbox so it will suck enemies outside of its hitbox
+    this.body.setSize(220,220);
 
     //center anchor on middle of sprite (enemies will be sucked to center of sprite)
     this.anchor.setTo(0.5, 0.5);
@@ -17,8 +19,7 @@ var Whirlpool = function(game) {
     this.spinStart = 0;
 
     // attack effects
-    /* NEED TO SET HITBOX */
-    this.suckSpeed = 120; //px per frame
+    this.suckSpeed = 180; //px per frame
     this.currentEnemies = [];
 
     //initially inactive
@@ -61,6 +62,8 @@ Whirlpool.prototype.cast = function(x, y) {
 
     // revive whirlpool and start spinning
     this.revive();
+
+    // set timer
     this.spinStart = this.game.time.time;
 
     // set cooldown
@@ -87,4 +90,3 @@ Whirlpool.prototype.suck = function(enemy) {
     );
 
 };
-

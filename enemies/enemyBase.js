@@ -64,6 +64,7 @@ Enemy.prototype.enemyDefaultState = function() {
 
 Enemy.prototype.enemyStunnedState = function() {
     //override to play stunned animation 
+    console.error('Enemy does not override enemyStunnedState');
 };
 /* END STATE LOGIC */
 

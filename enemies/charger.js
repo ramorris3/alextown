@@ -34,15 +34,10 @@ Charger.prototype.enemyDefaultState = (function(_super) {
     };
 })(Enemy.prototype.enemyDefaultState);
 
-// extends base state
-Charger.prototype.enemyStunnedState = (function(_super) {
-    return function() {
-        /* add extension logic here */
-        this.animations.play('stunned');
-
-        return _super.apply(this, arguments);
-    };
-})(Enemy.prototype.enemyStunnedState);
+// overrides base state
+Charger.prototype.enemyStunnedState = function() {
+    this.animations.play('stunned');
+}
 
 // charge state specific to charger
 Charger.prototype.enemyChargeState = function() {

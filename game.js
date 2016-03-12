@@ -49,8 +49,28 @@ GameState.prototype.preload = function() {
 
 // Set up gameplay
 GameState.prototype.create = function() {
+    //GRAPHICS ARE RENDERED IN THE ORDER IN WHICH THEY ARE ADDED TO THE GAME */
+    /*
+        1. Surroundings
+        2. Whirlpool
+        3. Player
+        4. Enemies
+    */
+
     // make castle surroundings (lvl 1)
     this.castleStage = alexTown.makeCastleStage(this.game);
+
+    // init player's spells
+    PlayerSpells.whirlpool = this.game.add.existing(
+            new Whirlpool(this.game)
+        );
+
+    // create player sprite
+    this.player = this.game.add.existing(
+        new WarriorPlayer(this.game,
+            this.PLAYER_SPRITE_WIDTH * 2,
+            (this.game.height / 2) - (this.PLAYER_SPRITE_HEIGHT / 2))
+    );
 
     //init enemies group
     Enemies.enemyGroup = game.add.physicsGroup(Phaser.Physics.ARCADE);;
@@ -66,19 +86,6 @@ GameState.prototype.create = function() {
         );
         EnemyWeapons.arrowPool.add(arrow);
     }
-
-    // create player sprite
-    this.player = this.game.add.existing(
-        new WarriorPlayer(this.game,
-            this.PLAYER_SPRITE_WIDTH * 2,
-            (this.game.height / 2) - (this.PLAYER_SPRITE_HEIGHT / 2))
-    );
-
-    // init player's spells
-    PlayerSpells.whirlpool = this.game.add.existing(
-            new Whirlpool(this.game)
-        );
-
 
     // capture certain keys to prevent default actions in browser (HTML 5 only)
     this.game.input.keyboard.addKeyCapture([

@@ -6,6 +6,9 @@ var WarriorPlayer = function(game, x, y) {
     this.animations.add('run', [0,1,2,3], 9, true);
     this.smoothed = false;
 
+    // set pivot to center
+    this.anchor.setTo(0.5, 0.5);
+
     // add player sword
     this.sword = this.game.add.existing(
             new WarriorSword(this.game)
@@ -91,7 +94,7 @@ WarriorPlayer.prototype.flash = alexTown.flash;
 // player sword class definition
 var WarriorSword = function(game) {
     this.game = game;
-    Phaser.Sprite.call(this, game, 30, -15, 'warriorsword');
+    Phaser.Sprite.call(this, game, 20, -35, 'warriorsword');
     game.physics.enable(this, Phaser.Physics.ARCADE);
     this.animations.add('swing', [0,1,2,3,4,5,6,7,8,9], 30, false);
     this.smoothed = false;

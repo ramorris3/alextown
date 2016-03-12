@@ -18,7 +18,7 @@ GameState.prototype.preload = function() {
         this.PLAYER_SPRITE_WIDTH,
         this.PLAYER_SPRITE_HEIGHT);
     this.game.load.spritesheet('warriorsword', 'assets/warriorsword.png',
-        72, 63);
+        144, 99);
     this.game.load.spritesheet('whirlpool', 'assets/whirlpoolsprite.png', 150, 150);
 
     this.CHOMPER_SPRITE_WIDTH = 24;

@@ -94,14 +94,17 @@ WarriorPlayer.prototype.flash = alexTown.flash;
 // player sword class definition
 var WarriorSword = function(game) {
     this.game = game;
-    Phaser.Sprite.call(this, game, 20, -35, 'warriorsword');
+    Phaser.Sprite.call(this, game, 18, -10, 'warriorsword');
     game.physics.enable(this, Phaser.Physics.ARCADE);
-    this.animations.add('swing', [0,1,2,3,4,5,6,7,8,9], 30, false);
+    this.animations.add('swing');
     this.smoothed = false;
+
+    // center pivot on middle of sprite
+    this.anchor.setTo(0.5, 0.5);
 
     // basic attack logic
     this.nextSwing = 0;
-    this.swingRate = 150; // sword swing cool down
+    this.swingRate = 180; // sword swing cool down
     this.damage = 1;
 
     this.kill();
@@ -118,7 +121,7 @@ WarriorSword.prototype.swing = function() {
 
     // play sword animation
     this.revive();
-    this.animations.play('swing', 30, false, true); // kill on animation complete
+    this.animations.play('swing', 40, false, true); // kill on animation complete
 
     // set cooldown
     this.nextSwing = this.game.time.time + this.swingRate;

@@ -1,33 +1,33 @@
 var Enemy = function(game, x, y, target, spriteKey) {
-	this.game = game;
-	Phaser.Sprite.call(this, game, x, y, spriteKey);
+    this.game = game;
+    Phaser.Sprite.call(this, game, x, y, spriteKey);
 
-	/*children need to add animations on their own*/
+    /*children need to add animations on their own*/
     //add default animation
     //add stunned animation
 
-	this.smoothed = false;
+    this.smoothed = false;
 
-	//set up damage logic
-	this.invincible = false;
-	this.flashTimer = 20;
-	this.health = 1;
+    //set up damage logic
+    this.invincible = false;
+    this.flashTimer = 20;
+    this.health = 1;
     this.maxHealth = 1;
     this.attackPoints = 1;
 
-	//set pivot point for sprite to the center
-	this.anchor.setTo(0.5, 0.5);
+    //set pivot point for sprite to the center
+    this.anchor.setTo(0.5, 0.5);
 
-	//enable physics
-	this.game.physics.enable(this, Phaser.Physics.ARCADE);
-	this.body.bounce.setTo(10, 10);
+    //enable physics
+    this.game.physics.enable(this, Phaser.Physics.ARCADE);
+    this.body.bounce.setTo(10, 10);
 
-	//set motion constants/vars
-	this.MAX_SPEED = 100; //pixels/sec
+    //set motion constants/vars
+    this.MAX_SPEED = 100; //pixels/sec
     this.target = target;
 
-	//init state logic
-	this.currentState = this.enemyDefaultState;
+    //init state logic
+    this.currentState = this.enemyDefaultState;
 };
 
 Enemy.prototype = Object.create(Phaser.Sprite.prototype);
@@ -58,7 +58,7 @@ Enemy.prototype.update = function() {
 // these are just placeholders so we don't get reference errors
 // (you shouldn't have to change the update function)
 Enemy.prototype.enemyDefaultState = function() {
-	//override to play walking animation, make custom movement
+    //override to play walking animation, make custom movement
     this.body.velocity.setTo(-this.MAX_SPEED, 0);
 };
 

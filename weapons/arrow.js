@@ -20,5 +20,5 @@ Arrow.prototype.fire = function(rook) {
 };
 
 Arrow.prototype.damageTarget = function(target) {
-	target.takeDamage(target, this.attackPoints, target.flinch); 
+    target.takeDamage(target, this.attackPoints, target.flinch); 
 };

@@ -14,6 +14,8 @@ var Charger = function(game, x, y, target) {
 
     // movement var
     this.CHARGE_SPEED = 200;
+
+    this.xpValue = 10;
 };
 
 // Chargers are a type of Enemy

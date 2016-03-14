@@ -15,6 +15,8 @@ var Rook = function(game, x, y, target, ammo) {
     this.reloadCount = 50;
     this.quiver = 6;
     this.ammo = ammo;
+
+    this.xpValue = 10;
 };
 
 // Rooks are a type of Phaser.Sprite

@@ -7,6 +7,9 @@ var GameState = function(game) {
 
 // Load images and sounds
 GameState.prototype.preload = function() {
+    // game font
+    game.load.bitmapFont('carrier_command', 'assets/carrier_command.png', 'assets/carrier_command.xml');
+
     // tiles
     this.game.load.image('ground', 'assets/groundtile.png');
     this.game.load.image('rug', 'assets/rugtile.png');
@@ -59,6 +62,12 @@ GameState.prototype.create = function() {
 
     // make castle surroundings (lvl 1)
     this.castleStage = alexTown.makeCastleStage(this.game);
+
+
+    // load up the xp meter
+    game.playerXP = 0;
+    game.nextLevel = 100;
+    game.xpMeter = game.add.bitmapText(770, 10, 'carrier_command', 'EXP 0/100', 20);
 
     // init player's spells
     PlayerSpells.whirlpool = this.game.add.existing(

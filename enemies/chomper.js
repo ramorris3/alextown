@@ -12,6 +12,8 @@ var Chomper = function(game, x, y, target) {
 
     //player slow effect
     this.slowSpeed = 10;
+
+    this.xpValue = 10;
 };
 
 // Chompers are a type of Phaser.Sprite

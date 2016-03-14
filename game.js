@@ -65,6 +65,8 @@ GameState.prototype.create = function() {
 
 
     // load up the xp meter
+    game.playerXP = 0;
+    game.nextLevel = 100;
     game.xpMeter = game.add.bitmapText(850, 10, 'carrier_command', '0/100', 20);
 
     // init player's spells

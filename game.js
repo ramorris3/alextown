@@ -65,6 +65,7 @@ GameState.prototype.create = function() {
 
 
     // load up the xp meter
+    game.playerLevel = 1;
     game.playerXP = 0;
     game.nextLevel = 100;
     game.xpMeter = game.add.bitmapText(770, 10, 'carrier_command', 'EXP 0/100', 20);

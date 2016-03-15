@@ -29,6 +29,10 @@ alexTown.flash = function(self) {
 
 alexTown.updateXP = function(data) {
     data.game.playerXP += data.xpValue;
+    if (data.game.playerXP >= data.game.nextLevel) {
+        game.playerLevel += 1;
+        data.game.nextLevel = ~~((game.playerLevel * (game.playerLevel + 1)) / 2) * 100;
+    }
     var meterText = 'EXP ' + data.game.playerXP + '/' + data.game.nextLevel;
     data.game.xpMeter.x = data.game.width - 20 * meterText.length - 50;
     data.game.xpMeter.text = meterText;

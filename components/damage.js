@@ -33,6 +33,16 @@ alexTown.updateXP = function(data) {
         game.playerLevel += 1;
         data.game.nextLevel = ~~((game.playerLevel * (game.playerLevel + 1)) / 2) * 100;
         data.game.xpMeter.flashTimer = 30;
+
+        data.game.levelUpText = game.add.bitmapText(data.game.width/2, data.game.height/2, 'carrier_command', 'LEVEL UP!', 40);
+        data.game.levelUpText.anchor.set(0.5);
+        data.game.levelUpText.update = function() {
+            this.alpha -= 0.05;
+            this.fontSize += 3;
+            if (this.alpha < 0.1) {
+                this.kill();
+            }
+        }
     }
     var meterText = 'EXP ' + data.game.playerXP + '/' + data.game.nextLevel;
     data.game.xpMeter.x = data.game.width - 20 * meterText.length - 50;

@@ -44,7 +44,7 @@ alexTown.updateXP = function(data) {
             }
         }
     }
-    var meterText = 'EXP ' + data.game.playerXP + '/' + data.game.nextLevel;
+    var meterText = 'LVL' + game.playerLevel + ' EXP ' + data.game.playerXP + '/' + data.game.nextLevel;
     data.game.xpMeter.x = data.game.width - 20 * meterText.length - 50;
     data.game.xpMeter.text = meterText;
 }

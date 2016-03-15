@@ -68,7 +68,8 @@ GameState.prototype.create = function() {
     game.playerLevel = 1;
     game.playerXP = 0;
     game.nextLevel = 100;
-    game.xpMeter = game.add.bitmapText(770, 10, 'carrier_command', 'EXP 0/100', 20);
+    game.xpMeter = game.add.bitmapText(game.width-10, 10, 'carrier_command', 'LVL1 EXP 0/100', 20);
+    game.xpMeter.anchor.set(1,0);
     game.xpMeter.update = function() {
         this.flash(this);
     };

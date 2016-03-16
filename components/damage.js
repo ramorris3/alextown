@@ -11,6 +11,9 @@ alexTown.takeDamage = function(self, damage, flinch) {
             that.invincible = false;
         }, self);
     }
+
+    // visual effects
+    Visuals.slices.slice(self.x, self.y);
 };
 
 alexTown.flash = function(self) {

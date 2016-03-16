@@ -63,30 +63,6 @@ GameState.prototype.create = function() {
     // make castle surroundings (lvl 1)
     this.castleStage = alexTown.makeCastleStage(this.game);
 
-
-    // load up the xp meter
-    game.playerLevel = 1;
-    game.playerXP = 0;
-    game.nextLevel = 100;
-    game.xpMeter = game.add.bitmapText(game.width-10, 10, 'carrier_command', 'LVL1 EXP 0/100', 20);
-    game.xpMeter.anchor.set(1,0);
-    game.xpMeter.update = function() {
-        this.flash(this);
-    };
-    game.xpMeter.flash = function(self) {
-        if (self.flashTimer) {
-            self.flashTimer--;
-            // if invincible, flash every 2 frames
-            if (!(self.flashTimer % 2)) {
-                self.tint = 0xffff33;
-            } else {
-                self.tint = 0xffffff;
-            }
-        } else { // not hurt/invincible, reset tint to default
-            self.tint = 0xffffff;
-        }
-    };
-
     // init player's spells
     PlayerSpells.whirlpool = this.game.add.existing(
             new Whirlpool(this.game)
@@ -100,6 +76,13 @@ GameState.prototype.create = function() {
     );
 
     this.game.player = this.player;
+
+    // load up the xp meter
+    game.player.level = 1;
+    game.player.XP = 0;
+    game.player.nextLevel = 100;
+    game.xpMeter = game.add.bitmapText(game.width-10, 10, 'carrier_command', 'LVL1 EXP 0/100', 20);
+    game.xpMeter.anchor.set(1,0);
 
     //init enemies group
     Enemies.enemyGroup = game.add.physicsGroup(Phaser.Physics.ARCADE);;

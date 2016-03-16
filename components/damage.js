@@ -3,6 +3,9 @@ alexTown.takeDamage = function(self, damage, flinch) {
         // only damage if not invincible
         self.damage(damage);
 
+        // visual effects
+        Visuals.slices.slice(self.x, self.y);
+
         //toggle invincibility
         self.invincible = true;
         // set timer to restore to vulerable state afterwards
@@ -11,9 +14,6 @@ alexTown.takeDamage = function(self, damage, flinch) {
             that.invincible = false;
         }, self);
     }
-
-    // visual effects
-    Visuals.slices.slice(self.x, self.y);
 };
 
 alexTown.flash = function(self) {

@@ -57,7 +57,7 @@ GameState.prototype.preload = function() {
         this.ARROW_SPRITE_HEIGHT);
 
     // visual FX
-    this.game.load.spritesheet('slices', 'assets/slices.png', 24, 24);
+    this.game.load.spritesheet('slices', 'assets/slices.png', 36, 36);
 };
 
 

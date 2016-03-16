@@ -44,6 +44,15 @@ alexTown.updateXP = function(data) {
             }
         }
     }
+    data.game.xpUpText = game.add.bitmapText(data.game.player.x, data.game.player.y, 'carrier_command', '+' + data.xpValue, 10);
+    data.game.xpUpText.update = function() {
+        this.alpha -= 0.05;
+        this.y -= 3;
+        if (this.alpha < 0.1) {
+            this.kill();
+        }
+    }
+
     var meterText = 'LVL' + game.playerLevel + ' EXP ' + data.game.playerXP + '/' + data.game.nextLevel;
     data.game.xpMeter.text = meterText;
 }

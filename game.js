@@ -99,6 +99,8 @@ GameState.prototype.create = function() {
             (this.game.height / 2) - (this.PLAYER_SPRITE_HEIGHT / 2))
     );
 
+    this.game.player = this.player;
+
     //init enemies group
     Enemies.enemyGroup = game.add.physicsGroup(Phaser.Physics.ARCADE);;
 

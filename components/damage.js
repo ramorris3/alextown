@@ -45,7 +45,7 @@ alexTown.updateXP = function(data) {
     }
     data.game.xpUpText = game.add.bitmapText(data.game.player.x, data.game.player.y, 'carrier_command', '+' + data.xpValue, 10);
     data.game.xpUpText.update = function() {
-        this.alpha -= 0.05;
+        this.alpha -= 0.02;
         this.y -= 3;
         if (this.alpha < 0.1) {
             this.kill();

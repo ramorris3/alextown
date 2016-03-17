@@ -14,6 +14,9 @@ GameState.prototype.preload = function() {
     this.game.load.image('ground', 'assets/groundtile.png');
     this.game.load.image('rug', 'assets/rugtile.png');
 
+    // health
+    game.load.image('heart', 'assets/heart.png');
+
     // sprites/images
     this.PLAYER_SPRITE_WIDTH = 30;
     this.PLAYER_SPRITE_HEIGHT = 42;

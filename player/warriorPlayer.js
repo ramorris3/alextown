@@ -27,6 +27,14 @@ var WarriorPlayer = function(game, x, y) {
     this.maxHealth = 5;
     this.health = 5;
 
+    // create the health bar
+    this.hearts = []
+    for (i = 0; i < this.maxHealth; ++i){
+        this.hearts[i] = this.game.add.image(30*i + 10, 10, 'heart');
+        this.hearts[i].height = 20;
+        this.hearts[i].width = 22;
+    }
+
     // enable physics for player
     this.game.physics.enable(this, Phaser.Physics.ARCADE);
 
@@ -85,6 +93,18 @@ WarriorPlayer.prototype.update = function() {
         PlayerSpells.whirlpool.cast(this.x, this.y); // drop at current position
     }
 
+    if (this.hearts.length < this.health){
+        for (i = this.hearts.length; i < this.health; ++i){
+            this.hearts[i] = this.game.add.image(30*i + 10, 10, 'heart');
+            this.hearts[i].height = 20;
+            this.hearts[i].width = 22;
+        }
+    } else {
+        while (this.hearts.length > this.health){
+            var heart = this.hearts.pop()
+            heart.kill();
+        }
+    }
 };
 
 WarriorPlayer.prototype.takeDamage = alexTown.takeDamage;

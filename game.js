@@ -18,6 +18,7 @@ GameState.prototype.preload = function() {
     game.load.image('heart', 'assets/heart.png');
 
     // sprites/images
+    // player
     this.PLAYER_SPRITE_WIDTH = 30;
     this.PLAYER_SPRITE_HEIGHT = 42;
     this.game.load.spritesheet('warrior', 'assets/warrior.png',
@@ -25,8 +26,11 @@ GameState.prototype.preload = function() {
         this.PLAYER_SPRITE_HEIGHT);
     this.game.load.spritesheet('warriorsword', 'assets/warriorsword.png',
         144, 99);
+    
+    // spells
     this.game.load.spritesheet('whirlpool', 'assets/whirlpoolsprite.png', 150, 150);
 
+    // enemies
     this.CHOMPER_SPRITE_WIDTH = 24;
     this.CHOMPER_SPRITE_HEIGHT = 36;
     this.game.load.spritesheet('chomper', 'assets/chomper.png',
@@ -45,11 +49,15 @@ GameState.prototype.preload = function() {
         this.ROOK_SPRITE_WIDTH,
         this.ROOK_SPRITE_HEIGHT);
 
+    // weapons
     this.ARROW_SPRITE_WIDTH = 24;
     this.ARROW_SPRITE_HEIGHT = 3;
     this.game.load.spritesheet('arrow', 'assets/arrow.png',
         this.ARROW_SPRITE_WIDTH,
         this.ARROW_SPRITE_HEIGHT);
+
+    // visual FX
+    this.game.load.spritesheet('slices', 'assets/slices.png', 36, 36);
 };
 
 
@@ -61,7 +69,11 @@ GameState.prototype.create = function() {
         2. Whirlpool
         3. Player
         4. Enemies
+        5. Visual FX (dust, slices, etc.)
     */
+
+    // set stage background to sky color
+    this.game.stage.backgroundColor = 0x444444;
 
     // make castle surroundings (lvl 1)
     this.castleStage = alexTown.makeCastleStage(this.game);
@@ -88,10 +100,7 @@ GameState.prototype.create = function() {
     game.xpMeter.anchor.set(1,0);
 
     //init enemies group
-    Enemies.enemyGroup = game.add.physicsGroup(Phaser.Physics.ARCADE);;
-
-    // set stage background to sky color
-    this.game.stage.backgroundColor = 0x444444;
+    Enemies.enemyGroup = game.add.physicsGroup(Phaser.Physics.ARCADE);
 
     // create arrow pool for rooks
     EnemyWeapons.arrowPool = this.game.add.group();
@@ -101,6 +110,9 @@ GameState.prototype.create = function() {
         );
         EnemyWeapons.arrowPool.add(arrow);
     }
+
+    // init visual effects
+    Visuals.slices = new Slices(this.game);
 
     // capture certain keys to prevent default actions in browser (HTML 5 only)
     this.game.input.keyboard.addKeyCapture([

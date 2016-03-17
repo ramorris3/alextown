@@ -4,7 +4,7 @@ alexTown.takeDamage = function(self, damage, flinch) {
         self.damage(damage);
 
         // visual effects
-        Visuals.slices.slice(self.x, self.y);
+        Visuals.slices.slice(self);
 
         //toggle invincibility
         self.invincible = true;

@@ -17,19 +17,23 @@ var Slices = function(game) {
 Slices.prototype = Object.create(Object);
 Slices.prototype.constructor = Slices;
 
-Slices.prototype.slice = function(x, y) {
+Slices.prototype.slice = function(self) {
 	// get a slice sprite, and choose a random slice animation to play
 	var slice = this.slices.getFirstDead();
 	var animKey = this.animationKeys[Math.floor(Math.random() * 3)];
 
 	// revive and play animation (will die when animation ends)
-	slice.reset(x, y);
+	slice.reset(self.x, self.y);
 	slice.revive();
 	slice.play(animKey, 40, false, true);
+
+	// slice moves with enemy/character
+	slice.follow = self;
 
 	// fade as animation plays
 	slice.update = function() {
 		this.alpha -= .05;
-
+		this.x = this.follow.x;
+		this.y = this.follow.y;
 	};
 };

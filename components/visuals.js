@@ -22,7 +22,7 @@ Slices.prototype.slice = function(self) {
 	var animKey = this.animationKeys[Math.floor(Math.random() * 2)];
 
 	// revive and play animation (will die when animation ends)
-	slice.reset(self.x, self.y);
+	slice.reset(self.x + 10, self.y);
 	slice.revive();
 	slice.play(animKey, 40, false, true);
 
@@ -32,7 +32,7 @@ Slices.prototype.slice = function(self) {
 	// fade as animation plays
 	slice.update = function() {
 		this.alpha -= .05;
-		this.x = this.follow.x;
+		this.x = this.follow.x + 10;
 		this.y = this.follow.y;
 	};
 };

@@ -29,7 +29,7 @@ var Enemy = function(game, x, y, target, spriteKey) {
     //init state logic
     this.currentState = this.enemyDefaultState;
 
-    this.events.onKilled.add(alexTown.updateXP, this);
+    this.events.onKilled.add(alexTown.doOnEnemyDeath, this);
 };
 
 Enemy.prototype = Object.create(Phaser.Sprite.prototype);

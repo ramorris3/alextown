@@ -56,6 +56,13 @@ GameState.prototype.preload = function() {
         this.ARROW_SPRITE_WIDTH,
         this.ARROW_SPRITE_HEIGHT);
 
+    // drops
+    this.HEALTHDROPS_SPRITE_WIDTH = 24;
+    this.HEALTHDROPS_SPRITE_HEIGHT = 24;
+    this.game.load.spritesheet('flower', 'assets/flower.png',
+        this.HEALTHDROPS_SPRITE_WIDTH,
+        this.HEALTHDROPS_SPRITE_HEIGHT);
+
     // visual FX
     this.game.load.spritesheet('slices', 'assets/slices.png', 36, 36);
 };
@@ -110,6 +117,9 @@ GameState.prototype.create = function() {
         );
         EnemyWeapons.arrowPool.add(arrow);
     }
+
+    // init drops group
+    Drops.dropsGroup = this.game.add.group();
 
     // init visual effects
     Visuals.slices = new Slices(this.game);
@@ -174,6 +184,7 @@ GameState.prototype.update = function() {
     // player damaged by enemies/arrows
     this.game.physics.arcade.overlap(this.player, Enemies.enemyGroup, onPlayerHit, null, this);
     this.game.physics.arcade.overlap(this.player, EnemyWeapons.arrowPool, onEnemyWeaponHit, null, this);
+    this.game.physics.arcade.overlap(this.player, Drops.dropsGroup, onHealthDropHit, null, this);
 
 };
 
@@ -187,6 +198,10 @@ var onPlayerHit = function(player, enemy) {
 };
 var onEnemyWeaponHit = function(player, weapon) {
     weapon.damageTarget(player);
+};
+var onHealthDropHit = function(player, healthDrop) {
+    player.heal(healthDrop.healPoints);
+    healthDrop.destroy()
 };
 var onWhirlpoolHit = function(whirlpool, enemy) {
     whirlpool.suck(enemy);

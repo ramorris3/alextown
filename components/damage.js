@@ -53,8 +53,21 @@ alexTown.updateXP = function(data) {
         if (this.alpha < 0.1) {
             this.kill();
         }
-    }
+    };
 
     var meterText = 'LVL' + game.player.level + ' EXP ' + data.game.player.XP + '/' + data.game.player.nextLevel;
     data.game.xpMeter.text = meterText;
-}
+};
+
+alexTown.spawnDrop = function(deadEnemy){
+    if (Math.random() < .10) {
+    var drop = deadEnemy.game.add.existing(
+        new HealthDrop(deadEnemy.game, deadEnemy.x, deadEnemy.y)
+    );
+    Drops.dropsGroup.add(drop)}
+};
+
+alexTown.doOnEnemyDeath = function(enemy){
+    alexTown.updateXP(enemy);
+    alexTown.spawnDrop(enemy);
+};

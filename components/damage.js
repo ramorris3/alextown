@@ -39,6 +39,7 @@ alexTown.updateXP = function(data) {
 
         player.maxHealth += 1;
         player.heal(1);
+        player.sword.damage += 1;
 
         data.game.levelUpText = game.add.bitmapText(data.game.width/2, data.game.height/2, 'carrier_command', 'LEVEL UP!', 40);
         data.game.levelUpText.anchor.set(0.5);

@@ -31,10 +31,15 @@ alexTown.flash = function(self) {
 };
 
 alexTown.updateXP = function(data) {
-    data.game.player.XP += data.xpValue;
-    if (data.game.player.XP >= data.game.player.nextLevel) {
-        game.player.level += 1;
-        data.game.player.nextLevel = ~~((game.player.level * (game.player.level + 1)) / 2) * 100;
+    var player = data.game.player;
+    player.XP += data.xpValue;
+    if (player.XP >= player.nextLevel) {
+        player.level += 1;
+        player.nextLevel = ~~((player.level * (player.level + 1)) / 2) * 100;
+
+        player.maxHealth += 1;
+        player.heal(1);
+        player.sword.damage += 1;
 
         data.game.levelUpText = game.add.bitmapText(data.game.width/2, data.game.height/2, 'carrier_command', 'LEVEL UP!', 40);
         data.game.levelUpText.anchor.set(0.5);
@@ -46,7 +51,7 @@ alexTown.updateXP = function(data) {
             }
         }
     }
-    data.game.xpUpText = game.add.bitmapText(data.game.player.x, data.game.player.y, 'carrier_command', '+' + data.xpValue, 10);
+    data.game.xpUpText = game.add.bitmapText(player.x, player.y, 'carrier_command', '+' + data.xpValue, 10);
     data.game.xpUpText.update = function() {
         this.alpha -= 0.02;
         this.y -= 3;
@@ -55,7 +60,7 @@ alexTown.updateXP = function(data) {
         }
     };
 
-    var meterText = 'LVL' + game.player.level + ' EXP ' + data.game.player.XP + '/' + data.game.player.nextLevel;
+    var meterText = 'LVL' + player.level + ' EXP ' + player.XP + '/' + player.nextLevel;
     data.game.xpMeter.text = meterText;
 };
 

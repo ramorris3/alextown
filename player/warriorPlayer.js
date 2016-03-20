@@ -27,6 +27,8 @@ var WarriorPlayer = function(game, x, y) {
     this.maxHealth = 5;
     this.health = 5;
 
+    this.mana = 3;
+
     // create the health bar
     this.hearts = []
     for (i = 0; i < this.maxHealth; ++i){

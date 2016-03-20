@@ -57,6 +57,11 @@ Whirlpool.prototype.cast = function(x, y) {
         return;
     }
 
+    if (game.player.mana <= 0) {
+        return;
+    }
+    game.player.mana -= 1;
+
     // place on the floor
     this.reset(x,y);
 

@@ -14,8 +14,9 @@ GameState.prototype.preload = function() {
     this.game.load.image('ground', 'assets/groundtile.png');
     this.game.load.image('rug', 'assets/rugtile.png');
 
-    // health
+    // health & mana
     game.load.image('heart', 'assets/heart.png');
+    game.load.image('bottle', 'assets/magicbottle.png');
 
     // sprites/images
     // player

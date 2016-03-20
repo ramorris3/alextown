@@ -27,12 +27,22 @@ var WarriorPlayer = function(game, x, y) {
     this.maxHealth = 5;
     this.health = 5;
 
+    this.mana = 3;
+
     // create the health bar
     this.hearts = []
     for (i = 0; i < this.maxHealth; ++i){
-        this.hearts[i] = this.game.add.image(30*i + 10, 10, 'heart');
+        this.hearts[i] = this.game.add.image(30*i + 10, 3, 'heart');
         this.hearts[i].height = 20;
         this.hearts[i].width = 22;
+    }
+
+    // mana bar
+    this.bottles = []
+    for (i = 0; i < this.mana; ++i){
+        this.bottles[i] = this.game.add.image(30*i + 10, 25, 'bottle');
+        this.bottles[i].height = 20;
+        this.bottles[i].width = 14;
     }
 
     // enable physics for player
@@ -93,15 +103,30 @@ WarriorPlayer.prototype.update = function() {
         PlayerSpells.whirlpool.cast(this.x, this.y); // drop at current position
     }
 
+    // update health bar
     if (this.hearts.length < this.health){
         for (i = this.hearts.length; i < this.health; ++i){
-            this.hearts[i] = this.game.add.image(30*i + 10, 10, 'heart');
+            this.hearts[i] = this.game.add.image(30*i + 10, 3, 'heart');
             this.hearts[i].height = 20;
             this.hearts[i].width = 22;
         }
     } else {
         while (this.hearts.length > this.health){
             var heart = this.hearts.pop()
+            heart.kill();
+        }
+    }
+
+    // update mana bar
+    if (this.bottles.length < this.mana){
+        for (i = this.bottles.length; i < this.mana; ++i){
+            this.bottles[i] = this.game.add.image(30*i + 10, 25, 'bottle');
+            this.bottles[i].height = 20;
+            this.bottles[i].width = 14;
+        }
+    } else {
+        while (this.bottles.length > this.mana){
+            var heart = this.bottles.pop()
             heart.kill();
         }
     }

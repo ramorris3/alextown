@@ -34,7 +34,7 @@ GameState.prototype.preload = function() {
     // enemies
     this.CHOMPER_SPRITE_WIDTH = 24;
     this.CHOMPER_SPRITE_HEIGHT = 36;
-    this.game.load.spritesheet('chomper', 'assets/chomper.png',
+    this.game.load.spritesheet('chomper', 'assets/chomper_2.png',
         this.CHOMPER_SPRITE_WIDTH,
         this.CHOMPER_SPRITE_HEIGHT);
 

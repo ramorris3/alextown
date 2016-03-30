@@ -1,8 +1,8 @@
 var Chomper = function(game, x, y, target) {
     Enemy.call(this, game, x, y, target, 'chomper');
 
-    this.animations.add('chomp', [0,1,2,3], 10, true);
-    this.animations.add('stunned', [4,5], 10, true);
+    this.animations.add('chomp', [0,1,2,3,4,5], 10, true);
+    this.animations.add('stunned', [6,7,8,9], 10, true);
 
     //override health
     this.health = 2;

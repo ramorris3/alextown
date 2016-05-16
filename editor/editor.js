@@ -53,13 +53,13 @@ function update() {
     placeCreature();
   }
 
-  // check if user is saving the level (Ctrl + S is released)
+  // check if user is saving the level (Ctrl + S is pressed)
   if (saveKey.isDown) {
-    prevSaveDown = true;
-  } else {
-    if (prevSaveDown && controlKey.isDown) {
+    if (!prevSaveDown && controlKey.isDown) {
       save();
     }
+    prevSaveDown = true;
+  } else {
     prevSaveDown = false;
   }
 }
@@ -133,6 +133,7 @@ function save () {
 
   // NEED TO IMPLEMENT FILE SAVING. Nothing is actually saved yet
   // I'm thinking we can use nodejs to write files to the "stages" folder.  And maybe JQuery or Angular to make the request
-  alert('file was saved as ' + filename + '.  (But not really... need to implement file saving');
+
+  alert('file was saved as ' + filename + '  (But not really... need to implement file saving)');
 }
 

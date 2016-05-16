@@ -82,7 +82,13 @@ function updateHighlight() {
   }
   // keep highlight on screen
   if (highlight.x <= 0) highlight.x = 0;
+  if (highlight.x + highlight.width >= editor.width) {
+    highlight.x = editor.width - highlight.width;
+  }
   if (highlight.y <= 0) highlight.y = 0;
+  if (highlight.y + highlight.height >= editor.height) {
+    highlight.y = editor.height - highlight.height;
+  }
 }
 
 // places a creature at the current highlight gridloc
@@ -115,6 +121,16 @@ function save () {
       return;
     }
   }
+
+  var gridStr = '';
+  for (i = 0; i < grid.length; i++) {
+    for (j = 0; j < grid[i].length; j++) {
+      gridStr += grid[i][j];
+    }
+    gridStr += '\n';
+  }
+  console.log(gridStr);
+
   // NEED TO IMPLEMENT FILE SAVING. Nothing is actually saved yet
   // I'm thinking we can use nodejs to write files to the "stages" folder.  And maybe JQuery or Angular to make the request
   alert('file was saved as ' + filename + '.  (But not really... need to implement file saving');

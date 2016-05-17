@@ -8,13 +8,20 @@ var app = angular.module('EditorApp', [])
 
       /* CORE EDITOR FUNCTIONS (GUI) */
       function preload() {
+        // GUI elements
         editor.load.image('highlight', '../assets/highlight.png');
         editor.load.image('cursor', '../assets/cursor.png');
+        editor.load.image('stageRight', '../assets/stage_right.png');
+        editor.load.image('stageLeft', '../assets/stage_left.png');
+
+        // enemies
         editor.load.spritesheet('chomper', '../assets/chomper_2.png', 24, 36);
       }
 
       var highlight;
       var cursor;
+      var stageRight;
+      var stageLeft;
       var grid = [];
       var tileSize = 50;
       var prevMouseDown = false;
@@ -23,10 +30,14 @@ var app = angular.module('EditorApp', [])
       var prevSaveDown = false;
       var filename;
       var level;
+      var viewFrame = 0;
+      var maxFrames = 20;
 
       function create() {
+        // init world
+        editor.world.setBounds(0, 0, editor.width * maxFrames, editor.height);
         // init grid
-        for (i = 0; i < editor.width; i += tileSize) {
+        for (i = 0; i < editor.width * maxFrames; i += tileSize) {
           var list = [];
           for (j = 0; j < editor.height; j += tileSize) {
             list.push('0');
@@ -36,7 +47,16 @@ var app = angular.module('EditorApp', [])
 
         // init GUI elements
         highlight = editor.add.sprite(0, 0, 'highlight');
+        stageLeft = editor.add.sprite(8, editor.world.centerY - 16, 'stageLeft');
+        stageRight = editor.add.sprite(editor.width - 40, editor.world.centerY - 16, 'stageRight');
         cursor = editor.add.sprite(editor.world.centerX, editor.world.centerY, 'cursor');
+        stageLeft.fixedToCamera = true;
+        stageRight.fixedToCamera = true;
+        cursor.fixedToCamera = true;
+
+        editor.physics.enable(cursor, Phaser.Physics.ARCADE);
+        editor.physics.enable(stageRight, Phaser.Physics.ARCADE);
+        editor.physics.enable(stageLeft, Phaser.Physics.ARCADE);
 
         // init hotkey controls
         controlKey = editor.input.keyboard.addKey(Phaser.Keyboard.CONTROL);
@@ -44,11 +64,44 @@ var app = angular.module('EditorApp', [])
       }
 
       function update() {
+        // update the camera position
+        if (editor.camera.x < viewFrame * editor.width) {
+          editor.camera.x += 20;
+        } else if (editor.camera.x > viewFrame * editor.width) {
+          editor.camera.x -= 20;
+        }
+
         // update mouse cursor position
-        cursor.x = editor.input.mousePointer.x;
-        cursor.y = editor.input.mousePointer.y;
-        // update gridLocation of the highlight
+        cursor.cameraOffset.x = editor.input.mousePointer.x;
+        console.log(cursor.cameraOffset.x);
+        cursor.cameraOffset.y = editor.input.mousePointer.y;
+        console.log(cursor.cameraOffset.y);
+
+        // update gridLocation and visibility of grid highlight
         updateHighlight();
+
+        // update the GUI sprites and functionality based on hover
+        // default
+        if (!highlight.alive) {
+          highlight.revive();
+        }
+        cursor.clickAction = function() {
+          placeCreature();
+        };
+        // hovering over right-arrow
+        editor.physics.arcade.overlap(cursor, stageRight, function() {
+          highlight.kill(); // hide highlight
+          cursor.clickAction = function() {
+            scrollRight();
+          };
+        });
+        // hovering over left-arrow
+        editor.physics.arcade.overlap(cursor, stageLeft, function() {
+          highlight.kill(); // hide highlight
+          cursor.clickAction = function() {
+            scrollLeft();
+          };
+        });
 
         // check if the player released the mouse click button
         if (editor.input.activePointer.isDown) {
@@ -56,7 +109,7 @@ var app = angular.module('EditorApp', [])
         }
         else if (prevMouseDown) { // mouse was down but is not anymore
           prevMouseDown = false;
-          placeCreature();
+          cursor.clickAction();
         }
 
         // check if user is saving the level (Ctrl + S is pressed)
@@ -86,15 +139,6 @@ var app = angular.module('EditorApp', [])
           highlight.x = cGridLoc.x * tileSize;
           highlight.y = cGridLoc.y * tileSize;
         }
-        // keep highlight on screen
-        if (highlight.x <= 0) highlight.x = 0;
-        if (highlight.x + highlight.width >= editor.width) {
-          highlight.x = editor.width - highlight.width;
-        }
-        if (highlight.y <= 0) highlight.y = 0;
-        if (highlight.y + highlight.height >= editor.height) {
-          highlight.y = editor.height - highlight.height;
-        }
       }
 
       // places a creature at the current highlight gridloc
@@ -112,6 +156,19 @@ var app = angular.module('EditorApp', [])
           // play chomper animation
           creature.animations.add('chomp', [0,1,2,3,4,5], 10, true);
           creature.animations.play('chomp');
+        }
+      }
+
+      function scrollRight() {
+        viewFrame++;
+        if (viewFrame > maxFrames) {
+          viewFrame = maxFrames;
+        }
+      }
+      function scrollLeft() {
+        viewFrame--;
+        if (viewFrame < 0) {
+          viewFrame = 0;
         }
       }
 

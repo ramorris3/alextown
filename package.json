@@ -1,0 +1,13 @@
+{
+  "name": "trace-italienne",
+  "description": "An RPG shmup",
+  "version": "0.0.0",
+  "scripts": {
+    "start": "nodemon server.js"
+  },
+  "dependencies": {
+    "body-parser": "^1.15.1",
+    "express": "^4.13.4",
+    "fs": "0.0.2"
+  }
+}

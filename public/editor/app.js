@@ -6,7 +6,7 @@ var app = angular.module('EditorApp', [])
       /* EDITOR DEF */
       var editor = new Phaser.Game(1000, 500, Phaser.CANVAS, '', {preload: preload, create: create, update: update}); 
 
-      /* CORE EDITOR FUNCTIONS */
+      /* CORE EDITOR FUNCTIONS (GUI) */
       function preload() {
         editor.load.image('highlight', '../assets/highlight.png');
         editor.load.image('cursor', '../assets/cursor.png');
@@ -22,6 +22,7 @@ var app = angular.module('EditorApp', [])
       var saveKey;
       var prevSaveDown = false;
       var filename;
+      var level;
 
       function create() {
         // init grid
@@ -119,14 +120,15 @@ var app = angular.module('EditorApp', [])
         // get filename and level number
         if (!filename) {
           filename = prompt('What do you want to name the file? (Exclude file extension.)');
-          var level = prompt('What level will this be (int)?');
           filename = filename.replace(/\W/g, '');
           filename += '.json';
-          // don't save if no filename or level int was given
+          // don't save if no filename given
           if (!filename) {
             alert('File was not saved.');
             return;
           }
+          level = prompt('What level will this be (int)?');
+          // don't save if level is invalid
           if (level === NaN || level === null) {
             alert('Must enter integer for level number.  File not saved.');
             return;

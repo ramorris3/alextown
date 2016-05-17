@@ -23,7 +23,7 @@ router.post('/save', function(req, res) {
   var levelData = {};
   levelData.level = req.body.level;
   levelData.data = req.body.data;
-  console.log('levelData: \n' + JSON.stringify(levelData, null, 2));
+  console.log('levelData:\n' + JSON.stringify(levelData, null, 2));
   // write the levelData to the file
   fs.writeFile(filepath, JSON.stringify(levelData, null, 2), function(err) {
       if(err) {

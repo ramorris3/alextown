@@ -13,6 +13,7 @@ var app = angular.module('EditorApp', [])
         editor.load.image('cursor', '../assets/cursor.png');
         editor.load.image('stageRight', '../assets/stage_right.png');
         editor.load.image('stageLeft', '../assets/stage_left.png');
+        editor.load.bitmapFont('carrier_command', '../assets/carrier_command.png', '../assets/carrier_command.xml');
 
         // enemies
         editor.load.spritesheet('chomper', '../assets/chomper_2.png', 24, 36);
@@ -32,6 +33,7 @@ var app = angular.module('EditorApp', [])
       var level;
       var viewFrame = 0;
       var maxFrames = 20;
+      var frameText;
 
       function create() {
         // init world
@@ -58,6 +60,10 @@ var app = angular.module('EditorApp', [])
         editor.physics.enable(stageRight, Phaser.Physics.ARCADE);
         editor.physics.enable(stageLeft, Phaser.Physics.ARCADE);
 
+        // init HUD text
+        frameText = editor.add.bitmapText(10, 10, 'carrier_command', 'FRAME: ' + viewFrame + '/' + maxFrames, 20);
+        frameText.fixedToCamera = true;
+
         // init hotkey controls
         controlKey = editor.input.keyboard.addKey(Phaser.Keyboard.CONTROL);
         saveKey = editor.input.keyboard.addKey(Phaser.Keyboard.S);
@@ -82,12 +88,13 @@ var app = angular.module('EditorApp', [])
 
         // update the GUI sprites and functionality based on hover
         // default
-        if (!highlight.alive) {
-          highlight.revive();
-        }
         cursor.clickAction = function() {
           placeCreature();
         };
+        // if done scrolling, show highlight again
+        if (!highlight.alive && editor.camera.x == viewFrame * editor.width) {
+          highlight.revive();
+        }
         // hovering over right-arrow
         editor.physics.arcade.overlap(cursor, stageRight, function() {
           highlight.kill(); // hide highlight
@@ -139,10 +146,23 @@ var app = angular.module('EditorApp', [])
           highlight.x = cGridLoc.x * tileSize;
           highlight.y = cGridLoc.y * tileSize;
         }
+
+        // keep highlight in view
+        if (highlight.x < editor.camera.x) {
+          highlight.x = editor.camera.x;
+        } else if (highlight.x > editor.camera.x + editor.camera.width - tileSize) {
+          highlight.x = editor.camera.x + editor.camera.width - tileSize;
+        }
+        if (highlight.y < 0) { // camera only moves horizontally
+          highlight.y = 0;
+        } else if (highlight.y > editor.height - tileSize) {
+          highlight.y = editor.height - tileSize;
+        }
       }
 
       // places a creature at the current highlight gridloc
       function placeCreature() {
+        if (!highlight.alive) return;
         gridLoc = getGridLocation(highlight.x, highlight.y);
         if (grid[gridLoc.x][gridLoc.y] === '0') {
           // place chomper on grid model
@@ -164,12 +184,14 @@ var app = angular.module('EditorApp', [])
         if (viewFrame > maxFrames) {
           viewFrame = maxFrames;
         }
+        frameText.text = 'FRAME: ' + viewFrame + '/' + maxFrames;
       }
       function scrollLeft() {
         viewFrame--;
         if (viewFrame < 0) {
           viewFrame = 0;
         }
+        frameText.text = 'FRAME: ' + viewFrame + '/' + maxFrames;
       }
 
       // saves the grid to a .json file - evoked by Ctrl + S

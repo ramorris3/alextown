@@ -1,0 +1,3 @@
+<div ng-show="getFlashMessage().visible" class="row">
+  <p class="flash-text" ng-style="{ 'background-color': getFlashMessage().color }">{{ getFlashMessage().message }} <a href="#" ng-click="hideFlashMessage()">&times;</a></p>
+</div>

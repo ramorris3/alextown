@@ -11,11 +11,11 @@ var port;
 
 if (process.argv[2]) {
   if (process.argv[2] === 'editor') {
-    app.use(express.static('editor'));
+    app.use(express.static('client/editor'));
     port = 2000;
   }
 } else {
-  app.use(express.static('public'));
+  app.use(express.static('client/game'));
   port = 3000;
 }
 

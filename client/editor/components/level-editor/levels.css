@@ -1,13 +1,3 @@
-body, html {
-  font-family: sans-serif;
-  font-weight: 300;
-  font-size: 32px;
-}
-
-p {
-  padding: 10px 0px 10px 0px;
-}
-
 .flash-text {
   color: white;
   text-align: center;
@@ -25,18 +15,6 @@ p {
   text-decoration: none;
   color: white;
   font-weight: bold;
-}
-
-div {
-  overflow: scroll;
-}
-
-.center {
-  text-align: center;
-}
-
-#main-frame canvas {
-  cursor: none;
 }
 
 .settings-frame {

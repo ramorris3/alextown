@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Level Editor</title>
+  <link rel="shortcut icon" href="../favicon.png" />
+  <!-- Bootstrap and CSS -->
+  <link rel="stylesheet" href="/editor/dist/ext/components/bootstrap.min.css" type="text/css" />
+  <link rel="stylesheet" href="/editor/dist/all.min.css" type="text/css" />
+  <!-- External JS -->
+  <script src="/editor/dist/ext/phaser.min.js"></script>
+  <script src="/editor/dist/ext/angular.min.js"></script>
+  <script src="/editor/dist/ext/angular-ui-router.min.js"></script>
+  <!-- Angular app def and editor def-->
+  <script src="/editor/dist/all.min.js"></script>
+</head>
+
+<body ng-app="EditorApp">
+  <div class="container-fluid">
+    <ti-message></ti-message>
+    <ui-view></ui-view>
+  </div>
+</body>
+</html>

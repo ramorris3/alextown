@@ -1,14 +1,13 @@
-var app = angular.module('EditorApp', [])
 
-.controller('MainController', 
-  ['$http', '$scope', 'SaveService',
-    function($http, $scope, SaveService) {
+app.controller('MainController', 
+  ['$http', '$scope', 'SaveService', 'MessageService',
+    function($http, $scope, SaveService, MessageService) {
 
       var self = this;
 
       /* flash message when saving */
-      $scope.getFlashMessage = SaveService.getFlashMessage;
-      $scope.hideFlashMessage = SaveService.hideFlashMessage;
+      $scope.getFlashMessage = MessageService.getFlashMessage;
+      $scope.hideFlashMessage = MessageService.hideFlashMessage;
 
       /* SETTINGS FRAME */
       $scope.enemies = [
@@ -235,7 +234,7 @@ var app = angular.module('EditorApp', [])
           }
           level = prompt('What level will this be (int)?');
           // don't save if level is invalid
-          if (level === NaN || level === null) {
+          if (level.isNaN() || level === null) {
             alert('Must enter integer for level number.  File not saved.');
             return;
           }

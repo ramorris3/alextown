@@ -44,7 +44,7 @@ http://alextown.cmerkley.whsites.net/
      - Pattern: Straight, Burst (forward), Fan, Radius, Horizontal Double, Vertical Double, X
      - Bullet Type: Firearm, Arrow, Ice, Fire
 
- *Sprites:*
+*Sprites:*
  - For each animation:
    - Dimensions
    - Number of frames
@@ -56,7 +56,7 @@ http://alextown.cmerkley.whsites.net/
      - Melee: Duration of animation == duration of attack
      - Ranged: Each animation spawns one "shot" of bullet/bullets
 
- *Stats:*
+*Stats:*
   - Movement Speed (px per frame)
   - Attack Cooldown (frames per cooldown)
   - Damage

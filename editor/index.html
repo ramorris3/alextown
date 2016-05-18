@@ -8,11 +8,15 @@
   <script src="components/phaser.min.js"></script>
   <script src="components/angular.min.js"></script>
   <script src="editor.js"></script>
+  <script src="SaveService.js"></script>
 </head>
 
 <body ng-app="EditorApp" ng-controller="MainController">
 
   <div class="container-fluid">
+    <div ng-show="getFlashMessage().visible" class="row">
+      <p class="flash-text" ng-style="{ 'background-color': getFlashMessage().color }">{{ getFlashMessage().message }} <a href="#" ng-click="hideFlashMessage()">&times;</a></p>
+    </div>
     <div class="row">
       <p class="center">Ctrl + S to save.</p>
     </div>

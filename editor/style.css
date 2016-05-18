@@ -4,6 +4,29 @@ body, html {
   font-size: 32px;
 }
 
+p {
+  padding: 10px 0px 10px 0px;
+}
+
+.flash-text {
+  color: white;
+  text-align: center;
+  font-size: 14px;
+  font-weight: 300;
+}
+
+.flash-text a {
+  color: white;
+  float: right;
+  margin-right: 10px;
+}
+
+.flash-text a:hover {
+  text-decoration: none;
+  color: white;
+  font-weight: bold;
+}
+
 div {
   overflow: scroll;
 }

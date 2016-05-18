@@ -1,8 +1,33 @@
 var app = angular.module('EditorApp', [])
 
 .controller('MainController', 
-  ['$http', '$scope',
-    function($http, $scope) {
+  ['$http', '$scope', 'SaveService',
+    function($http, $scope, SaveService) {
+
+      var self = this;
+
+      /* flash message when saving */
+      $scope.getFlashMessage = SaveService.getFlashMessage;
+      $scope.hideFlashMessage = SaveService.hideFlashMessage;
+
+      /* SETTINGS FRAME */
+      $scope.enemies = [
+        {
+          name: 'Chomper',
+          description: 'Can\'t deal damage, but they slow on contact.'
+        },
+        {
+          name: 'Charger',
+          description: 'Temperamental enemies who will charge when in range.'
+        },
+        {
+          name: 'Rook',
+          description: 'Sharpshooters who deal damage from a distance.'
+        }
+      ];
+
+      $scope.currentEnemy = $scope.enemies[0];
+
       /* EDITOR DEF */
       var editor = new Phaser.Game(1000, 500, Phaser.CANVAS, 'main-frame', {preload: preload, create: create, update: update}); 
 
@@ -26,7 +51,7 @@ var app = angular.module('EditorApp', [])
       var cursor;
       var stageRight;
       var stageLeft;
-      var grid = [];
+      self.grid = [];
       var tileSize = 50;
       var prevMouseDown = false;
       var controlKey;
@@ -48,7 +73,7 @@ var app = angular.module('EditorApp', [])
           for (j = 0; j < editor.height; j += tileSize) {
             list.push('0');
           }
-          grid.push(list);
+          self.grid.push(list);
         }
 
         // init GUI elements
@@ -166,9 +191,9 @@ var app = angular.module('EditorApp', [])
       function placeCreature() {
         if (!highlight.alive) return;
         gridLoc = getGridLocation(highlight.x, highlight.y);
-        if (grid[gridLoc.x][gridLoc.y] === '0') {
+        if (self.grid[gridLoc.x][gridLoc.y] === '0') {
           // place chomper on grid model
-          grid[gridLoc.x][gridLoc.y] = 'Z';
+          self.grid[gridLoc.x][gridLoc.y] = 'Z';
 
           // place chomper on GUI at center of highlight
           var creature = editor.add.sprite(gridLoc.x * tileSize, gridLoc.y * tileSize, 'chomper');
@@ -216,34 +241,8 @@ var app = angular.module('EditorApp', [])
           }
         }
 
-        // request to server to save the level data
-        $http.post('api/save/stage', { "filename": filename, "level": level, "data": grid })
-          .success(function(data) {
-            console.log('got data' + JSON.stringify(data, null, 2));
-            alert('File was successfully saved: public/stages/' + filename);
-          })
-          .error(function(data) {
-            console.log('ERROR: ' + data);
-            alert('There was a problem saving the file.');
-          });
+        // save the level
+        SaveService.saveLevel(filename, level, self.grid);
       }
-
-      /* SETTINGS FRAME */
-      $scope.enemies = [
-        {
-          name: 'Chomper',
-          description: 'Can\'t deal damage, but they slow on contact.'
-        },
-        {
-          name: 'Charger',
-          description: 'Temperamental enemies who will charge when in range.'
-        },
-        {
-          name: 'Rook',
-          description: 'Sharpshooters who deal damage from a distance.'
-        }
-      ];
-
-      $scope.currentEnemy = $scope.enemies[0];
   }
 ]);

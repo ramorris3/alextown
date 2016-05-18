@@ -4,10 +4,13 @@ var app = angular.module('EditorApp', [])
   ['$http', '$scope',
     function($http, $scope) {
       /* EDITOR DEF */
-      var editor = new Phaser.Game(1000, 500, Phaser.CANVAS, '', {preload: preload, create: create, update: update}); 
+      var editor = new Phaser.Game(1000, 500, Phaser.CANVAS, 'main-frame', {preload: preload, create: create, update: update}); 
 
-      /* CORE EDITOR FUNCTIONS (GUI) */
+      /* Core editor functions (GUI) */
       function preload() {
+        // background
+        editor.load.image('floor', '../assets/editor_floor.png');
+
         // GUI elements
         editor.load.image('highlight', '../assets/highlight.png');
         editor.load.image('cursor', '../assets/cursor.png');
@@ -38,6 +41,7 @@ var app = angular.module('EditorApp', [])
       function create() {
         // init world
         editor.world.setBounds(0, 0, editor.width * maxFrames, editor.height);
+        editor.add.tileSprite(0, 0, editor.width * maxFrames, editor.height, 'floor');
         // init grid
         for (i = 0; i < editor.width * maxFrames; i += tileSize) {
           var list = [];
@@ -79,9 +83,7 @@ var app = angular.module('EditorApp', [])
 
         // update mouse cursor position
         cursor.cameraOffset.x = editor.input.mousePointer.x;
-        console.log(cursor.cameraOffset.x);
         cursor.cameraOffset.y = editor.input.mousePointer.y;
-        console.log(cursor.cameraOffset.y);
 
         // update gridLocation and visibility of grid highlight
         updateHighlight();
@@ -130,7 +132,7 @@ var app = angular.module('EditorApp', [])
         }
       }
 
-      /* HELPER METHODS */
+      /* Editor helper methods */
       function getGridLocation(cartX, cartY) {
         return {
           x: Math.floor(cartX / tileSize),
@@ -215,7 +217,7 @@ var app = angular.module('EditorApp', [])
         }
 
         // request to server to save the level data
-        $http.post('../api/save', { "filename": filename, "level": level, "data": grid })
+        $http.post('../api/save/stage', { "filename": filename, "level": level, "data": grid })
           .success(function(data) {
             console.log('got data' + JSON.stringify(data, null, 2));
             alert('File was successfully saved: public/stages/' + filename);
@@ -226,6 +228,22 @@ var app = angular.module('EditorApp', [])
           });
       }
 
+      /* SETTINGS FRAME */
+      $scope.enemies = [
+        {
+          name: 'Chomper',
+          description: 'Can\'t deal damage, but they slow on contact.'
+        },
+        {
+          name: 'Charger',
+          description: 'Temperamental enemies who will charge when in range.'
+        },
+        {
+          name: 'Rook',
+          description: 'Sharpshooters who deal damage from a distance.'
+        }
+      ];
 
+      $scope.currentEnemy = $scope.enemies[0];
   }
 ]);

@@ -1,0 +1,21 @@
+body, html {
+  font-family: sans-serif;
+  font-weight: 300;
+  font-size: 32px;
+}
+
+div {
+  overflow: scroll;
+}
+
+.center {
+  text-align: center;
+}
+
+#main-frame canvas {
+  cursor: none;
+}
+
+.settings-frame {
+  height: 500px;
+}

@@ -12,12 +12,13 @@ app.use(express.static('public'));
 var router = express.Router(); 
 
 router.get('/test', function(req, res) {
-  res.send('<h1>Hooray!  API is working.</h1>');
+  res.send('<p>Hooray!  API is working.</p>\
+    <style>body, html {padding: 20px;text-align: center; font-family: sans-serif; font-weight: 300; font-size: 48px;}</style>');
 });
 
-router.post('/save', function(req, res) {
+router.post('/save/stage', function(req, res) {
   // get the filepath
-  var filepath = 'public/stages/' + req.body.filename;
+  var filepath = 'stages/' + req.body.filename;
   console.log('saving to ' + filepath + '...');
   // create an object to save at "filepath"
   var levelData = {};

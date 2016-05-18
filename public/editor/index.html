@@ -3,26 +3,31 @@
 <head>
   <title>Level Editor</title>
   <link rel="shortcut icon" href="../favicon.png" />
+  <link rel="stylesheet" href="../components/bootstrap.min.css" type="text/css" />
+  <script src="../components/bootstrap.min.js"></script>
+  <link rel="stylesheet" href="style.css" type="text/css" />
   <script src="../components/phaser.min.js"></script>
   <script src="../components/angular.min.js"></script>
-  <script src="app.js"></script>
-  <style>
-    body, html {
-      font-family: sans-serif;
-      font-weight: 300;
-      font-size: 32px;
-    }
-    p {
-      text-align: center;
-    }
-    canvas {
-      margin: 0 auto;
-      margin-top: 20px;
-      cursor: none;
-    }
-  </style>
+  <script src="editor.js"></script>
 </head>
-<body ng-app='EditorApp' ng-controller="MainController">
-  <p>Ctrl + S to save.</p>
+
+<body ng-app="EditorApp" ng-controller="MainController">
+
+  <div class="container-fluid">
+    <div class="row">
+      <p class="center">Ctrl + S to save.</p>
+    </div>
+    <div class="row">
+      <div class="col-sm-9" id="main-frame"></div>
+      <div class="col-sm-3 settings-frame">
+       <pre ng-repeat="(name, description) in enemies">{{description}}</pre>
+       <select ng-model="currentEnemy" ng-options="enemy as enemy.name for enemy in enemies">
+       </select>
+       <pre>name: {{currentEnemy.name}}<br/>description: {{currentEnemy.description}}
+       </pre>
+      </div>
+    </div>
+  </div>
+
 </body>
 </html>

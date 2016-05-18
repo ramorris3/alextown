@@ -9,17 +9,17 @@ var app = angular.module('EditorApp', [])
       /* Core editor functions (GUI) */
       function preload() {
         // background
-        editor.load.image('floor', '../assets/editor_floor.png');
+        editor.load.image('floor', 'assets/editor_floor.png');
 
         // GUI elements
-        editor.load.image('highlight', '../assets/highlight.png');
-        editor.load.image('cursor', '../assets/cursor.png');
-        editor.load.image('stageRight', '../assets/stage_right.png');
-        editor.load.image('stageLeft', '../assets/stage_left.png');
-        editor.load.bitmapFont('carrier_command', '../assets/carrier_command.png', '../assets/carrier_command.xml');
+        editor.load.image('highlight', 'assets/highlight.png');
+        editor.load.image('cursor', 'assets/cursor.png');
+        editor.load.image('stageRight', 'assets/stage_right.png');
+        editor.load.image('stageLeft', 'assets/stage_left.png');
+        editor.load.bitmapFont('carrier_command', 'assets/carrier_command.png', 'assets/carrier_command.xml');
 
         // enemies
-        editor.load.spritesheet('chomper', '../assets/chomper_2.png', 24, 36);
+        editor.load.spritesheet('chomper', 'assets/chomper_2.png', 24, 36);
       }
 
       var highlight;
@@ -217,7 +217,7 @@ var app = angular.module('EditorApp', [])
         }
 
         // request to server to save the level data
-        $http.post('../api/save/stage', { "filename": filename, "level": level, "data": grid })
+        $http.post('api/save/stage', { "filename": filename, "level": level, "data": grid })
           .success(function(data) {
             console.log('got data' + JSON.stringify(data, null, 2));
             alert('File was successfully saved: public/stages/' + filename);

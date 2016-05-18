@@ -19,6 +19,12 @@ http://alextown.cmerkley.whsites.net/
             ///-._ _ _ _ _ _ _}^ - - - - ~                     ~--,   .-~
 ```
 
+# TO DO
+ - Implement AI for a simple enemy (prototype in sandbox)
+ - Design and implement enemy editor
+   - Save and load enemies within enemy editor
+   - Load enemies made with editor into game and level-editor
+
 # ENEMY OPTIONS
 *General:*
  - Name

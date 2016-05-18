@@ -6,13 +6,24 @@ var fs = require('fs'); // for writing to files
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
-app.use(express.static('public'));
+
+var port;
+
+if (process.argv[2]) {
+  if (process.argv[2] === 'editor') {
+    app.use(express.static('editor'));
+    port = 2000;
+  }
+} else {
+  app.use(express.static('public'));
+  port = 3000;
+}
 
 // API endpoints
 var router = express.Router(); 
 
 router.get('/test', function(req, res) {
-  res.send('<p>Hooray!  API is working.</p>\
+  res.send('<p>Hooray!  API is working!</p>\
     <style>body, html {padding: 20px;text-align: center; font-family: sans-serif; font-weight: 300; font-size: 48px;}</style>');
 });
 
@@ -39,7 +50,6 @@ router.post('/save/stage', function(req, res) {
 app.use('/api', router);
 
 // Run server
-var port = process.env.PORT || 2000;
 app.listen(port, function() {
   console.log('app listening on port ' + port + '...');
 });

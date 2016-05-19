@@ -1,3 +1,12 @@
+.level-bg {
+  min-height: 100vh;
+  background: skyblue;
+  background: -webkit-linear-gradient(skyblue, white);
+  background: -o-linear-gradient(skyblue, white);
+  background: -moz-linear-gradient(skyblue, white);
+  background: linear-gradient(skyblue, white);
+}
+
 .flash-text {
   color: white;
   text-align: center;

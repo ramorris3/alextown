@@ -10,10 +10,7 @@ p {
 
 canvas {
   cursor: none;
-}
-
-div {
-  overflow: scroll;
+  border: 5px solid white;
 }
 
 .center {

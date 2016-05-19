@@ -1,6 +1,6 @@
-app.controller('MainController', 
-  ['$http', '$scope', 'SaveService', 'MessageService',
-    function($http, $scope, SaveService, MessageService) {
+app.controller('LevelController', 
+  ['$http', '$scope', 'SaveService',
+    function($http, $scope, SaveService) {
 
       var self = this;
 
@@ -23,7 +23,7 @@ app.controller('MainController',
       $scope.currentEnemy = $scope.enemies[0];
 
       /* EDITOR DEF */
-      var editor = new Phaser.Game(1000, 500, Phaser.CANVAS, 'main-frame', {preload: preload, create: create, update: update}); 
+      var editor = new Phaser.Game(1000, 500, Phaser.CANVAS, 'level-frame', {preload: preload, create: create, update: update}); 
 
       /* Core editor functions (GUI) */
       function preload() {
@@ -229,7 +229,7 @@ app.controller('MainController',
           }
           level = prompt('What level will this be (int)?');
           // don't save if level is invalid
-          if (level.isNaN() || level === null) {
+          if (isNaN(level) || level === null) {
             alert('Must enter integer for level number.  File not saved.');
             return;
           }

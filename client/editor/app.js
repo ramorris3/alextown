@@ -1,4 +1,4 @@
-var app = angular.module('EditorApp', [ui.router])
+var app = angular.module('EditorApp', ['ui.router'])
 
 .config(function($stateProvider, $urlRouterProvider) {
 
@@ -7,6 +7,12 @@ var app = angular.module('EditorApp', [ui.router])
   $stateProvider
     .state('level', {
       url: '/level',
-      templateUrl: 'components/levels.html'
+      templateUrl: 'components/level-editor/levels.html',
+      controller: 'LevelController'
+    })
+    .state('enemy', {
+      url: '/enemy',
+      templateUrl: 'components/enemy-editor/enemies.html',
+      controller: 'EnemyController'
     });
 });

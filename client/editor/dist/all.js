@@ -1,13 +1,107 @@
+var app = angular.module('EditorApp', ['ui.router'])
 
-app.controller('MainController', 
-  ['$http', '$scope', 'SaveService', 'MessageService',
-    function($http, $scope, SaveService, MessageService) {
+.config(function($stateProvider, $urlRouterProvider) {
+
+  $urlRouterProvider.otherwise('/level');
+
+  $stateProvider
+    .state('level', {
+      url: '/level',
+      templateUrl: 'components/level-editor/levels.html',
+      controller: 'LevelController'
+    })
+    .state('enemy', {
+      url: '/enemy',
+      templateUrl: 'components/enemy-editor/enemies.html',
+      controller: 'EnemyController'
+    });
+});
+app.service('MessageService',
+  function() {
+
+    var colors = {
+      RED: '#E50000',
+      GREEN: '#198C19'
+    };
+
+    var flashMessage = {
+      visible: false,
+      message: '',
+      color: colors.GREEN
+    };
+
+    this.setFlashMessage = function(message, isBad) {
+      flashMessage.message = message;
+      flashMessage.color = isBad ? colors.RED : colors.GREEN;
+      flashMessage.visible = true; // whenever flashmessage is updated, show it
+    };
+
+    this.getFlashMessage = function() {
+      return flashMessage;
+    };
+
+    this.hideFlashMessage = function() {
+      flashMessage.visible = false;
+    };
+  });
+app.service('SaveService', [
+  '$http', 'MessageService', function($http, MessageService) {
+
+    this.saveLevel = function(filename, level, data) {
+      // request to server to save the level data
+      $http.post('api/save/stage', { 'filename': filename, 'level': level, 'data': data })
+        .success(function(data) {
+          MessageService.setFlashMessage('File was successfully saved as ~/stages/' + filename, false);
+        })
+        .error(function(data) {
+          console.log(data);
+          MessageService.setFlashMessage('Well, shoot!  Something went wrong.', true);
+        });
+    };
+
+  }
+]);
+app.controller('EnemyController',
+  ['$http', '$scope', 'SaveService',
+  function($http, $scope, SaveService) {
+
+    /* EDITOR DEF */
+    var editor = new Phaser.Game(1000, 500, Phaser.CANVAS, 'enemy-frame', {preload: preload, create: create, update: update});
+
+    function preload() {
+      editor.load.image('floor', 'assets/editor_floor.png');
+    }
+
+    function create() {
+      editor.add.tileSprite(0, 0, editor.width, editor.height, 'floor');
+    }
+
+    function update() {
+      /* nothing yet */
+    }
+
+  }
+]);
+app.controller('MessageController', [
+  '$scope', 'MessageService', 
+  function($scope, MessageService){
+    $scope.getFlashMessage = MessageService.getFlashMessage;
+    $scope.hideFlashMessage = MessageService.hideFlashMessage;
+  }
+]);
+
+app.directive('tiMessage', function() {
+  return {
+    restrict: 'E', 
+    templateUrl: 'components/flash-message/message.html',
+    controller: 'MessageController'
+  };
+});
+app.controller('LevelController', 
+  ['$http', '$scope', 'SaveService',
+    function($http, $scope, SaveService) {
 
       var self = this;
-
-      /* flash message when saving */
-      $scope.getFlashMessage = MessageService.getFlashMessage;
-      $scope.hideFlashMessage = MessageService.hideFlashMessage;
 
       /* SETTINGS FRAME */
       $scope.enemies = [
@@ -28,7 +122,7 @@ app.controller('MainController',
       $scope.currentEnemy = $scope.enemies[0];
 
       /* EDITOR DEF */
-      var editor = new Phaser.Game(1000, 500, Phaser.CANVAS, 'main-frame', {preload: preload, create: create, update: update}); 
+      var editor = new Phaser.Game(1000, 500, Phaser.CANVAS, 'level-frame', {preload: preload, create: create, update: update}); 
 
       /* Core editor functions (GUI) */
       function preload() {
@@ -234,7 +328,7 @@ app.controller('MainController',
           }
           level = prompt('What level will this be (int)?');
           // don't save if level is invalid
-          if (level.isNaN() || level === null) {
+          if (isNaN(level) || level === null) {
             alert('Must enter integer for level number.  File not saved.');
             return;
           }

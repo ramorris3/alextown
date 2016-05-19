@@ -18,16 +18,22 @@ gulp.task('lint', function() {
     .pipe(jshint.reporter('default'));
 });
 
-// clean previously built files
-gulp.task('clean', function() {
-  return gulp.src(['client/editor/dist/*.css', 'client/editor/dist/*.js'])
+// clean previously built JS files
+gulp.task('cleanJS', function() {
+  return gulp.src('client/editor/dist/*.js')
+    .pipe(rm());
+});
+
+// clean CSS
+gulp.task('cleanCSS', function() {
+  return gulp.src('client/editor/dist/*.css')
     .pipe(rm());
 });
 
 // minify and concat css
 gulp.task('css', function() {
   return gulp.src(editorCSS)
-    .pipe(rename('all.min.css'))
+    .pipe(concat('all.min.css'))
     .pipe(minifyCSS())
     .pipe(gulp.dest('./client/editor/dist'));
 });
@@ -44,9 +50,12 @@ gulp.task('scripts', function() {
 
 // watch for file changes
 gulp.task('watch', function() {
-  gulp.watch(editorJS,['lint', 'clean', 'scripts']);
-  gulp.watch(editorCSS, ['clean', 'css']);
+  gulp.watch(editorJS,['lint', 'cleanJS', 'scripts']);
+  gulp.watch(editorCSS, ['cleanCSS', 'css']);
 });
+
+// clean all built files
+gulp.task('clean', ['cleanJS', 'cleanCSS']);
 
 // default task builds and watches
 gulp.task('default', ['lint', 'clean', 'css', 'scripts', 'watch']);

@@ -9,7 +9,7 @@ app.controller('MessageController', [
 app.directive('tiMessage', function() {
   return {
     restrict: 'E', 
-    templateUrl: '../flash-message/message.html',
-    Controller: 'MessageController'
+    templateUrl: 'components/flash-message/message.html',
+    controller: 'MessageController'
   };
 });

@@ -3,19 +3,28 @@
 <head>
   <title>Level Editor</title>
   <link rel="shortcut icon" href="../favicon.png" />
-  <!-- Bootstrap and CSS -->
-  <link rel="stylesheet" href="/dist/ext/bootstrap.min.css" type="text/css" />
+  <!-- custom CSS -->
   <link rel="stylesheet" href="/dist/all.min.css" type="text/css" />
   <!-- External JS -->
   <script src="/dist/ext/phaser.min.js"></script>
   <script src="/dist/ext/angular.min.js"></script>
   <script src="/dist/ext/angular-ui-router.min.js"></script>
-  <!-- Angular app def and editor def-->
+  <!-- My angular app def -->
   <script src="/dist/all.min.js"></script>
 </head>
 
 <body ng-app="EditorApp">
+  <!-- Flash Messages -->
   <ti-message></ti-message>
+
+  <!-- Navigation -->
+  <div class="nav">
+    <div class="nav-buttons-wrap">
+      <a ui-sref="level">Level Editor</a><a ui-sref="enemy">Enemy Editor</a>
+    </div>
+  </div>
+
+  <!-- Main Content -->
   <ui-view></ui-view>
 </body>
 </html>

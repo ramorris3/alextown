@@ -1,5 +1,6 @@
 .enemy-bg {
-  min-height: 100vh;
+  padding: 40px;
+  padding-bottom: 200px;
   color: white;
   background: purple;
   background: -webkit-linear-gradient(purple, #B80048);

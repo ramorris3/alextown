@@ -319,13 +319,20 @@ app.controller('LevelController',
         // get filename and level number
         if (!filename) {
           filename = prompt('What do you want to name the file? (Exclude file extension.)');
-          filename = filename.replace(/\W/g, '');
-          filename += '.json';
+
           // don't save if no filename given
           if (!filename) {
             alert('File was not saved.');
             return;
           }
+
+          filename = filename.replace(/\W/g, '');
+          if (filename === '') {
+            alert('You must include at least one alphanumeric character in the filename.  File was not saved.');
+            return;
+          }
+
+          filename += '.json';
           level = prompt('What level will this be (int)?');
           // don't save if level is invalid
           if (isNaN(level) || level === null) {

@@ -1,5 +1,6 @@
 .level-bg {
-  min-height: 100vh;
+  padding: 40px;
+  padding-bottom: 200px;
   background: skyblue;
   background: -webkit-linear-gradient(skyblue, white);
   background: -o-linear-gradient(skyblue, white);
@@ -7,25 +8,12 @@
   background: linear-gradient(skyblue, white);
 }
 
-.flash-text {
-  color: white;
-  text-align: center;
-  font-size: 14px;
-  font-weight: 300;
-}
-
-.flash-text a {
-  color: white;
-  float: right;
-  margin-right: 10px;
-}
-
-.flash-text a:hover {
-  text-decoration: none;
-  color: white;
-  font-weight: bold;
-}
-
 .settings-frame {
-  height: 500px;
+  position: relative;
+  margin: 0 auto;
+  padding: 40px;
+  height: 510px;
+  width: 930px;
+  background: white;
+  border-radius: 5px;
 }

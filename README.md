@@ -28,13 +28,14 @@
 # ENEMY OPTIONS
 *General:*
  - Name
- - Class: Infantry, Marksman, Scout, Elemental Ice, Elemental Fire
+ - Class: Infantry, Marksman, Scout
  - Description
  - Portrait
 
 *Movement:*
  - Speed (px per frame)
  - Follow, Avoid, or March
+ - Flinch when hit? (bool)
 
 *Attack:*
  - Attack Speed (frames per cooldown)

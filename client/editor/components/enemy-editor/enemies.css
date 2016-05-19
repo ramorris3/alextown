@@ -8,3 +8,11 @@
   background: -moz-linear-gradient(purple, #B80048);
   background: linear-gradient(purple, #B80048);
 }
+
+.enemy-bg .settings-frame {
+  color: black;
+}
+
+.preview-img {
+  max-height: 150px;
+}

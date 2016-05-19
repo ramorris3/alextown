@@ -1,5 +1,14 @@
+app.service('GUIDService', function() {
+  this.getGUID() {
+    var S4 = function() {
+      return (((1+Math.random())*0x10000)|0).toString(16).substring(1);
+    };
+    return (S4()+S4()+"-"+S4()+"-"+S4()+"-"+S4()+"-"+S4()+S4()+S4());
+  }
+});
 var app = angular.module('EditorApp', ['ui.router'])
 
+// ui-router configuration
 .config(function($stateProvider, $urlRouterProvider) {
 
   $urlRouterProvider.otherwise('/level');
@@ -15,6 +24,77 @@ var app = angular.module('EditorApp', ['ui.router'])
       templateUrl: 'components/enemy-editor/enemies.html',
       controller: 'EnemyController'
     });
+})
+
+/* 
+  File reader for image processing.
+  Code credit: http://odetocode.com/blogs/scott/archive/2013/07/03/building-a-filereader-service-for-angularjs-the-service.aspx
+*/
+.factory('FileReader', [
+  '$q', '$log',
+  function($q, $log) {
+
+    var onLoad = function(reader, deferred, scope) {
+      return function() {
+        scope.$apply(function() {
+          deferred.resolve(reader.result);
+        });
+      };
+    };
+
+    var onError = function(reader, deferred, scope) {
+      return function() {
+        scope.$apply(function() {
+          deferred.reject(reader.result);
+        });
+      };
+    };
+
+    var onProgress = function(reader, scope) {
+      return function(event) {
+        scope.$broadcast('fileProgress',
+          {
+            total: event.total,
+            loaded: event.loaded
+          });
+      };
+    };
+
+    var getReader = function(deferred, scope) {
+      var reader = new FileReader();
+      reader.onload = onLoad(reader, deferred, scope);
+      reader.onerror = onError(reader, deferred, scope);
+      reader.onprogress = onProgress(reader, scope);
+      return reader;
+    };
+
+    var readAsDataUrl = function(file, scope) {
+      var deferred = $q.defer();
+
+      var reader = getReader(deferred, scope);
+      reader.readAsDataURL(file);
+
+      return deferred.promise;
+    };
+
+    return {
+      readAsDataUrl: readAsDataUrl
+    };
+  }
+]);
+
+app.service('EnemyService', function() {
+
+  var enemy = {
+    pic: null
+  };
+
+  self.saveEnemy = function(data) {
+    enemy.pic = data.pic;
+    console.log('enemy pic: ');
+    console.log(enemy.pic);
+  };
+
 });
 app.service('MessageService',
   function() {
@@ -44,8 +124,10 @@ app.service('MessageService',
       flashMessage.visible = false;
     };
   });
+// This service handles all "save" requests to the API
 app.service('SaveService', [
-  '$http', 'MessageService', function($http, MessageService) {
+  '$http', 'MessageService',
+  function($http, MessageService) {
 
     this.saveLevel = function(filename, level, data) {
       // request to server to save the level data
@@ -62,26 +144,70 @@ app.service('SaveService', [
   }
 ]);
 app.controller('EnemyController',
-  ['$http', '$scope', 'SaveService',
-  function($http, $scope, SaveService) {
+  ['$http', '$scope', 'EnemyService', 'FileReader',
+  function($http, $scope, EnemyService, FileReader) {
+
+    $scope.enemyData = {};
+    $scope.enemy = {};
+
+    // NEED A SAVE BUTTON
+    // when you save, the image will go to the DB
+    // Then, you'll restart the canvas
+    // preload will then make an API request for the image.
+    // (NEED AN API ROUTE FOR THAT PART)
 
     /* EDITOR DEF */
     var editor = new Phaser.Game(1000, 500, Phaser.CANVAS, 'enemy-frame', {preload: preload, create: create, update: update});
 
     function preload() {
       editor.load.image('floor', 'assets/editor_floor.png');
+      if ($scope.enemyData.pic) {
+        editor.load.image('floor', $scope.enemyData.pic);
+      }
     }
 
     function create() {
       editor.add.tileSprite(0, 0, editor.width, editor.height, 'floor');
+      if ($scope.enemyData.pic) {
+        $scope.enemy = editor.add.sprite(0, 0, $scope.enemyData.pic);
+      }
     }
 
     function update() {
       /* nothing yet */
     }
 
+    /* VIEW METHODS */
+    $scope.getFile = function() {
+      $scope.progress = 0;
+      FileReader.readAsDataUrl($scope.file, $scope)
+        .then(function(result) {
+          $scope.previewSrc = result;
+          $scope.enemyData.pic = result;
+          reloadState();
+        });
+    };
+
+    function reloadState() {
+      editor.state.start(editor.state.current);
+    }
   }
-]);
+])
+
+/* 
+  Directive for file uploads
+  Credit: http://plnkr.co/edit/y5n16v?p=preview
+*/
+.directive('ngFileSelect', function() {
+  return {
+    link: function($scope, el) {
+      el.bind('change', function(e){
+        $scope.file = (e.srcElement || e.target).files[0];
+        $scope.getFile();
+      });
+    }
+  };
+});
 app.controller('MessageController', [
   '$scope', 'MessageService', 
   function($scope, MessageService){
@@ -160,6 +286,7 @@ app.controller('LevelController',
         // init world
         editor.world.setBounds(0, 0, editor.width * maxFrames, editor.height);
         editor.add.tileSprite(0, 0, editor.width * maxFrames, editor.height, 'floor');
+
         // init grid
         for (i = 0; i < editor.width * maxFrames; i += tileSize) {
           var list = [];

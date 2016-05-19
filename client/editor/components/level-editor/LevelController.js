@@ -61,6 +61,7 @@ app.controller('LevelController',
         // init world
         editor.world.setBounds(0, 0, editor.width * maxFrames, editor.height);
         editor.add.tileSprite(0, 0, editor.width * maxFrames, editor.height, 'floor');
+
         // init grid
         for (i = 0; i < editor.width * maxFrames; i += tileSize) {
           var list = [];

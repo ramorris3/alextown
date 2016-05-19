@@ -1,6 +1,11 @@
 <div class="enemy-bg">
   <div id="enemy-frame" class="phaser-frame"></div>
   <div class="settings-frame">
-    <pre>This is where the settings will go</pre>
+
+    <!-- TESTING -->
+    <input type="file" ng-file-select="onFileSelect($files)" /><br />
+    <img class="preview-img" ng-src="{{ previewSrc }}" />
+    <progress ng-show="{{ progress }}" value="{{ progress }}"></progress>
+
   </div> 
 </div>

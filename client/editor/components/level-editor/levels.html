@@ -1,9 +1,18 @@
 <div class="level-bg">
   <div id="level-frame" class="phaser-frame"></div>
   <div class="settings-frame">
+    <!-- FULL LIST -->
     <!-- <p ng-repeat="(name, description) in enemies">{{description}}</p> -->
-    <select ng-model="currentEnemy" ng-options="enemy as enemy.name for enemy in enemies">
+
+    <!-- SELECT ONE ENEMY -->
+    <!-- <select ng-model="currentEnemy" ng-options="enemy as enemy.name for enemy in enemies">
     </select>
-    <p>name: {{currentEnemy.name}}<br/>description: {{currentEnemy.description}}</p>
+    <p>name: {{currentEnemy.name}}<br/>description: {{currentEnemy.description}}</p> -->
+
+    <!-- Saving -->
+    <div class="save-btn-wrap">
+      <span class="light-btn" ng-click="cancelSave()">Cancel</span>
+      <span class="dark-btn" ng-click="saveLevel()">Save Level</span>
+    </div>
   </div>
 </div>

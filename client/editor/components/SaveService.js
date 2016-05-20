@@ -7,19 +7,23 @@ app.service('SaveService', [
       // request to server to save the level data
       $http.post('api/save/stage', { 'filename': filename, 'level': level, 'data': data })
         .success(function(data) {
-          MessageService.setFlashMessage('File was successfully saved as ~/stages/' + filename, false);
+          MessageService.setFlashMessage(data.message, false);
         })
         .error(function(data) {
-          console.log(data);
-          MessageService.setFlashMessage('Well, shoot!  Something went wrong.', true);
+          MessageService.setFlashMessage(data.message, true);
         });
     };
 
-    var guid = function() {
-      var S4 = function() {
-        return (((1+Math.random())*0x10000)|0).toString(16).substring(1);
-      };
-      return (S4()+S4()+"-"+S4()+"-"+S4()+"-"+S4()+"-"+S4()+S4()+S4());
+    this.saveEnemy = function(enemyData, callback) {
+      // save the image...
+      $http.post('api/save/img', enemyData)
+        .success(function(data) {
+          MessageService.setFlashMessage(data.message, false);
+          callback(data);
+        })
+        .error(function(data) {
+          MessageService.setFlashMessage(data.message, true);
+        });
     };
 
   }

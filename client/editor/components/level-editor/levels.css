@@ -7,13 +7,3 @@
   background: -moz-linear-gradient(skyblue, white);
   background: linear-gradient(skyblue, white);
 }
-
-.settings-frame {
-  position: relative;
-  margin: 0 auto;
-  padding: 40px;
-  height: 510px;
-  width: 930px;
-  background: white;
-  border-radius: 5px;
-}

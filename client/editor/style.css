@@ -35,6 +35,41 @@ body, html {
   color: #34444f;
 }
 
+.dark-btn, .light-btn {
+  display: inline-block;
+  font-weight: 300;
+  font-size: 18px;
+  text-decoration: none;
+  margin-right: 5px;
+  margin-left: 5px;
+  border-radius: 5px;
+  padding: 10px;
+  cursor: pointer;
+  border: solid 3px #34444f;
+}
+
+.dark-btn {
+  color: white;
+  background-color: #34444f;
+}
+
+.light-btn {
+  color: #34444f;
+  background-color: white;
+}
+
+.dark-btn:hover {
+  background-color: white;
+  color: #34444f;
+  cursor: pointer;
+}
+
+.light-btn:hover {
+  background-color: #34444f;
+  color: white;
+  cursor: pointer;
+}
+
 p {
   padding: 10px 0px 10px 0px;
 }
@@ -51,6 +86,23 @@ canvas {
   cursor: none;
 }
 
+.settings-frame {
+  position: relative;
+  margin: 0 auto;
+  padding: 40px;
+  height: 510px;
+  width: 930px;
+  background: white;
+  border-radius: 5px;
+}
+
+.save-btn-wrap {
+  position: absolute;
+  top: 40px;
+  right: 40px;
+}
+
 .center {
   text-align: center;
 }
+

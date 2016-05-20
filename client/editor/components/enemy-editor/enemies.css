@@ -14,5 +14,6 @@
 }
 
 .preview-img {
-  max-height: 150px;
+  height: 50px;
+  width: auto;
 }

@@ -2,10 +2,17 @@
   <div id="enemy-frame" class="phaser-frame"></div>
   <div class="settings-frame">
 
-    <!-- TESTING -->
-    <input type="file" ng-file-select="onFileSelect($files)" /><br />
+    <!-- Image uploading -->
+    <input type="file" name="img" ng-file-select="onFileSelect($files)" /><br />
     <img class="preview-img" ng-src="{{ previewSrc }}" />
     <progress ng-show="{{ progress }}" value="{{ progress }}"></progress>
+    <a ng-show="src.length > 0" ng-href="{{ src }}" target="_blank">Click here to see the uploaded file</a>
+
+    <!-- Saving -->
+    <div class="save-btn-wrap">
+      <span class="light-btn" ng-click="cancelSave()">Cancel</span>
+      <span class="dark-btn" ng-click="saveEnemy()">Save Enemy</span>
+    </div>
 
   </div> 
 </div>

@@ -8,11 +8,10 @@
     - See `package.json` in the root folder for more details.
 4. `gulp build` 
     - This runs the JS linter/minifier.  It concatenates all javascript and CSS files in client/editor, minifies them, and puts them each one file: `dist/all.min.js` and `dist/all.min.css`
-    - If you want to run/test the project while you are writing code, just type `gulp` instead of `gulp build`.  `gulp build` builds the dist files and quits, but `gulp` builds the files, and then rebuilds them whenever it detects a change in your code.
+    - If you want to run/test the project while you are writing code, just type `gulp` instead of `gulp build`, and then leave it running in the terminal.  `gulp build` builds the dist files and quits, but `gulp` builds the files, and then rebuilds them whenever it detects a change in your code.
     - For more details, look at `gulpfile.js` in the root folder.
-5. Open a new terminal tab and cd to project root
-6. Type `npm run editor` to spin up the editor server
-7. Go to `localhost:2000` in your browser and have at it!
+5. Type `npm run editor` to spin up the editor server
+6. Go to `localhost:2000` in your browser and have at it!
 
 [https://monosnap.com/file/7Na7FkHMq4UfPdMeu66j2I4f2YRAPN]
 

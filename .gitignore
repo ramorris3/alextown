@@ -1,5 +1,4 @@
 .DS_Store
 .idea/
 node_modules/
-client/editor/dist/*.js
-client/editor/dist/*.css
+client/editor/dist/

@@ -1,5 +1,27 @@
 # TRACE ITALIENNE
 
+# TO RUN THE PROJECT
+1. Download and install node (https://nodejs.org/en/)
+2. Open terminal and cd to project root folder (trace-italienne/):
+3. `npm install`
+    - This should install all the packages you need to run the `gulp` builder (next step) and to run the local server.
+    - See `package.json` in the root folder for more details.
+4. `gulp build` 
+    - This runs the JS linter/minifier.  It concatenates all javascript and CSS files in client/editor, minifies them, and puts them each one file: `dist/all.min.js` and `dist/all.min.css`
+    - If you want to run/test the project while you are writing code, just type `gulp` instead of `gulp build`.  `gulp build` builds the dist files and quits, but `gulp` builds the files, and then rebuilds them whenever it detects a change in your code.
+    - For more details, look at `gulpfile.js` in the root folder.
+5. Open a new terminal tab and cd to project root
+6. Type `npm run editor` to spin up the editor server
+7. Go to `localhost:2000` in your browser and have at it!
+
+[https://monosnap.com/file/7Na7FkHMq4UfPdMeu66j2I4f2YRAPN]
+
+*Notes:*
+- Images are uploaded to ~/uploads/ within the project.
+- Levels are saved to ~/stages/
+- The Enemy editor takes png files.  We should only be using png's anyway, because they support transparency
+- I didn't bullet-proof input, so don't QA this thing.  Just run some basic tests to check functionality, watch the console to make sure you're not getting any errors, etc.
+
 ```
                         ^    ^
                        / \  //\

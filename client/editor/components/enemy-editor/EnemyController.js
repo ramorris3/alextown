@@ -1,13 +1,51 @@
 app.controller('EnemyController',
-  ['$http', '$scope', 'FileReader', 'SaveService', 
-  function($http, $scope, FileReader, SaveService) {
+  ['$http', '$scope', 'FileReader', 'EnemyService', 'SaveService', 
+  function($http, $scope, FileReader, EnemyService, SaveService) {
 
     //////////////////
     // INITIAL VARS //
     //////////////////
 
+    $scope.moveOptions = [
+      {
+        name: 'March',
+        func: function(enemySprite, playerSprite) {
+          enemySprite.body.velocity.x = -enemySprite.moveSpeed;
+        }
+      },
+      {
+        name: 'Follow',
+        func: function(enemySprite, playerSprite) {
+          // get distance to playerSprite
+          var distance = enemySprite.game.math.distance(enemySprite.x, enemySprite.y, playerSprite.x, playerSprite.y);
+          // if more than 200px away, follow
+          if (distance > 200) {
+            // Calculate the angle to the target
+            var rotation = enemySprite.game.math.angleBetween(enemySprite.x, enemySprite.y, playerSprite.x, playerSprite.y);
+            // set velocity vector based on rotation and speed
+            enemySprite.body.velocity.setTo(
+                Math.cos(rotation) * enemySprite.moveSpeed,
+                Math.sin(rotation) * enemySprite.moveSpeed
+            );
+          } else {
+            enemySprite.body.velocity.x = -enemySprite.moveSpeed;
+          }
+        }
+      }
+    ];
+
     $scope.enemyData = {
-      imgSrc: null
+      stats: {
+        health: 3,
+        moveSpeed: 200
+      },
+      sprites: {
+        moveSprite: {
+          src: 'api/uploads/skull-test.png'
+          // height, width
+        }
+      },
+      move: $scope.moveOptions[0].func
     };
 
 
@@ -17,56 +55,34 @@ app.controller('EnemyController',
 
     var editor = new Phaser.Game(1000, 500, Phaser.CANVAS, 'enemy-frame', {preload: preload, create: create, update: update});
 
+
+    /* EDITOR VARS */
+    var player;
+    var enemy = EnemyService.createEnemyFromData($scope.enemyData, editor);
+
     function preload() {
+      // background tiles
       editor.load.image('floor', 'assets/editor_floor.png');
 
-      if ($scope.enemyData.imgSrc) {
-        editor.load.image('enemy', $scope.enemyData.imgSrc);
-        $scope.enemyData.preloaded = true;
-      }
+      // player
+      editor.load.image('player', 'api/uploads/smile.png');
+      // load enemy assets
+      enemy.preload();
     }
-
-    /////////////////
-    // EDITOR VARS //
-    /////////////////
-
-    var enemy;
 
     function create() {
       // lay tiles
       editor.add.tileSprite(0, 0, editor.width, editor.height, 'floor');
 
-      // init enemy if one has been uploaded
-      if ($scope.enemyData.preloaded) {
-        enemy = editor.add.sprite(editor.world.centerX, editor.world.centerY, 'enemy');
-        enemy.xSpeed = 3;
-        enemy.ySpeed = 3;
-      }
+      player = editor.add.sprite(50, editor.world.centerY, 'player');
+
+      // create enemy sprite at given positions
+      enemy.create(editor.width, editor.world.randomY);
     }
 
     function update() {
-      if (enemy) {
-        // move enemy
-        enemy.x += enemy.xSpeed;
-        enemy.y += enemy.ySpeed;
-
-        // keep enemy inside editor
-        if (enemy.x < 0) {
-          enemy.xSpeed *= -1;
-          enemy.x = 0;
-        } else if (enemy.x > editor.width - enemy.width) {
-          enemy.xSpeed *= -1;
-          enemy.x = editor.width - enemy.width;
-        }
-
-        if (enemy.y < 0) {
-          enemy.ySpeed *= -1;
-          enemy.y = 0;
-        } else if (enemy.y > editor.height - enemy.height) {
-          enemy.ySpeed *= -1;
-          enemy.y = editor.height - enemy.height;
-        }
-      }
+      // update enemy state
+      enemy.update(player);
     }
 
 
@@ -107,11 +123,10 @@ app.controller('EnemyController',
     // OTHER HELPER METHODS //
     //////////////////////////
 
-    function reloadEditorState() {
-      $scope.enemyData.preloaded = false;
-      enemy = null;
+    $scope.reloadEditorState = function() {
+      enemy = EnemyService.createEnemyFromData($scope.enemyData, editor);
       editor.state.start(editor.state.current);
-    }
+    };
 
     function resetToDefault() {
       $scope.enemyData = {
@@ -123,10 +138,6 @@ app.controller('EnemyController',
   }
 ])
 
-/* 
-  Directive for file uploads
-  Credit: http://plnkr.co/edit/y5n16v?p=preview
-*/
 .directive('ngFileSelect', function() {
   return {
     link: function($scope, el) {

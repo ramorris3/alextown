@@ -113,14 +113,11 @@ router.get('/uploads/:filename', function(req, res) {
 
 app.use('/api', router);
 
+
 //////////////////////
 // HELPER FUNCTIONS //
 //////////////////////
 
-/*
-  Creates a unique GUID for filenames, id's, etc.
-  code credit: http://stackoverflow.com/questions/105034/create-guid-uuid-in-javascript
-*/
 function guid() {
   var S4 = function() {
     return (((1+Math.random())*0x10000)|0).toString(16).substring(1);
@@ -128,10 +125,6 @@ function guid() {
   return (S4()+S4()+"-"+S4()+"-"+S4()+"-"+S4()+"-"+S4()+S4()+S4());
 }
 
-/*
-  Image processing function
-  code credit: http://stackoverflow.com/questions/20267939/nodejs-write-base64-image-file 
-*/
 function decodeBase64Image(dataString) {
   var matches = dataString.match(/^data:([A-Za-z-+\/]+);base64,(.+)$/),
     response = {};

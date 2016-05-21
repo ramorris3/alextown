@@ -8,6 +8,17 @@
     <progress ng-show="{{ progress }}" value="{{ progress }}"></progress>
     <a ng-show="src.length > 0" ng-href="{{ src }}" target="_blank">Click here to see the uploaded file</a>
 
+    <!-- Enemy speed stat -->
+    <p>Enter enemy speed here</p><input ng-model="enemyData.stats.moveSpeed" type="text">
+
+    <!-- Enemy movement script -->
+    <p>Choose enemy movement behavior</p>
+    <select ng-model="enemyData.move" ng-options="moveOption.func as moveOption.name for moveOption in moveOptions">
+    </select>
+    <p>{{enemyData.move}}</p>
+
+    <span class="dark-btn" ng-click="reloadEditorState()">Reload</span>
+
     <!-- Saving -->
     <div class="save-btn-wrap">
       <span class="light-btn" ng-click="cancelSave()">Cancel</span>

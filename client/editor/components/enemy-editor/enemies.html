@@ -2,27 +2,73 @@
   <div id="enemy-frame" class="phaser-frame"></div>
   <div class="settings-frame">
 
-    <!-- Image uploading -->
-    <input type="file" name="img" ng-file-select="onFileSelect($files)" /><br />
-    <img class="preview-img" ng-src="{{ previewSrc }}" />
-    <progress ng-show="{{ progress }}" value="{{ progress }}"></progress>
-    <a ng-show="src.length > 0" ng-href="{{ src }}" target="_blank">Click here to see the uploaded file</a>
+    <!-- Reload button -->
+    <div class="btn-row">
+      <div class="btn-wrap-left">
+        <span class="dark-btn" ng-click="reloadEditorState()">Reload</span>
+      </div>
+      <div class="btn-wrap-right">
+        <span class="dark-btn" ng-click="cancelSave()">Cancel</span>
+        <span class="dark-btn" ng-click="saveEnemy()">Save Enemy</span>
+      </div>
+    </div>
 
-    <!-- Enemy speed stat -->
-    <p>Enter enemy speed here</p><input ng-model="enemyData.stats.moveSpeed" type="text">
+    <!-- Image uploading -->
+    <div class="settings-row">
+      <input type="file" name="img" ng-file-select="onFileSelect($files)" /><br />
+      <img class="preview-img" ng-src="{{ previewSrc }}" />
+      <progress ng-show="{{ progress }}" value="{{ progress }}"></progress>
+      <a ng-show="src.length > 0" ng-href="{{ src }}" target="_blank">Click here to see the uploaded file</a>
+    </div>
+
+    <!-- General info -->
+    <div class="settings-row">
+      <p class="form-header">Enemy background</p>
+      <form>
+        <p><!-- name -->
+          <label for="name">Name:</label>
+          <input ng-model="enemyData.name" id="name" type="text" />
+        </p>
+        <p><!-- description -->
+          <label for="description">Description:</label>
+          <input ng-model="enemyData.description" id="description" type="text" />
+        </p>
+      </form>
+    </div>
+
+    <!-- Stats -->
+    <div class="settings-row">
+      <p class="form-header">Stats</p>
+      <form>
+        <p><!-- health -->
+          <label for="health">Health:</label>
+          <input ng-model="enemyData.stats.health" id="health" type="text" />
+        </p>
+        <p><!-- Damage -->
+          <label for="damage">Damage:</label>
+          <input ng-model="enemyData.stats.damage" id="damage" type="text" />
+        </p>
+      </form>
+    </div>
 
     <!-- Enemy movement script -->
-    <p>Choose enemy movement behavior</p>
-    <select ng-model="enemyData.move" ng-options="moveOption.func as moveOption.name for moveOption in moveOptions">
-    </select>
-    <p>{{enemyData.move}}</p>
+    <div class="settings-row">
+      <p class="form-header">movement</p>
+      <form>
+        <p><!-- movement speed -->
+          <label for="moveSpeed">Speed:</label>
+          <input ng-model="enemyData.stats.moveSpeed" id="moveSpeed" type="text" />
+        </p>
+        <p><!-- Type -->
+          <label for="move-type">Type:</label>
+          <select ng-model="enemyData.move" ng-options="moveOption.func as moveOption.name for moveOption in moveOptions" id="move-type">
+          </select>
+        </p>
+      </form>
+    </div>
 
-    <span class="dark-btn" ng-click="reloadEditorState()">Reload</span>
-
-    <!-- Saving -->
-    <div class="save-btn-wrap">
-      <span class="light-btn" ng-click="cancelSave()">Cancel</span>
-      <span class="dark-btn" ng-click="saveEnemy()">Save Enemy</span>
+    <div class="settings-row">
+    <pre>{{ enemyData | json }}</pre>
     </div>
 
   </div> 

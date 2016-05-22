@@ -8,7 +8,7 @@ app.controller('EnemyController',
 
     $scope.moveOptions = [
       {
-        name: 'March',
+        name: 'Default',
         func: function(enemySprite, playerSprite) {
           enemySprite.body.velocity.x = -enemySprite.moveSpeed;
         }
@@ -35,9 +35,12 @@ app.controller('EnemyController',
     ];
 
     $scope.enemyData = {
+      name: 'Grumpus',
+      description: 'Enter enemy description or tagline here.',
       stats: {
         health: 3,
-        moveSpeed: 200
+        moveSpeed: 200,
+        damage: 1
       },
       sprites: {
         moveSprite: {

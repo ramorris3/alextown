@@ -51,7 +51,7 @@
 # ENEMY OPTIONS
 *General:*
  - Name
- - Class: Infantry, Marksman, Scout
+ - Class: Infantry, Marksman, Scout (?)
  - Description
  - Portrait
 

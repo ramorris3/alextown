@@ -35,7 +35,7 @@ body, html {
   color: #34444f;
 }
 
-.dark-btn, .light-btn {
+.dark-btn {
   display: inline-block;
   font-weight: 300;
   font-size: 18px;
@@ -45,33 +45,17 @@ body, html {
   border-radius: 5px;
   padding: 10px;
   cursor: pointer;
-  border: solid 3px #34444f;
-}
-
-.dark-btn {
   color: white;
-  background-color: #34444f;
-}
-
-.light-btn {
-  color: #34444f;
-  background-color: white;
+  background: #B80048;
 }
 
 .dark-btn:hover {
-  background-color: white;
-  color: #34444f;
+  background: #980068;
   cursor: pointer;
-}
-
-.light-btn:hover {
-  background-color: #34444f;
-  color: white;
-  cursor: pointer;
-}
-
-p {
-  padding: 10px 0px 10px 0px;
+  background: -webkit-linear-gradient(#B80048, #980068);
+  background: -o-linear-gradient(#B80048, #980068);
+  background: -moz-linear-gradient(#B80048, #980068);
+  background: linear-gradient(#B80048, #980068);
 }
 
 .phaser-frame {
@@ -90,19 +74,77 @@ canvas {
   position: relative;
   margin: 0 auto;
   padding: 40px;
-  height: 510px;
+  min-height: 500px;
   width: 930px;
-  background: white;
+  background: #34444f;
   border-radius: 5px;
+  background: white;
 }
 
-.save-btn-wrap {
-  position: absolute;
-  top: 40px;
-  right: 40px;
+.btn-row {
+  width: 100%;
+  min-height: 47px;
+}
+
+.btn-wrap-right {
+  float: right;
+}
+
+.btn-wrap-left {
+  float: left;
+}
+
+.btn-wrap-right span, .btn-wrap-left span {
+  display: inline-block;
 }
 
 .center {
   text-align: center;
+}
+
+.settings-row {
+  width: 930px;
+  margin-top: 10px;
+  margin-bottom: 10px;
+  border-bottom: 1px solid #EFF0F1;
+  padding: 20px 0px;
+  color: #6a737c;
+}
+
+.form-header {
+  font-weight: 400;
+  text-transform: uppercase;
+  width: 100%;
+}
+
+form {
+  width: 470px;
+  display: inline-block;
+}
+
+form p {
+  line-height: 33px;
+}
+
+form input {
+  float: right;
+  width: 365px;
+  padding: 8px;
+  border-radius: 3px;
+}
+
+form select {
+  float: right;
+  width: 385px;
+  border-radius: 3px;
+  height: 33px;
+}
+
+input {
+  color: #6a737c;
+}
+
+pre {
+  white-space: pre-wrap;
 }
 

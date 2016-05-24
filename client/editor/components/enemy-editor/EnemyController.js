@@ -2,61 +2,64 @@ app.controller('EnemyController',
   ['$http', '$scope', 'FileReader', 'EnemyService', 'PlayerService', 'SaveService', 
   function($http, $scope, FileReader, EnemyService, PlayerService, SaveService) {
 
-    //////////////////
-    // INITIAL VARS //
-    //////////////////
+    ////////////////
+    // MODEL VARS //
+    ////////////////
 
     $scope.moveOptions = [
       {
-        name: 'Default',
-        func: function(enemySprite, playerSprite) {
-          enemySprite.animations.play('run');
-          console.log('x: ' + enemySprite.x + ', y: ' + enemySprite.y);
-
-          enemySprite.body.velocity.x = -enemySprite.moveSpeed;
-        }
+        key: 'DEFAULT',
+        name: 'Default'
       },
       {
-        name: 'Follow',
-        func: function(enemySprite, playerSprite) {
-          enemySprite.animations.play('run');
+        key: 'FOLLOW',
+        name: 'Follow'
+      }
+    ];
 
-          // get distance to playerSprite
-          var distance = enemySprite.game.math.distance(enemySprite.x, enemySprite.y, playerSprite.x, playerSprite.y);
-          // if more than 4px away, follow
-          if (distance > 4) {
-            // Calculate the angle to the target
-            var rotation = enemySprite.game.math.angleBetween(enemySprite.x, enemySprite.y, playerSprite.x, playerSprite.y);
-            // set velocity vector based on rotation and speed
-            enemySprite.body.velocity.setTo(
-                Math.cos(rotation) * enemySprite.moveSpeed,
-                Math.sin(rotation) * enemySprite.moveSpeed
-            );
-          } else {
-            enemySprite.body.velocity.x = -enemySprite.moveSpeed;
-          }
-        }
+    $scope.attackOptions = [
+      {
+        key: 'MELEE',
+        name: 'Charge (melee)',
+        duration: 120 // num frames
+      },
+      {
+        key: 'RANGED',
+        name: 'Fire (ranged)',
+        cooldown: 60, // num frames
+        bullet: [
+          'api/uploads/red-bullet.png',
+          'api/uploads/blue-bullet.png'
+        ],
+        bulletSpeed: 350 // px per second
       }
     ];
 
     $scope.enemyData = {
-      name: 'Grumpus',
-      description: 'Enter enemy description or tagline here.',
-      stats: {
-        health: 3,
-        moveSpeed: 200,
-        damage: 1
-      },
-      sprites: {
-        src: 'api/uploads/grumpus.png',
-        moveSprite: {
-          height: 36,
-          width: 24,
-          frames: [0,1,2,3,4,5],
-          fps: 10
-        }
-      },
-      move: $scope.moveOptions[1].func
+      // General
+      name: 'Morio',
+      description: 'every gam need a morio',
+      // stats
+      health: 3,
+      damage: 1,
+      // movement
+      moveSpeed: 200,
+      movePattern: $scope.moveOptions[0];
+      // animations
+      mainSprite: 'api/uploads/morio.png', // main sheet contains move, attack, and damaged animations
+      mainSpriteHeight: 50,
+      mainSpriteWidth: 50,
+      moveFrames: [0,1],
+      moveFps: 10,
+      attackFrames: [2,3],
+      attackFps: 10,
+      damageFrames: [4,5],
+      damageFps: 10,
+      deathSprite: 'api/uploads/explode.png', // death sheet contains only death animation
+      deathSpriteHeight: 50,
+      deathSpriteWidth: 50,
+      // attack patterns
+      attackPattern: $scope.attackOptions[1]
     };
 
     $scope.playerData = {

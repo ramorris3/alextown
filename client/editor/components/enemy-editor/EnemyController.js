@@ -1,6 +1,6 @@
 app.controller('EnemyController',
-  ['$http', '$scope', 'FileReader', 'EnemyService', 'SaveService', 
-  function($http, $scope, FileReader, EnemyService, SaveService) {
+  ['$http', '$scope', 'FileReader', 'EnemyService', 'PlayerService', 'SaveService', 
+  function($http, $scope, FileReader, EnemyService, PlayerService, SaveService) {
 
     //////////////////
     // INITIAL VARS //
@@ -10,16 +10,21 @@ app.controller('EnemyController',
       {
         name: 'Default',
         func: function(enemySprite, playerSprite) {
+          enemySprite.animations.play('run');
+          console.log('x: ' + enemySprite.x + ', y: ' + enemySprite.y);
+
           enemySprite.body.velocity.x = -enemySprite.moveSpeed;
         }
       },
       {
         name: 'Follow',
         func: function(enemySprite, playerSprite) {
+          enemySprite.animations.play('run');
+
           // get distance to playerSprite
           var distance = enemySprite.game.math.distance(enemySprite.x, enemySprite.y, playerSprite.x, playerSprite.y);
-          // if more than 200px away, follow
-          if (distance > 200) {
+          // if more than 4px away, follow
+          if (distance > 4) {
             // Calculate the angle to the target
             var rotation = enemySprite.game.math.angleBetween(enemySprite.x, enemySprite.y, playerSprite.x, playerSprite.y);
             // set velocity vector based on rotation and speed
@@ -43,12 +48,32 @@ app.controller('EnemyController',
         damage: 1
       },
       sprites: {
+        src: 'api/uploads/grumpus.png',
         moveSprite: {
-          src: 'api/uploads/skull-test.png'
-          // height, width
+          height: 36,
+          width: 24,
+          frames: [0,1,2,3,4,5],
+          fps: 10
         }
       },
-      move: $scope.moveOptions[0].func
+      move: $scope.moveOptions[1].func
+    };
+
+    $scope.playerData = {
+      stats: {
+        health: 5,
+        moveSpeed: 300,
+        damage: 1
+      },
+      sprites: {
+        src: 'api/uploads/hydra_run.png',
+        moveSprite: {
+          height: 32,
+          width: 32,
+          frames: [0,1,2,3],
+          fps: 10
+        }
+      }
     };
 
 
@@ -60,32 +85,41 @@ app.controller('EnemyController',
 
 
     /* EDITOR VARS */
-    var player;
-    var enemy = EnemyService.createEnemyFromData($scope.enemyData, editor);
+    var tiles;
+    var scrollSpeed = -75;
+    var player = PlayerService.createPlayerFromData($scope.playerData, editor);
+    var enemy = EnemyService.createEnemyFromData($scope.enemyData, editor, true);
 
     function preload() {
       // background tiles
       editor.load.image('floor', 'assets/editor_floor.png');
 
       // player
-      editor.load.image('player', 'api/uploads/smile.png');
+      player.preload();
       // load enemy assets
       enemy.preload();
     }
 
     function create() {
       // lay tiles
-      editor.add.tileSprite(0, 0, editor.width, editor.height, 'floor');
+      tiles = editor.add.tileSprite(0, 0, editor.width, editor.height, 'floor');
 
-      player = editor.add.sprite(50, editor.world.centerY, 'player');
+      // create player sprite
+      player.create(50, editor.world.centerY); // x, y
 
-      // create enemy sprite at given positions
-      enemy.create(editor.width, editor.world.randomY);
+      // create enemy sprite at given positions (y is between 100 and 400)
+      enemy.create(editor.width, Math.floor(Math.random() * (400 - 50 + 1)) + 50);
     }
 
     function update() {
+      // scroll bg
+      tiles.autoScroll(scrollSpeed, 0);
+
+      // update player
+      player.update();
+
       // update enemy state
-      enemy.update(player);
+      enemy.update(player.sprite);
     }
 
 
@@ -127,7 +161,7 @@ app.controller('EnemyController',
     //////////////////////////
 
     $scope.reloadEditorState = function() {
-      enemy = EnemyService.createEnemyFromData($scope.enemyData, editor);
+      enemy = EnemyService.createEnemyFromData($scope.enemyData, editor, true);
       editor.state.start(editor.state.current);
     };
 

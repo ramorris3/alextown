@@ -53,7 +53,7 @@
  - Name
  - Class: Infantry, Marksman, Scout (?)
  - Description
- - Portrait
+ - Portrait (?)
 
 *Movement:*
  - Speed (px per frame)

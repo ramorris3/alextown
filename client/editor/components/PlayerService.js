@@ -2,70 +2,69 @@ app.service('PlayerService', function() {
 
   var self = this;
 
-  self.createPlayerFromData = function(playerData, game, testing) {
-    var data = angular.copy(playerData);
 
-    var player = {
-      sprite: null
-    };
-    var cursors;
+  ///////////////////////
+  // PLAYER OBJECT DEF //
+  ///////////////////////
+
+  self.Player = function(game, x, y, data, testing) {
+    this.game = game;
+
+    // create sprite
+    Phaser.Sprite.call(this, this.game, x, y, data.mainSprite);
+    // init animations
+    this.animations.add('move', data.moveFrames, data.moveFps);
+    // this.animations.add(attack)
+    // this.animations.add(damage)
+
+    // physics
+    this.game.physics.enable(this, Phaser.Physics.ARCADE);
+    this.body.collideWorldBounds = true;
+    this.anchor.setTo(0.5, 0.5);
+    this.body.drag.setTo(1450, 1450); // x, y
+
     // movement constants
-    var maxSpeed = playerData.stats.moveSpeed;
-    var diagSpeed = maxSpeed / Math.sqrt(2);
-    var acceleration = 1500;
-    var drag = 1450;
+    this.maxSpeed = data.moveSpeed;
+    this.diagSpeed = this.maxSpeed / Math.sqrt(2);
+    this.acceleration = 1500;
 
-    player.preload = function() {
-      // load player moveSprite
-      game.load.spritesheet('player', data.sprites.src, data.sprites.moveSprite.width, data.sprites.moveSprite.height);
-    };
+    // controls
+    this.cursors = this.game.input.keyboard.createCursorKeys();
+  
+    // add to game
+    this.game.add.existing(this);
+  };
 
-    player.create = function(x, y) {
-      this.sprite = game.add.sprite(x, y, 'player');
-      this.sprite.animations.add('run', data.sprites.moveSprite.frames, data.sprites.moveSprite.fps, true);
+  self.Player.prototype = Object.create(Phaser.Sprite.prototype);
+  self.Player.prototype.constructor = self.Player;
 
-      game.physics.enable(this.sprite, Phaser.Physics.ARCADE);
-      this.sprite.body.collideWorldBounds = true;
-      this.sprite.body.drag.setTo(drag, drag); // x, y
-      this.sprite.anchor.setTo(0.5,0.5);
+  self.Player.prototype.update = function() {
+    this.animations.play('move');
 
-      this.sprite.health = data.stats.health;
-      this.sprite.moveSpeed = data.stats.moveSpeed;
-      this.sprite.damage = data.stats.damage;
+    // set up min and max mvt speed
+    if ((this.cursors.left.isDown || this.cursors.right.isDown) &&
+       (this.cursors.up.isDown || this.cursors.down.isDown)) {
+       this.body.maxVelocity.setTo(this.diagSpeed, this.diagSpeed); // x, y
+    } else {
+       this.body.maxVelocity.setTo(this.maxSpeed, this.maxSpeed); // x, y
+    }
 
-      cursors = game.input.keyboard.createCursorKeys();
-    };
+    // movement and controls
+    if (this.cursors.left.isDown) {
+     this.body.acceleration.x = -this.acceleration;
+    } else if (this.cursors.right.isDown) {
+       this.body.acceleration.x = this.acceleration;
+    } else {
+       this.body.acceleration.x = 0;
+    }
 
-    player.update = function() {
-      this.sprite.animations.play('run');
-
-      // set up min and max mvt speed
-      if ((cursors.left.isDown || cursors.right.isDown) &&
-         (cursors.up.isDown || cursors.down.isDown)) {
-         this.sprite.body.maxVelocity.setTo(diagSpeed, diagSpeed); // x, y
-      } else {
-         this.sprite.body.maxVelocity.setTo(maxSpeed, maxSpeed); // x, y
-      }
-
-      // movement and controls
-      if (cursors.left.isDown) {
-       this.sprite.body.acceleration.x = -acceleration;
-      } else if (cursors.right.isDown) {
-         this.sprite.body.acceleration.x = acceleration;
-      } else {
-         this.sprite.body.acceleration.x = 0;
-      }
-
-      if (cursors.up.isDown) {
-       this.sprite.body.acceleration.y = -acceleration;
-      } else if (cursors.down.isDown) {
-       this.sprite.body.acceleration.y = acceleration;
-      } else {
-       this.sprite.body.acceleration.y = 0;
-      }
-    };
-
-    return player;
+    if (this.cursors.up.isDown) {
+     this.body.acceleration.y = -this.acceleration;
+    } else if (this.cursors.down.isDown) {
+     this.body.acceleration.y = this.acceleration;
+    } else {
+     this.body.acceleration.y = 0;
+    }
   };
 
 });

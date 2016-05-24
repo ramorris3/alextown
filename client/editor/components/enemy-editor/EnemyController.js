@@ -88,21 +88,30 @@ app.controller('EnemyController',
       attackPattern: $scope.attackOptions[1]
     };
 
-    $scope.playerData = {
-      stats: {
-        health: 5,
-        moveSpeed: 300,
-        damage: 1
-      },
-      sprites: {
+    $scope.playerAssets = {
+      main: {
+        key: 'player',
         src: 'api/uploads/grumpus.png',
-        moveSprite: {
-          height: 36,
-          width: 24,
-          frames: [0,1,2,3,4,5],
-          fps: 10
-        }
+        width: 24,
+        height: 36
+      },
+      death: {
+        // later
       }
+    };
+
+    $scope.playerData = {
+      // general
+      name: 'Ghost Player',
+      description: 'This is just a test',
+      // stats
+      health: 5,
+      damage: 1,
+      moveSpeed: 300,
+      // animations
+      mainSprite: $scope.playerAssets.main.key,
+      moveFrames: [0,1,2,3,4,5],
+      moveFps: 10
     };
 
 
@@ -116,14 +125,16 @@ app.controller('EnemyController',
     /* EDITOR VARS */
     var tiles;
     var scrollSpeed = -75;
-    var player = PlayerService.createPlayerFromData($scope.playerData, editor);
+    var player;
+    var enemy;
 
     function preload() {
       // background tiles
       editor.load.image('floor', 'assets/editor_floor.png');
 
       // player
-      player.preload();
+      var playerMain = $scope.playerAssets.main;
+      editor.load.spritesheet(playerMain.key, playerMain.src, playerMain.width, playerMain.height);
 
       // load dynamic enemy assets
       var enemyMain = $scope.enemyAssets.main;
@@ -140,11 +151,11 @@ app.controller('EnemyController',
       tiles = editor.add.tileSprite(0, 0, editor.width, editor.height, 'floor');
 
       // create player sprite
-      player.create(50, editor.world.centerY); // x, y
+      player = new PlayerService.Player(editor, 50, editor.world.centerY, angular.copy($scope.playerData), true);
 
       // create enemy sprite
       var y = Math.floor(Math.random() * (400 - 50 + 1)) + 50;
-      new EnemyService.Enemy(editor, editor.width, y, angular.copy($scope.enemyData), player.sprite, true); // game, x, y, data, playerSprite, testing
+      enemy = new EnemyService.Enemy(editor, editor.width, y, angular.copy($scope.enemyData), player, true); // game, x, y, data, playerSprite, testing
     }
 
     function update() {

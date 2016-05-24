@@ -42,11 +42,11 @@
       <form>
         <p><!-- health -->
           <label for="health">Health:</label>
-          <input ng-model="enemyData.stats.health" id="health" type="text" />
+          <input ng-model="enemyData.health" id="health" type="text" />
         </p>
         <p><!-- Damage -->
           <label for="damage">Damage:</label>
-          <input ng-model="enemyData.stats.damage" id="damage" type="text" />
+          <input ng-model="enemyData.damage" id="damage" type="text" />
         </p>
       </form>
     </div>
@@ -57,11 +57,11 @@
       <form>
         <p><!-- movement speed -->
           <label for="moveSpeed">Speed:</label>
-          <input ng-model="enemyData.stats.moveSpeed" id="moveSpeed" type="text" />
+          <input ng-model="enemyData.moveSpeed" id="moveSpeed" type="text" />
         </p>
         <p><!-- Type -->
           <label for="move-type">Type:</label>
-          <select ng-model="enemyData.move" ng-options="moveOption.func as moveOption.name for moveOption in moveOptions" id="move-type">
+          <select ng-model="enemyData.movePattern" ng-options="moveOption as moveOption.name for moveOption in moveOptions" id="move-type">
           </select>
         </p>
       </form>

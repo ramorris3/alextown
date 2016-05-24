@@ -27,6 +27,7 @@ app.service('PlayerService', function() {
       game.physics.enable(this.sprite, Phaser.Physics.ARCADE);
       this.sprite.body.collideWorldBounds = true;
       this.sprite.body.drag.setTo(drag, drag); // x, y
+      this.sprite.anchor.setTo(0.5,0.5);
 
       this.sprite.health = data.stats.health;
       this.sprite.moveSpeed = data.stats.moveSpeed;
@@ -63,8 +64,6 @@ app.service('PlayerService', function() {
        this.sprite.body.acceleration.y = 0;
       }
     };
-
-    
 
     return player;
   };

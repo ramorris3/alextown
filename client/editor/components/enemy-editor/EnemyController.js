@@ -17,20 +17,30 @@ app.controller('EnemyController',
       }
     ];
 
+    $scope.bulletOptions = [
+      {
+        name: 'Blue',
+        src: 'api/uploads/blue-bullet.png'
+      },
+      {
+        name: 'Red',
+        src: 'api/uploads/red-bullet.png'
+      }
+    ];
+
     $scope.attackOptions = [
       {
         key: 'MELEE',
         name: 'Charge (melee)',
+        cooldown: 300, // num frames
+        chargeSpeed: 500, // px per frame
         duration: 120 // num frames
       },
       {
         key: 'RANGED',
         name: 'Fire (ranged)',
         cooldown: 60, // num frames
-        bullet: [
-          'api/uploads/red-bullet.png',
-          'api/uploads/blue-bullet.png'
-        ],
+        bullet: $scope.bulletOptions[1],
         bulletSpeed: 350 // px per second
       }
     ];
@@ -38,13 +48,13 @@ app.controller('EnemyController',
     $scope.enemyData = {
       // General
       name: 'Morio',
-      description: 'every gam need a morio',
+      description: 'every game needs a morio',
       // stats
       health: 3,
       damage: 1,
       // movement
       moveSpeed: 200,
-      movePattern: $scope.moveOptions[0];
+      movePattern: $scope.moveOptions[1],
       // animations
       mainSprite: 'api/uploads/morio.png', // main sheet contains move, attack, and damaged animations
       mainSpriteHeight: 50,
@@ -69,11 +79,11 @@ app.controller('EnemyController',
         damage: 1
       },
       sprites: {
-        src: 'api/uploads/hydra_run.png',
+        src: 'api/uploads/grumpus.png',
         moveSprite: {
-          height: 32,
-          width: 32,
-          frames: [0,1,2,3],
+          height: 36,
+          width: 24,
+          frames: [0,1,2,3,4,5],
           fps: 10
         }
       }
@@ -84,14 +94,14 @@ app.controller('EnemyController',
     // EDITOR DEF AND METHODS //
     ////////////////////////////
 
-    var editor = new Phaser.Game(1000, 500, Phaser.CANVAS, 'enemy-frame', {preload: preload, create: create, update: update});
+    var editor = new Phaser.Game(1000, 500, Phaser.CANVAS, 'enemy-frame', { preload: preload, create: create, update: update, render: render });
 
 
     /* EDITOR VARS */
     var tiles;
     var scrollSpeed = -75;
     var player = PlayerService.createPlayerFromData($scope.playerData, editor);
-    var enemy = EnemyService.createEnemyFromData($scope.enemyData, editor, true);
+    var enemy = EnemyService.deserializeEnemyData($scope.enemyData, editor, true);
 
     function preload() {
       // background tiles
@@ -104,6 +114,9 @@ app.controller('EnemyController',
     }
 
     function create() {
+      // allow timing for debug output
+      editor.time.advancedTiming = true;
+
       // lay tiles
       tiles = editor.add.tileSprite(0, 0, editor.width, editor.height, 'floor');
 
@@ -111,7 +124,9 @@ app.controller('EnemyController',
       player.create(50, editor.world.centerY); // x, y
 
       // create enemy sprite at given positions (y is between 100 and 400)
-      enemy.create(editor.width, Math.floor(Math.random() * (400 - 50 + 1)) + 50);
+      enemy.create(editor.width, // x
+        Math.floor(Math.random() * (400 - 50 + 1)) + 50,// y
+        player.sprite); // target (playerSprite)
     }
 
     function update() {
@@ -123,6 +138,10 @@ app.controller('EnemyController',
 
       // update enemy state
       enemy.update(player.sprite);
+    }
+
+    function render() {
+      editor.debug.text(editor.time.fps + ' fps', 36, 36); 
     }
 
 
@@ -164,7 +183,7 @@ app.controller('EnemyController',
     //////////////////////////
 
     $scope.reloadEditorState = function() {
-      enemy = EnemyService.createEnemyFromData($scope.enemyData, editor, true);
+      enemy = EnemyService.deserializeEnemyData($scope.enemyData, editor, true);
       editor.state.start(editor.state.current);
     };
 

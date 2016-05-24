@@ -45,6 +45,25 @@ app.controller('EnemyController',
       }
     ];
 
+    // used for preload
+    $scope.enemyAssets = {
+      // mainsprite = move, attack, damaged
+      main: {
+        key: 'morio',
+        src: 'api/uploads/morio.png',
+        width: 50,
+        height: 50
+      },
+      // deathsprite = death sequence: no collisions or logic
+      death: {
+        key: 'explode',
+        src: 'api/uploads/explode.png',
+        width: 50,
+        height: 50
+      }
+    };
+
+    // used for sprite initialization
     $scope.enemyData = {
       // General
       name: 'Morio',
@@ -56,18 +75,15 @@ app.controller('EnemyController',
       moveSpeed: 200,
       movePattern: $scope.moveOptions[1],
       // animations
-      mainSprite: 'api/uploads/morio.png', // main sheet contains move, attack, and damaged animations
-      mainSpriteHeight: 50,
-      mainSpriteWidth: 50,
+      mainSprite: $scope.enemyAssets.main.key, // main sheet contains move, attack, and damaged animations
       moveFrames: [0,1],
       moveFps: 10,
       attackFrames: [2,3],
       attackFps: 10,
       damageFrames: [4,5],
       damageFps: 10,
-      deathSprite: 'api/uploads/explode.png', // death sheet contains only death animation
-      deathSpriteHeight: 50,
-      deathSpriteWidth: 50,
+      deathSprite: $scope.enemyAssets.death.key, // death sheet contains only death animation
+      deathFps: 10,
       // attack patterns
       attackPattern: $scope.attackOptions[1]
     };
@@ -101,7 +117,6 @@ app.controller('EnemyController',
     var tiles;
     var scrollSpeed = -75;
     var player = PlayerService.createPlayerFromData($scope.playerData, editor);
-    var enemy = EnemyService.deserializeEnemyData($scope.enemyData, editor, true);
 
     function preload() {
       // background tiles
@@ -109,8 +124,12 @@ app.controller('EnemyController',
 
       // player
       player.preload();
-      // load enemy assets
-      enemy.preload();
+
+      // load dynamic enemy assets
+      var enemyMain = $scope.enemyAssets.main;
+      var enemyDeath = $scope.enemyAssets.death;
+      editor.load.spritesheet(enemyMain.key, enemyMain.src, enemyMain.width, enemyMain.height);
+      editor.load.spritesheet(enemyDeath.key, enemyDeath.src, enemyDeath.width, enemyDeath.height);
     }
 
     function create() {
@@ -123,10 +142,9 @@ app.controller('EnemyController',
       // create player sprite
       player.create(50, editor.world.centerY); // x, y
 
-      // create enemy sprite at given positions (y is between 100 and 400)
-      enemy.create(editor.width, // x
-        Math.floor(Math.random() * (400 - 50 + 1)) + 50,// y
-        player.sprite); // target (playerSprite)
+      // create enemy sprite
+      var y = Math.floor(Math.random() * (400 - 50 + 1)) + 50;
+      new EnemyService.Enemy(editor, editor.width, y, angular.copy($scope.enemyData), player.sprite, true); // game, x, y, data, playerSprite, testing
     }
 
     function update() {
@@ -137,7 +155,6 @@ app.controller('EnemyController',
       player.update();
 
       // update enemy state
-      enemy.update(player.sprite);
     }
 
     function render() {
@@ -183,16 +200,8 @@ app.controller('EnemyController',
     //////////////////////////
 
     $scope.reloadEditorState = function() {
-      enemy = EnemyService.deserializeEnemyData($scope.enemyData, editor, true);
       editor.state.start(editor.state.current);
     };
-
-    function resetToDefault() {
-      $scope.enemyData = {
-        preloaded: false
-      };
-      reloadEditorState();
-    }
 
   }
 ])

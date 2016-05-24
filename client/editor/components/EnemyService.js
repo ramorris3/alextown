@@ -2,115 +2,93 @@ app.service('EnemyService', function() {
 
   var self = this;
 
-
   //////////////////////
   // ENEMY OBJECT DEF //
   //////////////////////
 
-  self.deserializeEnemyData = function(enemyData, game, testing) {
-    var data = angular.copy(enemyData);
-    var key = randomKey();
-    var deathKey = randomKey();
+  /* CONSTRUCTOR/CREATE FUNCTION */
+  self.Enemy = function(game, x, y, data, playerSprite, testing) {
+    this.game = game;
 
-    var Enemy = function(data, game, testing) {
-    };
+    // create sprite
+    Phaser.Sprite.call(this, this.game, x, y, data.mainSprite);
+    // init animations
+    this.animations.add('move', data.moveFrames, data.moveFps);
+    this.animations.add('attack', data.attackFrames, data.attackFps);
+    this.animations.add('damage', data.damageFrames, data.damageFps);
 
-    Enemy.prototype.constructor = Enemy;
+    // init target
+    this.target = playerSprite;
 
-    /* CORE GAME FUNCTIONS */
-    Enemy.prototype.preload = function() {
-      // load main sprite (contains all "alive" animations)
-      game.load.spritesheet(key, data.mainSprite, data.mainSpriteWidth, data.mainSpriteHeight);
+    // init physics
+    this.game.physics.enable(this, Phaser.Physics.ARCADE);
+    this.anchor.setTo(0.5, 0.5);
 
-      // load death sprite (contains death animation)
-      game.load.spritesheet(deathKey, data.deathSprite, data.deathSpriteWidth, data.deathSpriteHeight);
-    };
+    // stats
+    this.health = data.health;
+    this.damage = data.damage;
+    this.moveSpeed = data.moveSpeed;
 
-    Enemy.prototype.create = function(x, y, playerSprite) {
-      // create sprite
-      this.sprite = game.add.sprite(x, y, key);
-      // init animations
-      this.sprite.animations.add('move', data.moveFrames, data.moveFps);
-      this.sprite.animations.add('attack', data.attackFrames, data.attackFps);
-      this.sprite.animations.add('damage', data.damageFrames, data.damageFps);
+    // config
+    this.movePattern = data.movePattern.key;
+    this.testing = testing;
+    if (!this.testing) {
+      this.collideWorldBounds = true;
+    }
 
-      console.log(this.sprite.animations);
-
-      // init target
-      this.target = playerSprite;
-
-      // init physics
-      game.physics.enable(this.sprite, Phaser.Physics.ARCADE);
-      this.sprite.anchor.setTo(0.5, 0.5);
-      if (!testing) {
-        this.sprite.collideWorldBounds = true;
-      }
-
-      // stats
-      this.sprite.health = data.health;
-      this.sprite.damage = data.damage;
-      this.sprite.moveSpeed = data.moveSpeed;
-
-      // init state function
-      this.currentState = this.moveState;
-    };
-
-    /* STATE IMPLEMENTATIONS */
-    Enemy.prototype.update = function() {
-      // play animation
-      this.sprite.animations.play('move');
-
-      // DEFAULT MARCHING MOVEMENT
-      if (data.movePattern.key === 'DEFAULT') {
-        this.sprite.body.velocity.setTo(-this.sprite.moveSpeed, 0);
-
-      // FOLLOWING MOVEMENT
-      } else if (data.movePattern.key === 'FOLLOW') {
-        // get distance to playerSprite
-        var distance = this.sprite.game.math.distance(this.sprite.x, this.sprite.y, this.target.x, this.target.y);
-
-        // if less than 100px away or to the right, chase
-        if (distance < 100 || this.sprite.x > this.target.x) {
-          // Calculate the angle to the target
-          var rotation = this.sprite.game.math.angleBetween(this.sprite.x, this.sprite.y, this.target.x, this.target.y);
-          // set velocity vector based on rotation and speed
-          this.sprite.body.velocity.setTo(
-              Math.cos(rotation) * this.sprite.moveSpeed,
-              Math.sin(rotation) * this.sprite.moveSpeed
-          );
-        } else { // leave the player alone and continue march
-          this.sprite.body.velocity.setTo(-this.sprite.moveSpeed, 0);
-        }
-
-      // ERROR
-      } else {
-        throw new Error('Move-pattern key unrecognized.');
-      }
-
-      // ATTACKING
-      // if attackPattern.key === 'MELEE', check range.  
-        // If in range, check if cooldown is inactive and check duration clock
-          // if cooldown is inactive, change animation to 'attack', increase move speed, and generate dust balls by feet. 
-
-      // if attackPattern.key === 'RANGED', check cooldown
-        // if cooldown is inactive, change animation to 'attack', generate dust balls, and create a bullet
-
-      // TESTING
-      if (testing && this.sprite.x < -this.sprite.width) { // off screen to the left
-        this.sprite.x = game.width + this.sprite.width;
-      }
-    };
-
-    return new Enemy(data, game, testing);
+    // add to game
+    this.game.add.existing(this);
   };
 
+  self.Enemy.prototype = Object.create(Phaser.Sprite.prototype);
+  self.Enemy.prototype.constructor = self.Enemy;
 
-  ////////////////////
-  // HELPER METHODS //
-  ////////////////////
+  /* UPDATE FUNCTION */
+  self.Enemy.prototype.update = function() {
+    // play moving animation by default
+    this.animations.play('move');
 
-  function randomKey() {
-    return Math.random().toString(36).substring(7);
-  }
+    // DEFAULT MARCHING MOVEMENT
+    if (this.movePattern === 'DEFAULT') {
+      this.body.velocity.setTo(-this.moveSpeed, 0);
+
+    // FOLLOWING MOVEMENT
+    } else if (this.movePattern === 'FOLLOW') {
+      // get distance to playerSprite
+      var distance = this.game.math.distance(this.x, this.y, this.target.x, this.target.y);
+
+      // if less than 100px away or to the right, chase
+      if (distance < 100 || this.x > this.target.x) {
+        // Calculate the angle to the target
+        var rotation = this.game.math.angleBetween(this.x, this.y, this.target.x, this.target.y);
+        // set velocity vector based on rotation and speed
+        this.body.velocity.setTo(
+            Math.cos(rotation) * this.moveSpeed,
+            Math.sin(rotation) * this.moveSpeed
+        );
+      } else { // leave the player alone and continue march
+        this.body.velocity.setTo(-this.moveSpeed, 0);
+      }
+
+    // MOVE DATA ERROR
+    } else {
+      throw new Error('Move-pattern key unrecognized.');
+    }
+
+    // ATTACKING
+    // if attackPattern.key === 'MELEE', check range.  
+      // If in range, check if cooldown is inactive and check duration clock
+        // if cooldown is inactive, change animation to 'attack', increase move speed, and generate dust balls by feet. 
+
+    // if attackPattern.key === 'RANGED', check cooldown
+      // if cooldown is inactive, change animation to 'attack', generate dust balls, and create a bullet
+
+    // TESTING
+    if (this.testing && this.x < -this.width) { // off screen to the left
+      this.x = this.game.width + this.width;
+    }
+  };
+
+  console.log('done with service init');
 
 });

@@ -5,18 +5,12 @@ app.controller('EnemyController',
     ////////////////
     // MODEL VARS //
     ////////////////
+    $scope.getMoveOptions = EnemyService.getMoveOptions;
 
-    $scope.moveOptions = [
-      {
-        key: 'DEFAULT',
-        name: 'Default'
-      },
-      {
-        key: 'FOLLOW',
-        name: 'Follow'
-      }
-    ];
-
+    /*
+      Enemy data and options are $scope properties,
+      because they are accessible and mutable via UI
+    */
     $scope.bulletOptions = [
       {
         name: 'Blue',
@@ -28,92 +22,105 @@ app.controller('EnemyController',
       }
     ];
 
-    $scope.attackOptions = [
+    $scope.enemyAttackOptions = [
       {
-        key: 'MELEE',
-        name: 'Charge (melee)',
+        key: 'Charge',
         cooldown: 300, // num frames
         chargeSpeed: 500, // px per frame
         duration: 120 // num frames
       },
       {
-        key: 'RANGED',
-        name: 'Fire (ranged)',
+        key: 'Ranged',
         cooldown: 60, // num frames
         bullet: $scope.bulletOptions[1],
         bulletSpeed: 350 // px per second
       }
     ];
 
-    // used for preload
-    $scope.enemyAssets = {
-      // mainsprite = move, attack, damaged
-      main: {
-        key: 'morio',
-        src: 'api/uploads/morio.png',
-        width: 50,
-        height: 50
-      },
-      // deathsprite = death sequence: no collisions or logic
-      death: {
-        key: 'explode',
-        src: 'api/uploads/explode.png',
-        width: 50,
-        height: 50
-      }
-    };
-
     // used for sprite initialization
     $scope.enemyData = {
       // General
-      name: 'Morio',
+      name: 'Morio', // NAME MUST BE UNIQUE
       description: 'every game needs a morio',
       // stats
       health: 3,
       damage: 1,
       // movement
       moveSpeed: 200,
-      movePattern: $scope.moveOptions[1],
+      movePattern: $scope.getMoveOptions().Default,
+      // Assets (preload)
+      // main sheet contains move, attack, and damaged animations
+      mainSprite: {
+        key: 'morio',
+        src: 'api/uploads/morio.png',
+        width: 50,
+        height: 50
+      },
+      deathSprite: {
+        key: 'unique-die-4567',
+        src: 'api/uploads/explode.png',
+        width: 50,
+        height: 50
+      },
       // animations
-      mainSprite: $scope.enemyAssets.main.key, // main sheet contains move, attack, and damaged animations
       moveFrames: [0,1],
       moveFps: 10,
       attackFrames: [2,3],
       attackFps: 10,
       damageFrames: [4,5],
       damageFps: 10,
-      deathSprite: $scope.enemyAssets.death.key, // death sheet contains only death animation
       deathFps: 10,
       // attack patterns
-      attackPattern: $scope.attackOptions[1]
+      attackPattern: $scope.enemyAttackOptions[1]
     };
 
-    $scope.playerAssets = {
-      main: {
-        key: 'player',
-        src: 'api/uploads/grumpus.png',
-        width: 24,
-        height: 36
+    /*
+      Player assets and data objects are local vars
+      because they will not be manipulated by the UI,
+      they will be loaded by PlayerService
+    */
+
+    // used for sprite initialization
+    var playerData = {
+      // General
+      name: 'stairfex', // NAME MUST BE UNIQUE
+      description: 'stairfex always beats morio',
+      // stats
+      health: 3,
+      damage: 1,
+      // movement
+      moveSpeed: 300,
+      // Assets (preload)
+      // main sheet contains move, attack, and damaged animations
+      mainSprite: {
+        key: 'stairfex',
+        src: 'api/uploads/stairfex.png',
+        width: 50,
+        height: 50
       },
-      death: {
-        // later
+      deathSprite: {
+        key: 'unique-die-4567',
+        src: 'api/uploads/explode.png',
+        width: 50,
+        height: 50
+      },
+      // animations
+      moveFrames: [0,1],
+      moveFps: 10,
+      attackFrames: [2,3],
+      attackFps: 10,
+      damageFrames: [4,5],
+      damageFps: 10,
+      deathFps: 10,
+      // attack patterns
+      attackPattern: {
+        key: 'RANGED',
+        name: 'Fire (ranged)',
+        cooldown: 30, // num frames
+        bullet: $scope.bulletOptions[0],
+        bulletSpeed: 500 // px per second
       }
     };
-
-    $scope.playerData = {
-      // general
-      name: 'Ghost Player',
-      description: 'This is just a test',
-      // stats
-      health: 5,
-      damage: 1,
-      moveSpeed: 300,
-      // animations
-      mainSprite: $scope.playerAssets.main.key,
-      moveFrames: [0,1,2,3,4,5],
-      moveFps: 10
-    };
-
 
     ////////////////////////////
     // EDITOR DEF AND METHODS //
@@ -133,12 +140,14 @@ app.controller('EnemyController',
       editor.load.image('floor', 'assets/editor_floor.png');
 
       // player
-      var playerMain = $scope.playerAssets.main;
+      var playerMain = playerData.mainSprite;
+      var playerDeath = playerData.deathSprite;
       editor.load.spritesheet(playerMain.key, playerMain.src, playerMain.width, playerMain.height);
+      editor.load.spritesheet(playerDeath.key, playerDeath.src, playerDeath.width, playerDeath.height);
 
       // load dynamic enemy assets
-      var enemyMain = $scope.enemyAssets.main;
-      var enemyDeath = $scope.enemyAssets.death;
+      var enemyMain = $scope.enemyData.mainSprite;
+      var enemyDeath = $scope.enemyData.deathSprite;
       editor.load.spritesheet(enemyMain.key, enemyMain.src, enemyMain.width, enemyMain.height);
       editor.load.spritesheet(enemyDeath.key, enemyDeath.src, enemyDeath.width, enemyDeath.height);
     }
@@ -151,7 +160,7 @@ app.controller('EnemyController',
       tiles = editor.add.tileSprite(0, 0, editor.width, editor.height, 'floor');
 
       // create player sprite
-      player = new PlayerService.Player(editor, 50, editor.world.centerY, angular.copy($scope.playerData), true);
+      player = new PlayerService.Player(editor, 50, editor.world.centerY, angular.copy(playerData), true);
 
       // create enemy sprite
       var y = Math.floor(Math.random() * (400 - 50 + 1)) + 50;

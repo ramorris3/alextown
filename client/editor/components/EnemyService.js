@@ -1,6 +1,17 @@
 app.service('EnemyService', function() {
 
   var self = this;
+  // movement enum
+  var moveOptions = {
+    Default: 0,
+    Charge: 1
+  };
+  self.getMoveOptions = function() {
+    return {
+      Default: 0,
+      Follow: 1
+    };
+  };
 
   //////////////////////
   // ENEMY OBJECT DEF //
@@ -11,7 +22,7 @@ app.service('EnemyService', function() {
     this.game = game;
 
     // create sprite
-    Phaser.Sprite.call(this, this.game, x, y, data.mainSprite);
+    Phaser.Sprite.call(this, this.game, x, y, data.mainSprite.key);
     // init animations
     this.animations.add('move', data.moveFrames, data.moveFps);
     this.animations.add('attack', data.attackFrames, data.attackFps);
@@ -30,7 +41,8 @@ app.service('EnemyService', function() {
     this.moveSpeed = data.moveSpeed;
 
     // config
-    this.movePattern = data.movePattern.key;
+    this.movePattern = data.movePattern;
+    
     this.testing = testing;
     if (!this.testing) {
       this.collideWorldBounds = true;
@@ -49,11 +61,11 @@ app.service('EnemyService', function() {
     this.animations.play('move');
 
     // DEFAULT MARCHING MOVEMENT
-    if (this.movePattern === 'DEFAULT') {
+    if (this.movePattern === moveOptions.Default) {
       this.body.velocity.setTo(-this.moveSpeed, 0);
 
     // FOLLOWING MOVEMENT
-    } else if (this.movePattern === 'FOLLOW') {
+    } else if (this.movePattern === moveOptions.Charge) {
       // get distance to playerSprite
       var distance = this.game.math.distance(this.x, this.y, this.target.x, this.target.y);
 

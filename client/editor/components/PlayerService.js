@@ -11,7 +11,7 @@ app.service('PlayerService', function() {
     this.game = game;
 
     // create sprite
-    Phaser.Sprite.call(this, this.game, x, y, data.mainSprite);
+    Phaser.Sprite.call(this, this.game, x, y, data.mainSprite.key);
     // init animations
     this.animations.add('move', data.moveFrames, data.moveFps);
     // this.animations.add(attack)

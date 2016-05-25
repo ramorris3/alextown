@@ -61,14 +61,14 @@
         </p>
         <p><!-- Type -->
           <label for="move-type">Type:</label>
-          <select ng-model="enemyData.movePattern" ng-options="moveOption as moveOption.name for moveOption in moveOptions" id="move-type">
+          <select ng-model="enemyData.movePattern" ng-options="v as k for (k, v) in getMoveOptions()" id="move-type">
           </select>
         </p>
       </form>
     </div>
 
     <div class="settings-row">
-    <pre>{{ enemyData | json }}</pre>
+    <pre>ENEMY_DATA_OBJECT = {{ enemyData | json }}</pre>
     </div>
 
   </div> 

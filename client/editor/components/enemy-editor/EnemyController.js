@@ -178,7 +178,9 @@ app.controller('EnemyController',
     }
 
     function render() {
-      editor.debug.text(editor.time.fps + ' fps', 36, 36); 
+      editor.debug.text(editor.time.fps + ' fps', editor.width - 64, 20);
+      editor.debug.spriteInfo(player, 10, 20); 
+      editor.debug.spriteInfo(enemy, 10, editor.height - 75);
     }
 
 

@@ -74,7 +74,7 @@ app.controller('EnemyController',
       damageFps: 10,
       deathFps: 10,
       // attack patterns
-      attackPattern: $scope.enemyAttackOptions[0]
+      attackPattern: $scope.enemyAttackOptions[1]
     };
 
     /*
@@ -117,11 +117,10 @@ app.controller('EnemyController',
       deathFps: 10,
       // attack patterns
       attackPattern: {
-        key: 'RANGED',
-        name: 'Fire (ranged)',
-        cooldown: 30, // num frames
+        key: 'Ranged',
+        cooldown: 10, // num frames
         bullet: $scope.bulletOptions[0],
-        bulletSpeed: 500 // px per second
+        bulletSpeed: 700 // px per second
       }
     };
 
@@ -166,6 +165,9 @@ app.controller('EnemyController',
       // lay tiles
       tiles = editor.add.tileSprite(0, 0, editor.width, editor.height, 'floor');
 
+      // create player bullet pool
+      editor.allPlayerBullets = editor.add.group();
+
       // create player sprite
       player = new PlayerService.Player(editor, 50, editor.world.centerY, angular.copy(playerData), true);
 
@@ -173,7 +175,7 @@ app.controller('EnemyController',
       editor.allEnemyBullets = editor.add.group();
 
       // create enemy sprite
-      var y = Math.floor(Math.random() * (400 - 50 + 1)) + 50;
+      var y = Math.floor(Math.random() * 350) + 50;
       enemy = new EnemyService.Enemy(editor, editor.width, y, angular.copy($scope.enemyData), player, true); // game, x, y, data, playerSprite, testing
     }
 
@@ -185,8 +187,9 @@ app.controller('EnemyController',
     function render() {
       if ($scope.showDebug) {
         editor.debug.text(editor.time.fps + ' fps', editor.width - 64, 20);
-        editor.debug.spriteInfo(player, 10, 20); 
-        editor.debug.spriteInfo(enemy, 10, editor.height - 75);
+        editor.debug.text('--PLAYER--', 10, 20);
+        editor.debug.spriteInfo(player, 10, 36); 
+        // editor.debug.spriteInfo(enemy, 10, editor.height - 75);
       }
     }
 

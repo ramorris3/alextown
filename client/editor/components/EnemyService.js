@@ -1,3 +1,7 @@
+/* 
+  This service contains the enemy object definition,
+  and handles loading and saving enemies from/to the database
+*/
 app.service('EnemyService', function() {
 
   var self = this;
@@ -126,7 +130,7 @@ app.service('EnemyService', function() {
 
     // MOVE DATA ERROR
     } else {
-      throw new Error('Move-pattern key unrecognized.');
+      throw new Error('Move-pattern key unrecognized in EnemyService.js');
     }
 
     // ATTACKING
@@ -193,7 +197,7 @@ app.service('EnemyService', function() {
     
     // ATTACK PATTERN ERROR
     } else {
-      throw new Error('Attack-pattern key unrecognized.');
+      throw new Error('Attack-pattern key unrecognized in EnemyService.js');
     }
   };
 

@@ -14,10 +14,12 @@ app.controller('EnemyController',
     $scope.bulletOptions = [
       {
         name: 'Blue',
+        key: 'blue-bullet',
         src: 'api/uploads/blue-bullet.png'
       },
       {
         name: 'Red',
+        key: 'red-bullet',
         src: 'api/uploads/red-bullet.png'
       }
     ];
@@ -25,9 +27,10 @@ app.controller('EnemyController',
     $scope.enemyAttackOptions = [
       {
         key: 'Charge',
-        cooldown: 300, // num frames
-        chargeSpeed: 500, // px per frame
-        duration: 120 // num frames
+        cooldown: 250, // num frames
+        chargeSpeed: 800, // px per frame
+        duration: 30, // num frames
+        range: 300
       },
       {
         key: 'Ranged',
@@ -71,7 +74,7 @@ app.controller('EnemyController',
       damageFps: 10,
       deathFps: 10,
       // attack patterns
-      attackPattern: $scope.enemyAttackOptions[1]
+      attackPattern: $scope.enemyAttackOptions[0]
     };
 
     /*
@@ -139,6 +142,10 @@ app.controller('EnemyController',
       // background tiles
       editor.load.image('floor', 'assets/editor_floor.png');
 
+      // preload bullets
+      editor.load.image('blue-bullet', 'api/uploads/blue-bullet.png');
+      editor.load.image('red-bullet', 'api/uploads/red-bullet.png');
+
       // player
       var playerMain = playerData.mainSprite;
       var playerDeath = playerData.deathSprite;
@@ -162,6 +169,9 @@ app.controller('EnemyController',
       // create player sprite
       player = new PlayerService.Player(editor, 50, editor.world.centerY, angular.copy(playerData), true);
 
+      // create enemy bullet pool
+      editor.allEnemyBullets = editor.add.group();
+
       // create enemy sprite
       var y = Math.floor(Math.random() * (400 - 50 + 1)) + 50;
       enemy = new EnemyService.Enemy(editor, editor.width, y, angular.copy($scope.enemyData), player, true); // game, x, y, data, playerSprite, testing
@@ -170,17 +180,14 @@ app.controller('EnemyController',
     function update() {
       // scroll bg
       tiles.autoScroll(scrollSpeed, 0);
-
-      // update player
-      player.update();
-
-      // update enemy state
     }
 
     function render() {
-      editor.debug.text(editor.time.fps + ' fps', editor.width - 64, 20);
-      editor.debug.spriteInfo(player, 10, 20); 
-      editor.debug.spriteInfo(enemy, 10, editor.height - 75);
+      if ($scope.showDebug) {
+        editor.debug.text(editor.time.fps + ' fps', editor.width - 64, 20);
+        editor.debug.spriteInfo(player, 10, 20); 
+        editor.debug.spriteInfo(enemy, 10, editor.height - 75);
+      }
     }
 
 

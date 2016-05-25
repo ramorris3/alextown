@@ -23,7 +23,8 @@ app.service('PlayerService', function() {
     this.anchor.setTo(0.5, 0.5);
     this.body.drag.setTo(1450, 1450); // x, y
 
-    // movement constants
+    // configuration
+    this.testing = testing;
     this.maxSpeed = data.moveSpeed;
     this.diagSpeed = this.maxSpeed / Math.sqrt(2);
     this.acceleration = 1500;

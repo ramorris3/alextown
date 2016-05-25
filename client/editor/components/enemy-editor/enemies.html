@@ -2,7 +2,7 @@
   <div id="enemy-frame" class="phaser-frame"></div>
   <div class="settings-frame">
 
-    <!-- Reload button -->
+    <!-- Reload button, save/cancel buttons -->
     <div class="btn-row">
       <div class="btn-wrap-left">
         <span class="dark-btn" ng-click="reloadEditorState()">Reload</span>
@@ -11,6 +11,15 @@
         <span class="dark-btn" ng-click="cancelSave()">Cancel</span>
         <span class="dark-btn" ng-click="saveEnemy()">Save Enemy</span>
       </div>
+    </div>
+
+    <!-- DEBUG -->
+    <div class="settings-row">
+      <p><!-- Debug output -->
+        <label for="debug">Show Debug:</label>
+        <input ng-model="showDebug" id="debug" type="checkbox" />
+      </p>
+      <pre ng-show="showDebug">ENEMY_DATA_OBJECT = {{ enemyData | json }}</pre>
     </div>
 
     <!-- Image uploading -->
@@ -42,11 +51,11 @@
       <form>
         <p><!-- health -->
           <label for="health">Health:</label>
-          <input ng-model="enemyData.health" id="health" type="text" />
+          <input ng-model="enemyData.health" id="health" type="number" />
         </p>
         <p><!-- Damage -->
           <label for="damage">Damage:</label>
-          <input ng-model="enemyData.damage" id="damage" type="text" />
+          <input ng-model="enemyData.damage" id="damage" type="number" />
         </p>
       </form>
     </div>
@@ -57,7 +66,7 @@
       <form>
         <p><!-- movement speed -->
           <label for="moveSpeed">Speed:</label>
-          <input ng-model="enemyData.moveSpeed" id="moveSpeed" type="text" />
+          <input ng-model="enemyData.moveSpeed" id="moveSpeed" type="number" />
         </p>
         <p><!-- Type -->
           <label for="move-type">Type:</label>
@@ -67,8 +76,55 @@
       </form>
     </div>
 
+    <!-- Enemy Attack behavior -->
     <div class="settings-row">
-    <pre>ENEMY_DATA_OBJECT = {{ enemyData | json }}</pre>
+      <p class="form-header">attack</p>
+      <form>
+        <p><!-- Attack options -->
+          <label for="attack-option">Type:</label>
+          <select ng-model="enemyData.attackPattern"
+                  ng-options="attackOption as attackOption.key for attackOption in enemyAttackOptions"
+                  id="attack-option">
+          </select>
+        </p>
+        <!-- Melee Options -->
+        <div ng-show="enemyData.attackPattern.key === 'Charge'">
+          <p><!-- cooldown -->
+            <label for="melee-cooldown">Cooldown:</label>
+            <input ng-model="enemyData.attackPattern.cooldown" id="melee-cooldown" type="number" />
+          </p>
+          <p><!-- chargeSpeed -->
+            <label for="charge-speed">Speed:</label>
+            <input ng-model="enemyData.attackPattern.chargeSpeed" id="charge-speed" type="number" />
+          </p>
+          <p><!-- charge duration -->
+            <label for="charge-dur">Duration:</label>
+            <input ng-model="enemyData.attackPattern.duration" id="charge-dur" type="number" />
+          </p>
+          <p><!-- Sight Range -->
+            <label for="charge-range">Sight Range:</label>
+            <input ng-model="enemyData.attackPattern.range" id="charge-range" type="number" />
+          </p>
+        </div>
+        <!-- Ranged Options -->
+        <div ng-show="enemyData.attackPattern.key === 'Ranged'">
+          <p><!-- cooldown -->
+            <label for="ranged-cooldown">Cooldown:</label>
+            <input ng-model="enemyData.attackPattern.cooldown" id="ranged-cooldown" type="number" />
+          </p>
+          <p><!-- Bullet speed -->
+            <label for="bullet-speed">Bullet Speed:</label>
+            <input ng-model="enemyData.attackPattern.bulletSpeed" id="bullet-speed" type="number">
+          </p>
+          <p><!-- Bullet Sprite -->
+            <label for="bullet-sprite">Bullet Sprite:</label>
+            <select ng-model="enemyData.attackPattern.bullet"
+                    ng-options="bullet as bullet.name for bullet in bulletOptions"
+                    id="bullet-sprite">
+            </select>
+          </p>
+        </div>
+      </form>
     </div>
 
   </div> 

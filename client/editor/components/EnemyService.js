@@ -5,6 +5,7 @@
 app.service('EnemyService', function() {
 
   var self = this;
+
   // movement enum
   var moveOptions = {
     Default: 0,
@@ -13,6 +14,7 @@ app.service('EnemyService', function() {
   self.getMoveOptions = function() {
     return moveOptions;
   };
+
 
   //////////////////////
   // ENEMY OBJECT DEF //

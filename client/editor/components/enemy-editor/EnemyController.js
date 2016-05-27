@@ -5,6 +5,8 @@ app.controller('EnemyController',
     ////////////////
     // MODEL VARS //
     ////////////////
+    $scope.showDebug = true;
+
     $scope.getMoveOptions = EnemyService.getMoveOptions;
 
     /*

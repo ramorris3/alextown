@@ -2,7 +2,6 @@ app.service('PlayerService', function() {
 
   var self = this;
 
-
   ///////////////////////
   // PLAYER OBJECT DEF //
   ///////////////////////
@@ -15,10 +14,7 @@ app.service('PlayerService', function() {
     // init animations
     this.animations.add('move', data.moveFrames, data.moveFps);
     this.animations.add('attack', data.attackFrames, data.attackFps);
-    console.log(this.animations);
-    console.log(this.animations.attack);
     this.animations.add('damage', data.damageFrames, data.damageFps);
-
     // physics
     this.game.physics.enable(this, Phaser.Physics.ARCADE);
     this.body.collideWorldBounds = true;
@@ -47,6 +43,9 @@ app.service('PlayerService', function() {
     }
     // melee?
 
+    // state config
+    this.currentState = this.defaultState;
+
     // controls
     this.cursors = this.game.input.keyboard.createCursorKeys();
     this.game.input.keyboard.addKeyCapture([Phaser.Keyboard.SPACEBAR]);
@@ -59,8 +58,23 @@ app.service('PlayerService', function() {
   self.Player.prototype.constructor = self.Player;
 
   self.Player.prototype.update = function() {
-    this.animations.play('move');
 
+    // tick the attack cooldown clock
+    if (this.cooldownClock > 0) {
+      this.cooldownClock--;
+    }
+
+    // state function (includes animation)
+    this.currentState();
+  };
+
+
+  ///////////////////////////////////////
+  // PLAYER HELPER AND STATE FUNCTIONS //
+  ///////////////////////////////////////
+
+  self.Player.prototype.move = function() {
+    // move player without choosing animation
     // set up min and max mvt speed
     if ((this.cursors.left.isDown || this.cursors.right.isDown) &&
        (this.cursors.up.isDown || this.cursors.down.isDown)) {
@@ -85,34 +99,61 @@ app.service('PlayerService', function() {
     } else {
      this.body.acceleration.y = 0;
     }
+  };
 
-    // tick the attack cooldown clock
-    if (this.cooldownClock > 0) {
-      this.cooldownClock--;
-    }
+  self.Player.prototype.isAttacking = function() {
+    return this.game.input.keyboard.isDown(Phaser.Keyboard.SPACEBAR);
+  };
 
+  /////////////////////
+  // STATE FUNCTIONS //
+  /////////////////////
+
+  self.Player.prototype.defaultState = function() {
+    // move the player and play move animation
+    this.move();
+    this.animations.play('move');
+
+    // switch states
     // if attacking
-    if (this.game.input.keyboard.isDown(Phaser.Keyboard.SPACEBAR)) { // input received
-      this.animations.play('attack');
-      console.log('played attack animation');
-      console.log(this.animations.currentAnim);
-      console.log(this.animations.currentFrame);
-      if (this.attackPattern.key === 'Ranged') { 
-        if (!this.cooldownClock) {// cooldown inactive
-          this.cooldownClock = this.cooldown;
-          var bullet = this.bullets.getFirstDead();
-          if (bullet) {
-            bullet.revive();
-            bullet.checkWorldBounds = true;
-            bullet.outOfBoundsKill = true;
-            bullet.reset(this.x, this.y);
-            bullet.body.velocity.x = this.bulletSpeed;
-          }
-        }
-      } else {
-        throw new Error('Attack-pattern key not recognized in PlayerService.js');
-      }
+    if (this.isAttacking()) {
+      this.currentState = this.attackState;
     }
   };
 
+  self.Player.prototype.attackState = function() {
+    // can move while firing
+    this.move();
+
+    // RANGED ATTACK
+    if (this.attackPattern.key === 'Ranged') { 
+      if (!this.cooldownClock) { // cooldown inactive
+        // fire bullet
+        this.cooldownClock = this.cooldown;
+        var bullet = this.bullets.getFirstDead();
+        if (bullet) {
+          bullet.revive();
+          bullet.checkWorldBounds = true;
+          bullet.outOfBoundsKill = true;
+          bullet.reset(this.x, this.y);
+          bullet.body.velocity.x = this.bulletSpeed;
+        }
+      }
+    } else {
+      throw new Error('Attack-pattern key not recognized in PlayerService.js');
+    }
+
+    this.animations.play('attack');
+
+    // STATE ROUTING
+    // go back to default if animation is finished
+    var sprite = this;
+    this.animations.currentAnim.onComplete.add(function() {
+      if (sprite.isAttacking()) {
+        sprite.currentState = sprite.attackState;
+      } else {
+        sprite.currentState = sprite.defaultState;
+      }
+    }, sprite.game);
+  };
 });

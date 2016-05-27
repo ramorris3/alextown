@@ -73,6 +73,8 @@ app.service('PlayerService', function() {
   // PLAYER HELPER AND STATE FUNCTIONS //
   ///////////////////////////////////////
 
+  // this function handles movement without playing the animation
+  // (can be used in multiple states)
   self.Player.prototype.move = function() {
     // move player without choosing animation
     // set up min and max mvt speed
@@ -139,6 +141,10 @@ app.service('PlayerService', function() {
           bullet.body.velocity.x = this.bulletSpeed;
         }
       }
+    // MELEE ???
+    // AOE ???
+
+    // UNSPECIFIED
     } else {
       throw new Error('Attack-pattern key not recognized in PlayerService.js');
     }

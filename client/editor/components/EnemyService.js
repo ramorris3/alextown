@@ -36,34 +36,21 @@ app.service('EnemyService', function() {
     this.moveSpeed = data.moveSpeed;
     this.originalMoveSpeed = this.moveSpeed;
 
-    // config
+    // enemy behavior config
+    this.testing = testing;
     this.movePattern = data.movePattern;
     this.attackPattern = data.attackPattern;
-    this.cooldown = this.attackPattern.cooldown;
-    this.cooldownClock = 0;
-    if (this.attackPattern.key === 'Ranged') {
-      // create bullet pool
-      this.bullets = this.game.add.group();
-      this.bullets.createMultiple(30, data.attackPattern.bullet.key);
-      this.bullets.setAll('anchor.x', 0.5);
-      this.bullets.setAll('anchor.y', 0.5);
-      this.bullets.setAll('outOfBoundsKill', true);
-      this.game.physics.enable(this.bullets, Phaser.Physics.ARCADE);
-      this.game.allEnemyBullets.add(this.bullets);
-      // bullet speed
-      this.bulletSpeed = data.attackPattern.bulletSpeed;
-    } else if (this.attackPattern.key === 'Charge') {
-      // set up melee vars
-      this.chargeSpeed = this.attackPattern.chargeSpeed;
-      this.chargeDuration = this.attackPattern.duration;
-      this.chargeClock = 0;
-      this.chargeRange = this.attackPattern.range;
+    if (this.attackPattern.key === 'Charge') {
+      this.getAttackStateInfo = this.getChargeStateInfo;
+    } else if (this.attackPattern.key === 'Ranged') {
+      this.getAttackStateInfo = this.getRangedStateInfo;
+    } else {
+      throw new Error('Attack-pattern key not recognized.');
     }
-    
-    this.testing = testing;
-    if (!this.testing) {
-      this.collideWorldBounds = true;
-    }
+    this.getAttackStateInfo().setup();
+
+    // state config
+    this.currentState = this.defaultState;
 
     // add to game
     this.game.add.existing(this);
@@ -75,8 +62,11 @@ app.service('EnemyService', function() {
   /* UPDATE FUNCTION */
   self.Enemy.prototype.update = function() {
 
-    // KILL ONLY IF OFF SCREEN TO THE LEFT
-    if (this.x < -this.width) { // off screen to the left
+    // execute active state
+    this.currentState();
+
+    // kill only if off screen to the left
+    if (this.x < -this.width) {
       // if testing, reset enemy
       if(this.testing) {
         this.x = this.game.width + this.width;
@@ -86,9 +76,182 @@ app.service('EnemyService', function() {
         this.pendingDestroy = true;
       }
     }
+  };
 
-    // play moving animation by default
+
+  ///////////////////////////////////
+  // ATTACK OPTION IMPLEMENTATIONS //
+  ///////////////////////////////////
+
+  /*
+    Any time you want to add another attack option to the enemy editor, you should implement it here with a getAttackStateInfo object.
+
+    Also, include any configurable variables that you will use for this stateInfo object in the EnemyController.enemyAttackOptions list
+
+    Each "info" function returns an object which represents an implementation of an enemy attack option.  There are three functions in each info object:
+      1) setVars: sets up all the variables needed for the attack state.  Should be called within sprite.create.
+      2) startAttack: checks preconditions before each attack, and does any one-time initialization before entering the attack state.  Should be called within each default state loop to check if attack should initiate
+      3) attackState: the implementation of the actual attack state itself.  Upon finishing, it will reset Enemy.currentState to Enemy.defaultState
+
+    Info functions are stored in an Enemy-scoped variable, so that they can be swapped out depending on which enemyAttackOption was chosen.
+
+    For example: 
+      // in the enemy.create method:
+      if (this.attackPattern.key === 'Charge') {
+        this.getAttackStateInfo = this.getChargeStateInfo;
+      }
+      this.getAttackStateInfo().setup();
+      ...
+      // in enemy.defaultState method:
+      if (this.getAttackStateInfo().startAttack()) {
+        this.currentState = this.getAttackStateInfo().attackState;
+      }
+  */
+
+  self.Enemy.prototype.getChargeStateInfo = function() {
+    var sprite = this;
+    return {
+      // call in the create function
+      setup: function() {
+        sprite.cooldown = sprite.attackPattern.cooldown;
+        sprite.cooldownClock = 0;
+        sprite.chargeSpeed = sprite.attackPattern.chargeSpeed;
+        sprite.chargeDuration = sprite.attackPattern.duration;
+        sprite.chargeClock = 0;
+        sprite.chargeRange = sprite.attackPattern.range;
+      },
+      // call before switching states to 'attack'
+      startAttack: function() {
+        if (sprite.cooldownClock) {
+          sprite.cooldownClock--;
+        }
+
+        // get distance to player to check if in range
+        var dist = sprite.game.math.distance(sprite.x, sprite.y, sprite.target.x, sprite.target.y);
+
+        // if in range, and if cooldown inactive, start charge
+        if (dist < sprite.chargeRange && !sprite.cooldownClock) {
+          // reset cooldown, set chargeDuration clock, set direction
+          sprite.cooldownClock = sprite.cooldown;
+          sprite.chargeClock = sprite.chargeDuration;
+          sprite.chargeRotation = sprite.game.math.angleBetween(sprite.x, sprite.y, sprite.target.x, sprite.target.y);
+          return true;
+        }
+
+        return false; // attack not ready to start
+      },
+      // state implementation
+      attackState: function() {
+        // charging
+        if (sprite.chargeClock) {
+          sprite.chargeClock--; // duration of charge - ticks down towards 0
+
+          sprite.animations.play('attack');
+
+          sprite.body.velocity.setTo(
+            Math.cos(sprite.chargeRotation) * sprite.chargeSpeed,
+            Math.sin(sprite.chargeRotation) * sprite.chargeSpeed
+          );
+
+          // stop charging if going out of bounds
+          if (sprite.right > sprite.game.width) {
+            sprite.body.velocity.setTo(0, 0);
+            sprite.x = sprite.game.width - sprite.offsetX;
+            sprite.chargeClock = 0;
+          }
+          if (sprite.bottom > sprite.game.height) {
+            sprite.body.velocity.setTo(0, 0);
+            sprite.y = sprite.game.height - sprite.offsetY;
+            sprite.chargeClock = 0;
+          } else if (sprite.top < 0) {
+            sprite.body.velocity.setTo(0, 0);
+            sprite.y = sprite.offsetY;
+            sprite.chargeClock = 0;
+          }
+        // done charging, back to default state
+        } else {
+          sprite.currentState = sprite.defaultState;
+        }
+      }
+    };
+  };
+
+  self.Enemy.prototype.getRangedStateInfo = function() {
+    var sprite = this;
+    return {
+      setup: function() {
+        sprite.cooldown = sprite.attackPattern.cooldown;
+        sprite.cooldownClock = 0;
+        // create bullet pool
+        sprite.bullets = sprite.game.add.group();
+        sprite.bullets.createMultiple(30, sprite.attackPattern.bullet.key);
+        sprite.bullets.setAll('anchor.x', 0.5);
+        sprite.bullets.setAll('anchor.y', 0.5);
+        sprite.bullets.setAll('outOfBoundsKill', true);
+        sprite.game.physics.enable(sprite.bullets, Phaser.Physics.ARCADE);
+        sprite.game.allEnemyBullets.add(sprite.bullets);
+        sprite.bulletSpeed = sprite.attackPattern.bulletSpeed;
+
+        sprite.fireBullet = function() {
+          sprite.cooldownClock = sprite.cooldown;
+          var bullet = sprite.bullets.getFirstDead();
+          if (bullet) {
+            bullet.revive();
+            bullet.checkWorldBounds = true;
+            bullet.outOfBoundsKill = true;
+            bullet.reset(sprite.x, sprite.y);
+            bullet.body.velocity.x = -sprite.bulletSpeed;
+          }
+        };
+
+      },
+      startAttack: function() {
+        // cooldown still active
+        if (sprite.cooldownClock) {
+          sprite.cooldownClock--;
+          return false;
+        }
+
+        sprite.fireBullet();
+        return true;
+      },
+      attackState: function() {
+        // moves while firing
+        sprite.move();
+
+        // play attack animation, go back to normal movement/animation when finished
+        sprite.animations.play('attack');
+
+        // go back to normal animation when finished
+        sprite.animations.currentAnim.onComplete.add(function() {
+          if (sprite.cooldownClock) { // cooldown active, back to default state
+            sprite.currentState = sprite.defaultState;
+          } else { // cooldown inactive, continue to play attack animation and shoot another bullet
+            sprite.fireBullet();
+          }
+        });
+      }
+    };
+  };
+
+  ///////////////////////////
+  // OTHER STATE FUNCTIONS //
+  ///////////////////////////
+
+  self.Enemy.prototype.defaultState = function() {
+    // regular movement
+    this.move();
     this.animations.play('move');
+
+    // switch states if attacking
+    if (this.getAttackStateInfo().startAttack()) {
+      this.currentState = this.getAttackStateInfo().attackState;
+    }
+  };
+
+  // this function handles movement without playing the animation
+  // (can be used in multiple states)
+  self.Enemy.prototype.move = function() {
 
     // DEFAULT MARCHING MOVEMENT
     if (this.movePattern === 'Default') {
@@ -123,75 +286,9 @@ app.service('EnemyService', function() {
 
     // MOVE DATA ERROR
     } else {
-      throw new Error('Move-pattern key unrecognized in EnemyService.js');
-    }
-
-    // ATTACKING
-    // tick cooldownClock
-    this.cooldownClock = this.cooldownClock < 0 ? 0 : this.cooldownClock - 1;
-
-    // if attackPattern.key === 'Charge', check range.  
-      // If in range, check if cooldown is inactive and check duration clock
-        // if cooldown is inactive, change animation to 'attack', increase move speed, and generate dust balls by feet. 
-    // CHARGE
-    if (this.attackPattern.key === 'Charge') {
-      // get distance to check range
-      var dist = this.game.math.distance(this.x, this.y, this.target.x, this.target.y);
-
-      if (dist < this.chargeRange && // in range
-        !this.cooldownClock) { // cooldown inactive
-        // start charge
-        // make a start charge state witha t ransition animation?
-        this.cooldownClock = this.cooldown;
-        this.chargeClock = this.chargeDuration;
-        this.chargeRotation = this.game.math.angleBetween(this.x, this.y, this.target.x, this.target.y);
-      }
-
-      // charging
-      if (this.chargeClock) {
-        this.animations.play('attack');
-        this.chargeClock--; // ticks down towards 0
-        this.body.velocity.setTo(
-          Math.cos(this.chargeRotation) * this.chargeSpeed,
-          Math.sin(this.chargeRotation) * this.chargeSpeed
-        );
-
-        // stop charging if going out of bounds
-        if (this.right > this.game.width) {
-          this.body.velocity.setTo(0, 0);
-          this.x = this.game.width - this.offsetX;
-          this.chargeClock = 0;
-        }
-        if (this.bottom > this.game.height) {
-          this.body.velocity.setTo(0, 0);
-          this.y = this.game.height - this.offsetY;
-          this.chargeClock = 0;
-        } else if (this.top < 0) {
-          this.body.velocity.setTo(0, 0);
-          this.y = this.offsetY;
-          this.chargeClock = 0;
-        }
-      }
-
-    // RANGED
-    } else if (this.attackPattern.key === 'Ranged') {
-      if (!this.cooldownClock) {
-        this.animations.play('attack');
-        this.cooldownClock = this.cooldown;
-        var bullet = this.bullets.getFirstDead();
-        if (bullet) {
-          bullet.revive();
-          bullet.checkWorldBounds = true;
-          bullet.outOfBoundsKill = true;
-          bullet.reset(this.x, this.y);
-          bullet.body.velocity.x = -this.bulletSpeed;
-        }
-      }
-    
-    // ATTACK PATTERN ERROR
-    } else {
-      throw new Error('Attack-pattern key unrecognized in EnemyService.js');
+      throw new Error('Move-pattern key unrecognized');
     }
   };
+
 
 });

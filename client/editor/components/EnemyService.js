@@ -6,15 +6,6 @@ app.service('EnemyService', function() {
 
   var self = this;
 
-  // movement enum
-  var moveOptions = {
-    Default: 0,
-    Follow: 1
-  };
-  self.getMoveOptions = function() {
-    return moveOptions;
-  };
-
 
   //////////////////////
   // ENEMY OBJECT DEF //
@@ -100,11 +91,11 @@ app.service('EnemyService', function() {
     this.animations.play('move');
 
     // DEFAULT MARCHING MOVEMENT
-    if (this.movePattern === moveOptions.Default) {
+    if (this.movePattern === 'Default') {
       this.body.velocity.setTo(-this.moveSpeed, 0);
 
     // FOLLOWING MOVEMENT
-    } else if (this.movePattern === moveOptions.Follow) {
+    } else if (this.movePattern === 'Follow') {
       // get distance to playerSprite
       var distance = this.game.math.distance(this.x, this.y, this.target.x, this.target.y);
 

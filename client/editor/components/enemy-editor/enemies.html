@@ -70,7 +70,7 @@
         </p>
         <p><!-- Type -->
           <label for="move-type">Type:</label>
-          <select ng-model="enemyData.movePattern" ng-options="v as k for (k, v) in getMoveOptions()" id="move-type">
+          <select ng-model="enemyData.movePattern" ng-options="option for option in moveOptions" id="move-type">
           </select>
         </p>
       </form>

@@ -5,14 +5,17 @@ app.controller('EnemyController',
     ////////////////
     // MODEL VARS //
     ////////////////
-    $scope.showDebug = true;
-
-    $scope.getMoveOptions = EnemyService.getMoveOptions;
+    $scope.showDebug = false; // shows fps and sprite/stat info
 
     /*
       Enemy data and options are $scope properties,
       because they are accessible and mutable via UI
     */
+    $scope.moveOptions = [
+      'Default',
+      'Follow'
+    ];
+
     $scope.bulletOptions = [
       {
         name: 'Blue',
@@ -52,7 +55,7 @@ app.controller('EnemyController',
       damage: 1,
       // movement
       moveSpeed: 200,
-      movePattern: $scope.getMoveOptions().Default,
+      movePattern: $scope.moveOptions[0],
       // Assets (preload)
       // main sheet contains move, attack, and damaged animations
       mainSprite: {

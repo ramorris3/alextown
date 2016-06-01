@@ -1,12 +1,12 @@
 app.controller('EnemyController',
-  ['$http', '$scope', 'FileReader', 'EnemyService', 'PlayerService', 'SaveService', 
-  function($http, $scope, FileReader, EnemyService, PlayerService, SaveService) {
+  ['$http', '$scope', 'DamageService', 'FileReader', 'EnemyService', 'PlayerService', 'SaveService', 
+  function($http, $scope, DamageService, FileReader, EnemyService, PlayerService, SaveService) {
 
     ////////////////
     // MODEL VARS //
     ////////////////
     $scope.showDebug = false; // shows fps and sprite/stat info
-
+    $scope.spawnTimer = 120; // frames between each enemy spawn
     /*
       Enemy data and options are $scope properties,
       because they are accessible and mutable via UI
@@ -51,22 +51,16 @@ app.controller('EnemyController',
       name: 'Morio', // NAME MUST BE UNIQUE
       description: 'every game needs a morio',
       // stats
-      health: 3,
+      health: 10,
       damage: 1,
       // movement
       moveSpeed: 200,
       movePattern: $scope.moveOptions[0],
       // Assets (preload)
       // main sheet contains move, attack, and damaged animations
-      mainSprite: {
+      spritesheet: {
         key: 'morio',
         src: 'api/uploads/morio.png',
-        width: 50,
-        height: 50
-      },
-      deathSprite: {
-        key: 'unique-die-4567',
-        src: 'api/uploads/explode.png',
         width: 50,
         height: 50
       },
@@ -75,9 +69,6 @@ app.controller('EnemyController',
       moveFps: 10,
       attackFrames: [2,3],
       attackFps: 10,
-      damageFrames: [4,5],
-      damageFps: 10,
-      deathFps: 10,
       // attack patterns
       attackPattern: $scope.enemyAttackOptions[1]
     };
@@ -94,21 +85,15 @@ app.controller('EnemyController',
       name: 'stairfex', // NAME MUST BE UNIQUE
       description: 'stairfex always beats morio',
       // stats
-      health: 3,
+      health: 20,
       damage: 1,
       // movement
       moveSpeed: 300,
       // Assets (preload)
       // main sheet contains move, attack, and damaged animations
-      mainSprite: {
+      spritesheet: {
         key: 'stairfex',
         src: 'api/uploads/stairfex.png',
-        width: 50,
-        height: 50
-      },
-      deathSprite: {
-        key: 'unique-die-4567',
-        src: 'api/uploads/explode.png',
         width: 50,
         height: 50
       },
@@ -117,9 +102,6 @@ app.controller('EnemyController',
       moveFps: 10,
       attackFrames: [2,3],
       attackFps: 10,
-      damageFrames: [4,5],
-      damageFps: 10,
-      deathFps: 10,
       // attack patterns
       attackPattern: {
         key: 'Ranged',
@@ -140,7 +122,8 @@ app.controller('EnemyController',
     var tiles;
     var scrollSpeed = -75;
     var player;
-    var enemy;
+    var enemyGroup;
+    var enemyTimer = 0;
 
     function preload() {
       // background tiles
@@ -150,17 +133,14 @@ app.controller('EnemyController',
       editor.load.image('blue-bullet', 'api/uploads/blue-bullet.png');
       editor.load.image('red-bullet', 'api/uploads/red-bullet.png');
 
-      // player
-      var playerMain = playerData.mainSprite;
-      var playerDeath = playerData.deathSprite;
-      editor.load.spritesheet(playerMain.key, playerMain.src, playerMain.width, playerMain.height);
-      editor.load.spritesheet(playerDeath.key, playerDeath.src, playerDeath.width, playerDeath.height);
+      // load debris/dust sprites
+      editor.load.spritesheet('death', 'api/uploads/explode.png', 50, 50);
 
-      // load dynamic enemy assets
-      var enemyMain = $scope.enemyData.mainSprite;
-      var enemyDeath = $scope.enemyData.deathSprite;
-      editor.load.spritesheet(enemyMain.key, enemyMain.src, enemyMain.width, enemyMain.height);
-      editor.load.spritesheet(enemyDeath.key, enemyDeath.src, enemyDeath.width, enemyDeath.height);
+      // player
+      editor.load.spritesheet(playerData.spritesheet.key, playerData.spritesheet.src, playerData.spritesheet.width, playerData.spritesheet.height);
+
+      // enemy
+      editor.load.spritesheet($scope.enemyData.spritesheet.key, $scope.enemyData.spritesheet.src, $scope.enemyData.spritesheet.width, $scope.enemyData.spritesheet.height);
     }
 
     function create() {
@@ -173,20 +153,73 @@ app.controller('EnemyController',
       // create player bullet pool
       editor.allPlayerBullets = editor.add.group();
 
+      // create death sprites
+      editor.deathAnimations = editor.add.group();
+      for (var i = 0; i < 10; i++) {
+        var deathSpr = editor.add.sprite(0, 0, 'death');
+        deathSpr.animations.add('die');
+        deathSpr.anchor.setTo(0.5, 0.5);
+        deathSpr.kill();
+        editor.deathAnimations.add(deathSpr);
+      }
+      editor.physics.enable(editor.deathAnimations, Phaser.Physics.ARCADE);
+
       // create player sprite
       player = new PlayerService.Player(editor, 50, editor.world.centerY, angular.copy(playerData), true);
 
       // create enemy bullet pool
       editor.allEnemyBullets = editor.add.group();
 
-      // create enemy sprite
-      var y = Math.floor(Math.random() * 350) + 50;
-      enemy = new EnemyService.Enemy(editor, editor.width, y, angular.copy($scope.enemyData), player, true); // game, x, y, data, playerSprite, testing
+      // create enemy sprite group
+      enemyGroup = editor.add.group();
     }
 
     function update() {
       // scroll bg
       tiles.autoScroll(scrollSpeed, 0);
+
+      // generate enemies
+      enemyTimer++;
+      if (enemyTimer % $scope.spawnTimer === 0) {
+        spawnEnemy();
+      }
+
+      var i;
+      var subgroup;
+      // enemy/player-bullet collision handling 
+      for (i = 0; i < editor.allPlayerBullets.children.length; i++) {
+        subgroup = editor.allPlayerBullets.children[i];
+        editor.physics.arcade.collide(enemyGroup, subgroup, hitCharacterHandler, hitCharacterProcess);
+      }
+
+      // player/enemy-bullet collision handling
+      for (i = 0; i < editor.allEnemyBullets.children.length; i++) {
+        subgroup = editor.allEnemyBullets.children[i];
+        editor.physics.arcade.collide(player, subgroup, hitCharacterHandler, hitCharacterProcess);
+      }
+    }
+
+    // collision is registered only if this func returns true
+    var hitCharacterProcess = function(character) {
+      return !character.invincible;
+    };
+
+    // kill bullet, damage enemy
+    var hitCharacterHandler = function(character, bullet) {
+      bullet.kill();
+      // create "bullet dust"
+      DamageService.takeDamage(character, 1);
+    };
+
+    function spawnEnemy() {
+      var enemy = new EnemyService.Enemy(
+        editor, // game
+        editor.width, // x
+        Math.floor(Math.random() * 350) + 50, // y
+        angular.copy($scope.enemyData), // data
+        player // target sprite
+      );
+      enemyGroup.add(enemy);
     }
 
     function render() {

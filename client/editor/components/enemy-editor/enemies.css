@@ -2,11 +2,11 @@
   padding: 40px;
   padding-bottom: 200px;
   color: white;
-  background: purple;
-  background: -webkit-linear-gradient(purple, #B80048);
-  background: -o-linear-gradient(purple, #B80048);
-  background: -moz-linear-gradient(purple, #B80048);
-  background: linear-gradient(purple, #B80048);
+  background: #E8130C;
+  background: -webkit-linear-gradient(#E8130C, #FF380D);
+  background: -o-linear-gradient(#E8130C, #FF380D);
+  background: -moz-linear-gradient(#E8130C, #FF380D);
+  background: linear-gradient(#E8130C, #FF380D);
 }
 
 .enemy-bg .settings-frame {

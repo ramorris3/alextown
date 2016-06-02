@@ -1,0 +1,10 @@
+.asset-bg {
+  padding: 40px;
+  padding-bottom: 200px;
+  color: white;
+  background: #E98A00;
+  background: -webkit-linear-gradient(#E98A00, #FFB849);
+  background: -o-linear-gradient(#E98A00, #FFB849);
+  background: -moz-linear-gradient(#E98A00, #FFB849);
+  background: linear-gradient(#E98A00, #FFB849);
+}

@@ -1,9 +1,9 @@
 .level-bg {
   padding: 40px;
   padding-bottom: 200px;
-  background: skyblue;
-  background: -webkit-linear-gradient(skyblue, white);
-  background: -o-linear-gradient(skyblue, white);
-  background: -moz-linear-gradient(skyblue, white);
-  background: linear-gradient(skyblue, white);
+  background: #008CFF;
+  background: -webkit-linear-gradient(#008CFF, #7FC5FF);
+  background: -o-linear-gradient(#008CFF, #7FC5FF);
+  background: -moz-linear-gradient(#008CFF, #7FC5FF);
+  background: linear-gradient(#008CFF, #7FC5FF);
 }

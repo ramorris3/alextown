@@ -5,8 +5,8 @@ app.service('MessageService',
     var self = this;
 
     var colors = {
-      RED: '#E50000',
-      GREEN: '#198C19'
+      RED: '#E8130C',
+      GREEN: '#00B20B'
     };
 
     var flashMessage = {

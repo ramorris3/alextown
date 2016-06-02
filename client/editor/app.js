@@ -15,6 +15,11 @@ var app = angular.module('EditorApp', ['ui.router'])
       url: '/enemy',
       templateUrl: 'components/enemy-editor/enemies.html',
       controller: 'EnemyController'
+    })
+    .state('asset', {
+      url: '/asset',
+      templateUrl: 'components/asset-editor/assets.html',
+      controller: 'AssetController'
     });
 })
 

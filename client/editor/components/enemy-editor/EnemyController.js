@@ -86,15 +86,6 @@ app.controller('EnemyController',
       }
     };
 
-    // loads a preview of the spritesheet file before saving
-    $scope.getFile = function() {
-      $scope.progress = 0;
-      FileReader.readAsDataUrl($scope.file, $scope)
-        .then(function(result) {
-          $scope.previewSrc = result;
-        });
-    };
-
     // saves the enemy
     $scope.saveEnemy = function() {
       // send enemyobject to EnemyService to save
@@ -285,6 +276,14 @@ app.controller('EnemyController',
       } else {
         loadEditor();
       }
+    };
+
+    // loads a preview of the spritesheet file before saving
+    $scope.getFile = function() {
+      FileReader.readAsDataUrl($scope.file, $scope)
+        .then(function(result) {
+          $scope.previewSrc = result;
+        });
     };
   }
 ])

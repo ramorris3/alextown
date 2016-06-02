@@ -58,12 +58,14 @@ body, html {
   background: linear-gradient(#B80048, #980068);
 }
 
-.phaser-frame {
+#phaser-frame {
   margin: 0 auto;
   margin-bottom: 40px;
   border: 5px solid white;
   border-radius: 5px;
+  height: 500px;
   width: 1000px;
+  background-color: #34444f;
 }
 
 canvas {
@@ -128,14 +130,14 @@ form p {
 
 form input {
   float: right;
-  width: 360px;
+  width: 350px;
   padding: 8px;
   border-radius: 3px;
 }
 
 form select {
   float: right;
-  width: 380px;
+  width: 370px;
   border-radius: 3px;
   height: 33px;
 }

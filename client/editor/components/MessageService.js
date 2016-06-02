@@ -1,5 +1,8 @@
 app.service('MessageService',
-  function() {
+  ['$rootScope', 
+  function($rootScope) {
+
+    var self = this;
 
     var colors = {
       RED: '#E50000',
@@ -12,17 +15,31 @@ app.service('MessageService',
       color: colors.GREEN
     };
 
-    this.setFlashMessage = function(message, isBad) {
+    self.setFlashMessage = function(message, isBad) {
       flashMessage.message = message;
-      flashMessage.color = isBad ? colors.RED : colors.GREEN;
-      flashMessage.visible = true; // whenever flashmessage is updated, show it
+      flashMessage.color = colors.GREEN;
+      if (isBad) {
+        flashMessage.color = colors.RED;
+        if (!message) {
+          flashMessage.message = 'An unknown error occured.';
+        }
+      }
+      flashMessage.visible = true;
+      // hide after 3s
+      setTimeout(
+        function(){ 
+          $rootScope.$apply(function() {
+            self.hideFlashMessage(); 
+          });
+        }, 5000);
     };
 
-    this.getFlashMessage = function() {
+    self.getFlashMessage = function() {
       return flashMessage;
     };
 
-    this.hideFlashMessage = function() {
+    self.hideFlashMessage = function() {
       flashMessage.visible = false;
     };
-  });
+  }
+]);

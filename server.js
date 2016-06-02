@@ -66,7 +66,8 @@ router.post('/save/img', function(req, res) {
   console.log(imgBuffer);
 
   // get filepath
-  var filename = guid() + '.png';
+  var key = req.body.key;
+  var filename = key + '.png';
   var filepath = path.join(__dirname,'uploads/',filename);
   console.log('Writing image to ' + filepath + '...')
 
@@ -78,9 +79,12 @@ router.post('/save/img', function(req, res) {
       }
       console.log('\nImage was successfully saved!\n');
       var apiSrc = 'api/uploads/' + filename;
-      res.status(200).send({message: 'Your enemy was successfully saved to the database!', src: apiSrc});
+      res.status(200).send({
+        message: 'Your enemy\'s spritesheet was successfully saved to the server!',
+        src: apiSrc,
+        key: key
+      });
     });
-
 });
 
 /* GET an image from "uploads" */
@@ -109,6 +113,64 @@ router.get('/uploads/:filename', function(req, res) {
       res.end(img);
     });
 
+});
+
+/* GET all enemies from the 'enemies.json' file */
+router.get('/enemies', function(req, res) {
+  var filepath = path.join(__dirname,'enemies.json');
+  console.log('\nRetrieving enemies from ' + filepath + '...\n');
+
+  fs.readFile(filepath, function(err, data) {
+    if (err) {
+      console.log(err);
+      return res.status(500).send({message: 'There was a problem retrieving existing enemy data.'});
+    }
+
+    console.log('\nGot enemy data!  Writing response...\n');
+    res.status(200).send({message: 'Successfully got enemies.', allEnemyData: JSON.parse(data)});
+  });
+});
+
+/* POST an enemy to the local server file 'enemies' */
+router.post('/save/enemies', function(req, res) {
+  // get enemy data
+  var newEnemy = req.body;
+  console.log('\nSAVING ENEMY:\n');
+  console.log(newEnemy);
+
+  // get filepath
+  var filepath = path.join(__dirname,'enemies.json');
+  console.log('\nReading enemy data from ' + filepath + '...\n');
+
+  // get existing enemyData
+  fs.readFile(filepath, function(err, data) {
+    if (err) {
+      console.log(err);
+      return res.status(500).send({message: 'There was a problem retrieving existing enemy data.'});
+    }
+
+    // add enemy to existing enemy data
+    console.log('\nGot enemy data from ' + filepath + '...\n');
+    var enemies = JSON.parse(data);
+    if (typeof enemies !== 'object') {
+      console.log('\nERROR: \'Enemies\' is not a JSON object.\n');
+      return res.status(500).send({message: 'Existing enemy data is corrupt.  Enemy not saved.'});
+    }
+    enemies[newEnemy.name] = newEnemy;
+    console.log(enemies);
+
+    // write enemy data to file
+    console.log('\nNew enemy added.  Writing to file ' + filepath + '...\n');
+    fs.writeFile(filepath, JSON.stringify(enemies, null, 2), function(err) {
+      if (err) {
+        console.log(err);
+        return res.status(500).send({message: 'There was a problem writing your enemy to the file.'});
+      }
+
+      console.log('\nEnemy data successfully written to ' + filepath + '!\n');
+      return res.status(200).send({message: 'Your enemy was successfully saved to the database!', allEnemyData: enemies});
+    });
+  });
 });
 
 app.use('/api', router);

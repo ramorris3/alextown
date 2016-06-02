@@ -1,0 +1,105 @@
+{
+  "Morio": {
+    "name": "Morio",
+    "description": "every game needs a morio",
+    "health": 10,
+    "damage": 1,
+    "moveSpeed": 200,
+    "movePattern": "Default",
+    "spritesheet": {
+      "key": "Morio",
+      "src": "api/uploads/Morio.png"
+    },
+    "width": 50,
+    "height": 50,
+    "moveFrames": "0,1",
+    "moveFps": 10,
+    "attackFrames": "2,3",
+    "attackFps": 10,
+    "attackPattern": {
+      "key": "Ranged",
+      "cooldown": 60,
+      "bullet": {
+        "name": "Red",
+        "key": "red-bullet",
+        "src": "api/uploads/red-bullet.png"
+      },
+      "bulletSpeed": 350
+    }
+  },
+  "hydra": {
+    "name": "hydra",
+    "description": "from zerg starcraft",
+    "health": 10,
+    "damage": 1,
+    "moveSpeed": 200,
+    "movePattern": "Default",
+    "spritesheet": {
+      "key": "hydra",
+      "src": "api/uploads/hydra.png"
+    },
+    "width": 32,
+    "height": 32,
+    "moveFrames": "0,1,2,3",
+    "moveFps": 10,
+    "attackFrames": "0,1,2,3",
+    "attackFps": "20",
+    "attackPattern": {
+      "key": "Charge",
+      "cooldown": 250,
+      "chargeSpeed": 800,
+      "duration": 15,
+      "range": 250
+    }
+  },
+  "blaaahhh": {
+    "name": "blaaahhh",
+    "description": "from zerg starcraft",
+    "health": 10,
+    "damage": 1,
+    "moveSpeed": 200,
+    "movePattern": "Default",
+    "spritesheet": {
+      "key": "hydra",
+      "src": "api/uploads/hydra.png"
+    },
+    "width": 32,
+    "height": 32,
+    "moveFrames": "0,1,2,3",
+    "moveFps": 10,
+    "attackFrames": "0,1,2,3",
+    "attackFps": "20",
+    "attackPattern": {
+      "key": "Charge",
+      "cooldown": 250,
+      "chargeSpeed": 600,
+      "duration": 15,
+      "range": 250
+    }
+  },
+  "hydralisk": {
+    "name": "hydralisk",
+    "description": "from zerg starcraft",
+    "health": 10,
+    "damage": 1,
+    "moveSpeed": 200,
+    "movePattern": "Default",
+    "spritesheet": {
+      "key": "hydra",
+      "src": "api/uploads/hydra.png"
+    },
+    "width": 32,
+    "height": 32,
+    "moveFrames": "0,1,2,3",
+    "moveFps": 10,
+    "attackFrames": "0,1,2,3",
+    "attackFps": "20",
+    "attackPattern": {
+      "key": "Charge",
+      "cooldown": 250,
+      "chargeSpeed": 600,
+      "duration": 25,
+      "range": 250
+    }
+  }
+}

@@ -30,7 +30,7 @@ app.controller('LevelController',
     // EDITOR DEF AND FUNCTIONS //
     //////////////////////////////
 
-    var editor = new Phaser.Game(1000, 500, Phaser.CANVAS, 'level-frame', {preload: preload, create: create, update: update}); 
+    var editor = new Phaser.Game(1000, 500, Phaser.CANVAS, 'phaser-frame', {preload: preload, create: create, update: update}); 
 
     function preload() {
       // background

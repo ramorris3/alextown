@@ -3,9 +3,66 @@
   and handles loading and saving enemies from/to the database
 */
 app.service('EnemyService', 
-  ['DamageService', function(DamageService) {
+  ['$http', '$rootScope', 'DamageService', 'MessageService',
+  function($http, $rootScope, DamageService, MessageService) {
 
     var self = this;
+
+    var allEnemies = {};
+    self.getAllEnemies = function() {
+      return allEnemies;
+    };
+
+    init();
+
+    self.saveEnemy = function(enemyData, spritesheet) {
+      // check for existing enemies
+      if (allEnemies.hasOwnProperty(enemyData.name)) {
+        var overwrite = confirm('There is already an enemy named "' + enemyData.name + '."  Do you want to overwrite this enemy?');
+        if (!overwrite) {
+          MessageService.setFlashMessage('Enemy was not saved.', true);
+          return;
+        }
+      }
+
+      // save the image if the user uploaded a new one...
+      if (spritesheet) {
+        $http.post('api/save/img', {img: spritesheet, key: enemyData.name}) // pass the key to check for duplicates?
+          .success(function(data) {
+            // update enemyData img reference
+            enemyData.spritesheet = {
+              key: data.key,
+              src: data.src
+            };
+            
+            // saved spritesheet, now save enemy
+            $http.post('api/save/enemies', enemyData)
+              .success(function(data) {
+                MessageService.setFlashMessage(data.message, false);
+                // reload enemies
+                allEnemies = data.allEnemyData;
+              })
+              .error(function(data) {
+                MessageService.setFlashMessage(data.message, true);
+              });
+          })
+          .error(function(data) {
+            MessageService.setFlashMessage(data.message, true);
+          });
+      // save enemy without newly-uploaded spritesheet (for editing existing enemies)
+      } else {
+        // save enemy
+        $http.post('api/save/enemies', enemyData)
+          .success(function(data) {
+            MessageService.setFlashMessage(data.message, false);
+            // reload enemies
+            allEnemies = data.allEnemyData;
+          })
+          .error(function(data) {
+            MessageService.setFlashMessage(data.message, true);
+          });
+      }
+    };
 
 
     //////////////////////
@@ -20,9 +77,17 @@ app.service('EnemyService',
       // create sprite
       Phaser.Sprite.call(this, this.game, x, y, data.spritesheet.key);
       // init animations
-      this.animations.add('move', data.moveFrames, data.moveFps);
-      this.animations.add('attack', data.attackFrames, data.attackFps);
-      this.animations.add('damage', data.damageFrames, data.damageFps);
+      // parse frames string to array of integers
+      var moveFrames = data.moveFrames.split(',');
+      for (i = 0; i < moveFrames.length; i++) {
+        moveFrames[i] = parseInt(moveFrames[i], 10);
+      }
+      var attackFrames = data.attackFrames.split(',');
+      for (i = 0; i < attackFrames.length; i++) {
+        attackFrames[i] = parseInt(attackFrames[i], 10);
+      }
+      this.animations.add('move', moveFrames, data.moveFps);
+      this.animations.add('attack', attackFrames, data.attackFps);
 
       // init target
       this.target = playerSprite;
@@ -289,6 +354,22 @@ app.service('EnemyService',
         throw new Error('Move-pattern key unrecognized');
       }
     };
+  
+
+    ///////////////////
+    // INIT FUNCTION //
+    ///////////////////
+
+    function init() {
+      $http.get('/api/enemies')
+        .success(function(data) {
+          allEnemies = data.allEnemyData;
+          MessageService.setFlashMessage('Choose an enemy from the list or build your own.  Then click "spawn" to test it out.', false);
+        })
+        .error(function(data) {
+          MessageService.setFlashMessage(data.message, true);
+        });
+    }
 
   }
 ]);

@@ -7,9 +7,7 @@ app.service('DamageService', function() {
     if (sprite.invincible) {
       return;
     }
-    console.log('before: ' + sprite.health);
     sprite.health -= damage;
-    console.log('after: ' + sprite.health);
     if (sprite.health <= 0) {
       var deathSpr = sprite.game.deathAnimations.getFirstDead();
       if (deathSpr) {

@@ -1,14 +1,14 @@
 <div class="enemy-bg">
-  <div id="enemy-frame" class="phaser-frame"></div>
+  <div id="phaser-frame"></div>
+
   <div class="settings-frame">
 
     <!-- Reload button, save/cancel buttons -->
     <div class="btn-row">
       <div class="btn-wrap-left">
-        <span class="dark-btn" ng-click="reloadEditorState()">Reload</span>
+        <span class="dark-btn" ng-click="reloadEditor()">Spawn</span>
       </div>
       <div class="btn-wrap-right">
-        <span class="dark-btn" ng-click="cancelSave()">Cancel</span>
         <span class="dark-btn" ng-click="saveEnemy()">Save Enemy</span>
       </div>
     </div>
@@ -29,12 +29,18 @@
       <pre ng-show="showDebug">ENEMY_DATA_OBJECT = {{ enemyData | json }}</pre>
     </div>
 
-    <!-- Image uploading -->
+    <!-- List of existing enemies -->
     <div class="settings-row">
-      <input type="file" name="img" ng-file-select="onFileSelect($files)" /><br />
-      <img class="preview-img" ng-src="{{ previewSrc }}" />
-      <progress ng-show="{{ progress }}" value="{{ progress }}"></progress>
-      <a ng-show="src.length > 0" ng-href="{{ src }}" target="_blank">Click here to see the uploaded file</a>
+      <p class="form-header">Enemies</p>
+      <form>
+        <p>
+          <label for="enemy">Enemy:</label>
+          <select id="enemy"
+                  ng-model="enemyData"
+                  ng-options="data as name for (name, data) in getAllEnemies() track by name">
+          </select>
+        </p>
+      </form>
     </div>
 
     <!-- General info -->
@@ -43,11 +49,55 @@
       <form>
         <p><!-- name -->
           <label for="name">Name:</label>
-          <input ng-model="enemyData.name" id="name" type="text" />
+          <input ng-model="enemyData.name" id="name"/>
         </p>
         <p><!-- description -->
           <label for="description">Description:</label>
-          <input ng-model="enemyData.description" id="description" type="text" />
+          <input ng-model="enemyData.description" id="description"/>
+        </p>
+      </form>
+    </div>
+
+    <!-- spritesheet image uploading -->
+    <div class="settings-row">
+      <p class="form-header">Spritesheet</p>
+      <form>
+        <p><!-- sprite file -->
+          <label for="sprite-png">Image.png:</label>
+          <input type="file" id="sprite-png" name="img" ng-file-select="onFileSelect($files)"/><br />
+          <img class="preview-img" ng-src="{{ previewSrc }}" />
+        </p>
+        <p><!-- width -->
+          <label for="spr-width">Width:</label>
+          <input ng-model="enemyData.width" id="spr-width" type="number"/>
+        </p>
+        <p><!-- height -->
+          <label for="spr-height">Height:</label>
+          <input ng-model="enemyData.height" id="spr-height" type="number"/>
+        </p>
+      </form>
+    </div>
+
+    <!-- Animation frames -->
+    <div class="settings-row">
+      <p class="form-header">Animations</p>
+      <p><em>Enter frames as a comma-separated list of integers.</em></p>
+      <form>
+        <p><!-- move frames -->
+          <label for="moveframes">Move Frames:</label>
+          <input ng-model="enemyData.moveFrames" id="moveframes" type="text" />
+        </p>
+        <p><!-- move fps -->
+          <label for="movefps">Move FPS:</label>
+          <input ng-model="enemyData.moveFps" id="movefps" type="text" />
+        </p>
+        <p><!-- attack frames -->
+          <label for="attackframes">Attack Frames:</label>
+          <input ng-model="enemyData.attackFrames" id="attackframes" type="text" />
+        </p>
+        <p><!-- attack fps -->
+          <label for="attackfps">Attack FPS:</label>
+          <input ng-model="enemyData.attackFps" id="attackfps" type="text" />
         </p>
       </form>
     </div>
@@ -90,7 +140,7 @@
         <p><!-- Attack options -->
           <label for="attack-option">Type:</label>
           <select ng-model="enemyData.attackPattern"
-                  ng-options="attackOption as attackOption.key for attackOption in enemyAttackOptions"
+                  ng-options="attackOption as key for (key, attackOption) in enemyAttackOptions"
                   id="attack-option">
           </select>
         </p>

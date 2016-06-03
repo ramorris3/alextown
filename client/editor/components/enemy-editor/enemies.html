@@ -1,4 +1,4 @@
-<div class="enemy-bg">
+<div class="enemy-bg bg">
   <div id="phaser-frame"></div>
 
   <div class="settings-frame">
@@ -61,19 +61,12 @@
     <!-- spritesheet image uploading -->
     <div class="settings-row">
       <p class="form-header">Spritesheet</p>
+      <p><em>You can choose from any preloaded spritesheets.  To add your own spritesheets to this list, go to the <a ui-sref="asset">asset loader.</a></em></p>
       <form>
         <p><!-- sprite file -->
           <label for="sprite-png">Image.png:</label>
           <input type="file" id="sprite-png" name="img" ng-file-select="onFileSelect($files)"/><br />
           <img class="preview-img" ng-src="{{ previewSrc }}" />
-        </p>
-        <p><!-- width -->
-          <label for="spr-width">Width:</label>
-          <input ng-model="enemyData.width" id="spr-width" type="number"/>
-        </p>
-        <p><!-- height -->
-          <label for="spr-height">Height:</label>
-          <input ng-model="enemyData.height" id="spr-height" type="number"/>
         </p>
       </form>
     </div>

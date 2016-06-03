@@ -1,0 +1,14 @@
+{
+  "Enemies": {},
+  "Bullets": {}
+}
+
+/*
+  Enemies: {
+    "Morio": {
+      "src": "api/uploads/morio.png",
+      "height": "50",
+      "width": "50"
+    }
+  }
+*/

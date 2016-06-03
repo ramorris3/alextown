@@ -31,7 +31,7 @@ app.service('MessageService',
           $rootScope.$apply(function() {
             self.hideFlashMessage(); 
           });
-        }, 5000);
+        }, 3000);
     };
 
     self.getFlashMessage = function() {

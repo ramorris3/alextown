@@ -1,6 +1,6 @@
 app.controller('LevelController', 
-  ['$http', '$scope', 'SaveService',
-  function($http, $scope, SaveService) {
+  ['$http', '$scope', 'LevelService',
+  function($http, $scope, LevelService) {
 
     //////////////////
     // INITIAL VARS //
@@ -248,7 +248,7 @@ app.controller('LevelController',
       }
 
       // save the level
-      SaveService.saveLevel(filename, level, self.grid);
+      LevelService.saveLevel(filename, level, self.grid);
     };
 
     $scope.cancelSave = function() {

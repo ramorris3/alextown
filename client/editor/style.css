@@ -58,6 +58,10 @@ body, html {
   background: linear-gradient(#B80048, #980068);
 }
 
+.bg {
+  min-height: calc(100vh - 183px);
+}
+
 #phaser-frame {
   margin: 0 auto;
   margin-bottom: 40px;
@@ -111,6 +115,17 @@ canvas {
   border-bottom: 1px solid #EFF0F1;
   padding: 20px 0px;
   color: #6a737c;
+}
+
+a, a:visited, a:active {
+  color: #B80048;
+  text-decoration: none;
+  font-weight: bold;
+}
+
+a:hover {
+  text-decoration: underline;
+  font-weight: bold;
 }
 
 .form-header {

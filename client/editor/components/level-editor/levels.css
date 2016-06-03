@@ -2,8 +2,8 @@
   padding: 40px;
   padding-bottom: 200px;
   background: #008CFF;
-  background: -webkit-linear-gradient(#008CFF, #7FC5FF);
-  background: -o-linear-gradient(#008CFF, #7FC5FF);
-  background: -moz-linear-gradient(#008CFF, #7FC5FF);
-  background: linear-gradient(#008CFF, #7FC5FF);
+  background: -webkit-linear-gradient(#008CFF, white);
+  background: -o-linear-gradient(#008CFF, white);
+  background: -moz-linear-gradient(#008CFF, white);
+  background: linear-gradient(#008CFF, white);
 }

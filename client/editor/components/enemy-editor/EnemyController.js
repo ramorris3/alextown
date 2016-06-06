@@ -1,6 +1,6 @@
 app.controller('EnemyController',
-  ['$http', '$scope', 'DamageService', 'FileReader', 'EnemyService', 'MessageService', 'PlayerService', 
-  function($http, $scope, DamageService, FileReader, EnemyService, MessageService, PlayerService) {
+  ['$http', '$scope', 'AssetService', 'DamageService', 'FileReader', 'EnemyService', 'MessageService', 'PlayerService', 
+  function($http, $scope, AssetService, DamageService, FileReader, EnemyService, MessageService, PlayerService) {
 
     ////////////////////////////
     // MODEL VARS AND METHODS //
@@ -19,18 +19,8 @@ app.controller('EnemyController',
       'Follow'
     ];
 
-    $scope.bulletOptions = [
-      {
-        name: 'Blue',
-        key: 'blue-bullet',
-        src: 'api/uploads/blue-bullet.png'
-      },
-      {
-        name: 'Red',
-        key: 'red-bullet',
-        src: 'api/uploads/red-bullet.png'
-      }
-    ];
+    $scope.getBullets = AssetService.getBullets;
+    $scope.getSprites = AssetService.getEnemies;
 
     $scope.enemyAttackOptions = {
       'Charge': {
@@ -43,18 +33,17 @@ app.controller('EnemyController',
       'Ranged': {
         key: 'Ranged',
         cooldown: 60, // num frames
-        bullet: $scope.bulletOptions[1],
+        bullet: $scope.getBullets(),
         bulletSpeed: 350 // px per second
       }
     };
 
     /*
+      PLAYER DATA IS HARD-CODED FOR NOW
       Player assets and data objects are local vars
       because they will not be manipulated by the UI,
-      they will be loaded by PlayerService
+      they will be loaded by PlayerService (eventually)
     */
-
-    // used for sprite initialization
     var playerData = {
       // General
       name: 'stairfex', // NAME MUST BE UNIQUE
@@ -67,10 +56,12 @@ app.controller('EnemyController',
       // Assets (preload)
       // main sheet contains move, attack, and damaged animations
       spritesheet: {
-        key: 'stairfex',
-        src: 'api/uploads/stairfex.png',
-        width: 50,
-        height: 50
+        "type": "Players",
+        "name": "Stairfex",
+        "width": 50,
+        "height": 50,
+        "key": "stairfex",
+        "src": "api/uploads/stairfex.png"
       },
       // animations
       moveFrames: [0,1],
@@ -81,7 +72,14 @@ app.controller('EnemyController',
       attackPattern: {
         key: 'Ranged',
         cooldown: 10, // num frames
-        bullet: $scope.bulletOptions[0],
+        bullet: {
+          "type": "Bullets",
+          "name": "Blue",
+          "width": 12,
+          "height": 12,
+          "key": "blue-bullet",
+          "src": "api/uploads/blue-bullet.png"
+        },
         bulletSpeed: 700 // px per second
       }
     };
@@ -120,7 +118,7 @@ app.controller('EnemyController',
         MessageService.setFlashMessage('The spritesheet is missing a source and a key.', true);
         return false;
       }
-      if (!data.width || !data.height) {
+      if (!data.spritesheet.width || !data.spritesheet.height) {
         MessageService.setFlashMessage('You need to specify the spritesheet\'s width and height.', true);
         return false;
       }
@@ -164,11 +162,8 @@ app.controller('EnemyController',
         // load debris/dust sprites
         editor.load.spritesheet('death', 'api/uploads/explode.png', 50, 50);
 
-        // player
-        editor.load.spritesheet(playerData.spritesheet.key, playerData.spritesheet.src, playerData.spritesheet.width, playerData.spritesheet.height);
-
-        // enemy
-        editor.load.spritesheet($scope.enemyData.spritesheet.key, $scope.enemyData.spritesheet.src, $scope.enemyData.width, $scope.enemyData.height);
+        // load all saved assets
+        AssetService.preloadAllAssets(editor);
       }
 
       function create() {

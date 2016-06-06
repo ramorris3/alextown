@@ -32,6 +32,7 @@
     <!-- List of existing enemies -->
     <div class="settings-row">
       <p class="form-header">Enemies</p>
+      <p><em>Leave this dropdown blank unless you want to edit an existing enemy.</em></p>
       <form>
         <p>
           <label for="enemy">Enemy:</label>
@@ -64,9 +65,9 @@
       <p><em>You can choose from any preloaded spritesheets.  To add your own spritesheets to this list, go to the <a ui-sref="asset">asset loader.</a></em></p>
       <form>
         <p><!-- sprite file -->
-          <label for="sprite-png">Image.png:</label>
-          <input type="file" id="sprite-png" name="img" ng-file-select="onFileSelect($files)"/><br />
-          <img class="preview-img" ng-src="{{ previewSrc }}" />
+          <label for="spritesheet">Spritesheet:</label>
+          <select ng-model="enemyData.spritesheet" ng-options="sprite as name for (name, sprite) in getSprites() track by name" id="spritesheet"></select><br />
+          <img class="preview-img" ng-src="{{ enemyData.spritesheet.src }}" />
         </p>
       </form>
     </div>
@@ -169,7 +170,7 @@
           <p><!-- Bullet Sprite -->
             <label for="bullet-sprite">Bullet Sprite:</label>
             <select ng-model="enemyData.attackPattern.bullet"
-                    ng-options="bullet as bullet.name for bullet in bulletOptions"
+                    ng-options="bullet as bulletName for (bulletName, bullet) in getBullets() track by bulletName"
                     id="bullet-sprite">
             </select>
           </p>

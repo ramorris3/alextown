@@ -1,14 +1,40 @@
 {
-  "Enemies": {},
-  "Bullets": {}
-}
-
-/*
-  Enemies: {
-    "Morio": {
-      "src": "api/uploads/morio.png",
-      "height": "50",
-      "width": "50"
+  "Players": {
+    "Stairfex": {
+      "type": "Players",
+      "name": "Stairfex",
+      "width": 50,
+      "height": 50,
+      "key": "stairfex",
+      "src": "api/uploads/stairfex.png"
+    }
+  },
+  "Enemies": {
+    "hydra_sheet": {
+      "type": "Enemies",
+      "name": "hydra_sheet",
+      "width": 32,
+      "height": 32,
+      "key": "0985aaa0-135e-3555-2dda-5e58a66d6aca",
+      "src": "api/uploads/0985aaa0-135e-3555-2dda-5e58a66d6aca.png"
+    }
+  },
+  "Bullets": {
+    "Blue": {
+      "type": "Bullets",
+      "name": "Blue",
+      "width": 12,
+      "height": 12,
+      "key": "blue-bullet",
+      "src": "api/uploads/blue-bullet.png"
+    },
+    "Red": {
+      "type": "Bullets",
+      "name": "Red",
+      "width": 12,
+      "height": 12,
+      "key": "red-bullet",
+      "src": "api/uploads/red-bullet.png"
     }
   }
-*/
+}

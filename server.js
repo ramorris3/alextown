@@ -66,7 +66,7 @@ router.post('/save/img', function(req, res) {
   console.log(imgBuffer);
 
   // get filepath
-  var key = req.body.key;
+  var key = guid();
   var filename = key + '.png';
   var filepath = path.join(__dirname,'uploads/',filename);
   console.log('Writing image to ' + filepath + '...')
@@ -80,7 +80,7 @@ router.post('/save/img', function(req, res) {
       console.log('\nImage was successfully saved!\n');
       var apiSrc = 'api/uploads/' + filename;
       res.status(200).send({
-        message: 'Your enemy\'s spritesheet was successfully saved to the server!',
+        message: 'Your asset\'s image was successfully saved to the server!',
         src: apiSrc,
         key: key
       });
@@ -111,6 +111,77 @@ router.get('/uploads/:filename', function(req, res) {
        'Content-Length': img.length
       });
       res.end(img);
+    });
+});
+
+/* GET all asset objects from 'assets.json' file */
+router.get('/assets', function(req,res) {
+
+  // get filepath
+  filepath = path.join(__dirname,'assets.json');
+
+  // read file
+  console.log('\nReading asset data from file ' + filepath + '...\n');
+  fs.readFile(filepath,
+    function(err, data) {
+      if (err) {
+        console.log(err);
+        return res.status(500).send({message: 'There was a problem loading the existing asset data.'});
+      }
+
+      console.log('\nGot asset data.  Writing response...\n');
+      // get subsection of assets, if requested
+      var allAssets = JSON.parse(data);
+      var type = req.query.type;
+      console.log(type);
+      console.log(allAssets[type]);
+      if (type && allAssets[type]) {
+        allAssets = allAssets[type];
+      }
+
+      res.status(200).send({message: 'Successfully got asset data.', allAssetData: allAssets});
+    });
+
+});
+
+/* POST an asset reference to 'assets.json' file */
+router.post('/save/asset', function(req,res) {
+  // get new asset data
+  var newAsset = req.body;
+
+  // get filepath
+  filepath = path.join(__dirname, 'assets.json');
+
+  // read file
+  console.log('\nReading asset data from file ' + filepath + '...\n');
+  fs.readFile(filepath,
+    function(err, data) {
+      if (err) {
+        console.log(err);
+        return res.status(500).send({message: 'There was a problem loading existing asset data.'});
+      }
+
+      // write the new asset to the file
+      console.log('\nGot asset data.  Writing new asset ref...\n');
+      var assets = JSON.parse(data);
+      if (typeof assets !== 'object') {
+        console.log('\nERROR: \'assets\' is not valid JSON.\n');
+        return res.status(500).send({message: 'Existing asset data is corrupt.  Asset not saved.'});
+      }
+      assets[newAsset.type][newAsset.name] = newAsset;
+      console.log(assets);
+
+      console.log('\nNew asset added.  Writing to file ' + filepath + '...\n');
+      fs.writeFile(filepath, JSON.stringify(assets, null, 2), function(err) {
+        if (err) {
+          console.log(err);
+          return res.status(500).send({message: 'There was a problem writing your asset to the file.'});
+        }
+
+        console.log('\nAsset data successfully written to ' + filepath + '!\n');
+        return res.status(200).send({message: 'Your asset was successfully saved to the database!', allAssetData: assets});
+      });
+
     });
 
 });

@@ -1,5 +1,14 @@
 <div class="asset-bg bg">
   <div class="settings-frame">
+    <!-- DEBUG -->
+    <div class="settings-row">
+      <pre>{{ getAllAssets() | json }}</pre>
+    </div>
+    <!-- DEBUG -->
+    <div class="settings-row">
+      <pre>{{ spriteData | json }}</pre>
+    </div>
+
     <!-- spritesheet image uploading -->
     <div class="settings-row">
       <p class="form-header">Upload an image</p>
@@ -9,15 +18,32 @@
           <input type="file" id="sprite-png" name="img" ng-file-select="onFileSelect($files)"/><br />
           <img class="preview-img" ng-src="{{ previewSrc }}" />
         </p>
+        <p><!-- type -->
+          <label for="type">Type:</label>
+          <select ng-model="spriteData.type" id="type">
+            <option ng-repeat="type in assetTypes">{{ type }}</option>
+          </select>
+        </p>
+        <p><!-- name -->
+          <label for="spr-name">Name:</label>
+          <input ng-model="spriteData.name" id="spr-name" type="text"/>
+        </p>
         <p><!-- width -->
           <label for="spr-width">Frame Width:</label>
-          <input ng-model="enemyData.width" id="spr-width" type="number"/>
+          <input ng-model="spriteData.width" id="spr-width" type="number"/>
         </p>
         <p><!-- height -->
           <label for="spr-height">Frame Height:</label>
-          <input ng-model="enemyData.height" id="spr-height" type="number"/>
+          <input ng-model="spriteData.height" id="spr-height" type="number"/>
         </p>
       </form>
+    </div>
+
+    <!-- Save button -->
+    <div class="btn-row">
+      <div class="btn-wrap-right">
+        <span class="dark-btn" ng-click="saveAsset()">Save Asset</span>
+      </div>
     </div>
   </div>
 </div>

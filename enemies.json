@@ -1,105 +1,35 @@
 {
-  "Morio": {
-    "name": "Morio",
-    "description": "every game needs a morio",
-    "health": 10,
-    "damage": 1,
-    "moveSpeed": 200,
-    "movePattern": "Default",
+  "new hydra test": {
+    "name": "new hydra test",
+    "description": "this is the first test using the asset loader",
     "spritesheet": {
-      "key": "Morio",
-      "src": "api/uploads/Morio.png"
+      "type": "Enemies",
+      "name": "hydra_sheet",
+      "width": 32,
+      "height": 32,
+      "key": "0985aaa0-135e-3555-2dda-5e58a66d6aca",
+      "src": "api/uploads/0985aaa0-135e-3555-2dda-5e58a66d6aca.png"
     },
-    "width": 50,
-    "height": 50,
-    "moveFrames": "0,1",
-    "moveFps": 10,
-    "attackFrames": "2,3",
-    "attackFps": 10,
+    "moveFrames": "0,1,2,3",
+    "moveFps": "10",
+    "attackFrames": "0,1,2,3",
+    "attackFps": "20",
+    "health": 7,
+    "damage": 1,
+    "moveSpeed": 300,
+    "movePattern": "Default",
     "attackPattern": {
       "key": "Ranged",
       "cooldown": 60,
       "bullet": {
+        "type": "Bullets",
         "name": "Red",
+        "width": 12,
+        "height": 12,
         "key": "red-bullet",
         "src": "api/uploads/red-bullet.png"
       },
       "bulletSpeed": 350
-    }
-  },
-  "hydra": {
-    "name": "hydra",
-    "description": "from zerg starcraft",
-    "health": 10,
-    "damage": 1,
-    "moveSpeed": 200,
-    "movePattern": "Default",
-    "spritesheet": {
-      "key": "hydra",
-      "src": "api/uploads/hydra.png"
-    },
-    "width": 32,
-    "height": 32,
-    "moveFrames": "0,1,2,3",
-    "moveFps": 10,
-    "attackFrames": "0,1,2,3",
-    "attackFps": "20",
-    "attackPattern": {
-      "key": "Charge",
-      "cooldown": 250,
-      "chargeSpeed": 800,
-      "duration": 15,
-      "range": 250
-    }
-  },
-  "blaaahhh": {
-    "name": "blaaahhh",
-    "description": "from zerg starcraft",
-    "health": 10,
-    "damage": 1,
-    "moveSpeed": 200,
-    "movePattern": "Default",
-    "spritesheet": {
-      "key": "hydra",
-      "src": "api/uploads/hydra.png"
-    },
-    "width": 32,
-    "height": 32,
-    "moveFrames": "0,1,2,3",
-    "moveFps": 10,
-    "attackFrames": "0,1,2,3",
-    "attackFps": "20",
-    "attackPattern": {
-      "key": "Charge",
-      "cooldown": 250,
-      "chargeSpeed": 600,
-      "duration": 15,
-      "range": 250
-    }
-  },
-  "hydralisk": {
-    "name": "hydralisk",
-    "description": "from zerg starcraft",
-    "health": 10,
-    "damage": 1,
-    "moveSpeed": 200,
-    "movePattern": "Default",
-    "spritesheet": {
-      "key": "hydra",
-      "src": "api/uploads/hydra.png"
-    },
-    "width": 32,
-    "height": 32,
-    "moveFrames": "0,1,2,3",
-    "moveFps": 10,
-    "attackFrames": "0,1,2,3",
-    "attackFps": "20",
-    "attackPattern": {
-      "key": "Charge",
-      "cooldown": 250,
-      "chargeSpeed": 600,
-      "duration": 25,
-      "range": 250
     }
   }
 }

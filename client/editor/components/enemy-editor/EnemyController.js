@@ -10,10 +10,18 @@ app.controller('EnemyController',
     $scope.getAllEnemies = EnemyService.getAllEnemies;
     $scope.showDebug = false; // shows fps and sprite/stat info
     $scope.spawnTimer = 120; // frames between each enemy spawn
-    /*
-      Enemy data and options are $scope properties,
-      because they are accessible and mutable via UI
-    */
+
+    $scope.reloadEditor = function() {
+      if (!dataIsValid()) {
+        return;
+      }
+      if (editor) {
+        editor.state.start(editor.state.current);
+      } else {
+        loadEditor();
+      }
+    };
+
     $scope.moveOptions = [
       'Default',
       'Follow'
@@ -88,7 +96,7 @@ app.controller('EnemyController',
     $scope.saveEnemy = function() {
       // send enemyobject to EnemyService to save
       if (dataIsValid) {
-        EnemyService.saveEnemy($scope.enemyData, $scope.previewSrc);
+        EnemyService.saveEnemy($scope.enemyData, $scope.reloadEditor);
       }
     };
 
@@ -261,35 +269,5 @@ app.controller('EnemyController',
         }
       }
     }
-
-    $scope.reloadEditor = function() {
-      if (!dataIsValid()) {
-        return;
-      }
-      if (editor) {
-        editor.state.start(editor.state.current);
-      } else {
-        loadEditor();
-      }
-    };
-
-    // loads a preview of the spritesheet file before saving
-    $scope.getFile = function() {
-      FileReader.readAsDataUrl($scope.file, $scope)
-        .then(function(result) {
-          $scope.previewSrc = result;
-        });
-    };
   }
-])
-
-.directive('ngFileSelect', function() {
-  return {
-    link: function($scope, el) {
-      el.bind('change', function(e){
-        $scope.file = (e.srcElement || e.target).files[0];
-        $scope.getFile();
-      });
-    }
-  };
-});
+]);

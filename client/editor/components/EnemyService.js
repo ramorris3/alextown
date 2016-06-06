@@ -15,7 +15,7 @@ app.service('EnemyService',
 
     init();
 
-    self.saveEnemy = function(enemyData, spritesheet) {
+    self.saveEnemy = function(enemyData, callback) {
       // check for existing enemies
       if (allEnemies.hasOwnProperty(enemyData.name)) {
         var overwrite = confirm('There is already an enemy named "' + enemyData.name + '."  Do you want to overwrite this enemy?');
@@ -25,42 +25,19 @@ app.service('EnemyService',
         }
       }
 
-      // save the image if the user uploaded a new one...
-      if (spritesheet) {
-        $http.post('api/save/img', {img: spritesheet, key: enemyData.name}) // pass the key to check for duplicates?
-          .success(function(data) {
-            // update enemyData img reference
-            enemyData.spritesheet = {
-              key: data.key,
-              src: data.src
-            };
-            
-            // saved spritesheet, now save enemy
-            $http.post('api/save/enemies', enemyData)
-              .success(function(data) {
-                MessageService.setFlashMessage(data.message, false);
-                // reload enemies
-                allEnemies = data.allEnemyData;
-              })
-              .error(function(data) {
-                MessageService.setFlashMessage(data.message, true);
-              });
-          })
-          .error(function(data) {
-            MessageService.setFlashMessage(data.message, true);
-          });
-      // save enemy without newly-uploaded spritesheet (for editing existing enemies)
-      } else {
-        // save enemy
-        $http.post('api/save/enemies', enemyData)
-          .success(function(data) {
-            MessageService.setFlashMessage(data.message, false);
-            // reload enemies
-            allEnemies = data.allEnemyData;
-          })
-          .error(function(data) {
-            MessageService.setFlashMessage(data.message, true);
-          });
+      // save enemy
+      $http.post('api/save/enemies', enemyData)
+        .success(function(data) {
+          MessageService.setFlashMessage(data.message, false);
+          // reload enemies
+          allEnemies = data.allEnemyData;
+          if (callback) {
+            callback();
+          }
+        })
+        .error(function(data) {
+          MessageService.setFlashMessage(data.message, true);
+        });
       }
     };
 

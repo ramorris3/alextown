@@ -35,6 +35,14 @@
       "height": 12,
       "key": "red-bullet",
       "src": "api/uploads/red-bullet.png"
+    },
+    "skull": {
+      "type": "Bullets",
+      "name": "skull",
+      "width": 40,
+      "height": 40,
+      "key": "0953e23b-59ea-dcc9-ed1a-39e9d959ca2c",
+      "src": "api/uploads/0953e23b-59ea-dcc9-ed1a-39e9d959ca2c.png"
     }
   }
 }

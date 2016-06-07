@@ -6,7 +6,7 @@
       "width": 50,
       "height": 50,
       "key": "stairfex",
-      "src": "api/uploads/stairfex.png"
+      "src": "../api/uploads/stairfex.png"
     }
   },
   "Enemies": {
@@ -16,7 +16,7 @@
       "width": 32,
       "height": 32,
       "key": "0985aaa0-135e-3555-2dda-5e58a66d6aca",
-      "src": "api/uploads/0985aaa0-135e-3555-2dda-5e58a66d6aca.png"
+      "src": "../api/uploads/0985aaa0-135e-3555-2dda-5e58a66d6aca.png"
     },
     "fuzzball": {
       "type": "Enemies",
@@ -24,7 +24,23 @@
       "width": 50,
       "height": 50,
       "key": "4072065f-c88d-bc56-a820-3190da21cdd0",
-      "src": "api/uploads/4072065f-c88d-bc56-a820-3190da21cdd0.png"
+      "src": "../api/uploads/4072065f-c88d-bc56-a820-3190da21cdd0.png"
+    },
+    "friar": {
+      "name": "friar",
+      "type": "Enemies",
+      "width": 150,
+      "height": 180,
+      "key": "1ec9459c-9980-0826-0e8f-5db065a1caf4",
+      "src": "../api/uploads/1ec9459c-9980-0826-0e8f-5db065a1caf4.png"
+    },
+    "morio": {
+      "name": "morio",
+      "type": "Enemies",
+      "width": 50,
+      "height": 50,
+      "key": "moriobd1523ad-d65b-06ea-2f85-cb0ddaa81c0c",
+      "src": "../api/uploads/moriobd1523ad-d65b-06ea-2f85-cb0ddaa81c0c.png"
     }
   },
   "Bullets": {
@@ -34,7 +50,7 @@
       "width": 12,
       "height": 12,
       "key": "blue-bullet",
-      "src": "api/uploads/blue-bullet.png"
+      "src": "../api/uploads/blue-bullet.png"
     },
     "Red": {
       "type": "Bullets",
@@ -42,7 +58,7 @@
       "width": 12,
       "height": 12,
       "key": "red-bullet",
-      "src": "api/uploads/red-bullet.png"
+      "src": "../api/uploads/red-bullet.png"
     },
     "skull": {
       "type": "Bullets",
@@ -50,7 +66,7 @@
       "width": 40,
       "height": 40,
       "key": "0953e23b-59ea-dcc9-ed1a-39e9d959ca2c",
-      "src": "api/uploads/0953e23b-59ea-dcc9-ed1a-39e9d959ca2c.png"
+      "src": "../api/uploads/0953e23b-59ea-dcc9-ed1a-39e9d959ca2c.png"
     }
   }
 }

@@ -26,13 +26,13 @@ app.service('AssetService',
       }
 
       // save img and get key (filename)
-      $http.post('api/save/img', {img: imgSrc})
+      $http.post('../api/save/img', {img: imgSrc, name: spriteData.name})
         .success(function(data) {
           // update spriteData with img reference
           spriteData.key = data.key;
           spriteData.src = data.src;
           
-          $http.post('api/save/asset', spriteData)
+          $http.post('../api/save/asset', spriteData)
             .success(function(data) {
               MessageService.setFlashMessage(data.message);
               allAssets = data.allAssetData;
@@ -62,7 +62,7 @@ app.service('AssetService',
     };
 
     function init() {
-      $http.get('api/assets')
+      $http.get('../api/assets')
         .success(function(data) {
           allAssets = data.allAssetData;
           LoaderService.assets = true;
@@ -158,7 +158,7 @@ app.service('EnemyService',
       }
 
       // save enemy
-      $http.post('api/save/enemies', enemyData)
+      $http.post('../api/save/enemies', enemyData)
         .success(function(data) {
           MessageService.setFlashMessage(data.message, false);
           // reload enemies
@@ -498,7 +498,7 @@ app.service('LevelService', [
 
     self.saveLevel = function(filename, level, data) {
       // request to server to save the level data
-      $http.post('api/save/stage', { 'filename': filename, 'level': level, 'data': data })
+      $http.post('../api/save/stage', { 'filename': filename, 'level': level, 'data': data })
         .success(function(data) {
           MessageService.setFlashMessage(data.message, false);
         })
@@ -508,7 +508,7 @@ app.service('LevelService', [
     };
 
     function init() {
-      $http.get('api/stages')
+      $http.get('../api/stages')
         .success(function(data) {
           // set currentLevel
           currentLevel = data.levelData.data;
@@ -826,7 +826,7 @@ app.controller('GameController',
         game.load.image('floor', 'assets/floor.png');
 
         // load FX sprites
-        game.load.spritesheet('death', 'api/uploads/explode.png', 50, 50);
+        game.load.spritesheet('death', '../api/uploads/explode.png', 50, 50);
 
         // load all character spritesheets
         AssetService.preloadAllAssets(game);

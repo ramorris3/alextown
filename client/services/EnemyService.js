@@ -29,7 +29,7 @@ app.service('EnemyService',
       }
 
       // save enemy
-      $http.post('api/save/enemies', enemyData)
+      $http.post('../api/save/enemies', enemyData)
         .success(function(data) {
           MessageService.setFlashMessage(data.message, false);
           // reload enemies

@@ -8,7 +8,7 @@
       "width": 32,
       "height": 32,
       "key": "0985aaa0-135e-3555-2dda-5e58a66d6aca",
-      "src": "api/uploads/0985aaa0-135e-3555-2dda-5e58a66d6aca.png"
+      "src": "../api/uploads/0985aaa0-135e-3555-2dda-5e58a66d6aca.png"
     },
     "moveFrames": "0,1,2,3",
     "moveFps": "10",
@@ -27,7 +27,7 @@
         "width": 12,
         "height": 12,
         "key": "red-bullet",
-        "src": "api/uploads/red-bullet.png"
+        "src": "../api/uploads/red-bullet.png"
       },
       "bulletSpeed": 350
     }
@@ -41,7 +41,7 @@
       "width": 32,
       "height": 32,
       "key": "0985aaa0-135e-3555-2dda-5e58a66d6aca",
-      "src": "api/uploads/0985aaa0-135e-3555-2dda-5e58a66d6aca.png"
+      "src": "../api/uploads/0985aaa0-135e-3555-2dda-5e58a66d6aca.png"
     },
     "attackPattern": {
       "key": "Ranged",
@@ -52,7 +52,7 @@
         "width": 40,
         "height": 40,
         "key": "0953e23b-59ea-dcc9-ed1a-39e9d959ca2c",
-        "src": "api/uploads/0953e23b-59ea-dcc9-ed1a-39e9d959ca2c.png"
+        "src": "../api/uploads/0953e23b-59ea-dcc9-ed1a-39e9d959ca2c.png"
       },
       "bulletSpeed": 350
     },
@@ -74,7 +74,7 @@
       "width": 50,
       "height": 50,
       "key": "4072065f-c88d-bc56-a820-3190da21cdd0",
-      "src": "api/uploads/4072065f-c88d-bc56-a820-3190da21cdd0.png"
+      "src": "../api/uploads/4072065f-c88d-bc56-a820-3190da21cdd0.png"
     },
     "moveFrames": "0,1",
     "moveFps": "10",
@@ -93,9 +93,42 @@
         "width": 40,
         "height": 40,
         "key": "0953e23b-59ea-dcc9-ed1a-39e9d959ca2c",
-        "src": "api/uploads/0953e23b-59ea-dcc9-ed1a-39e9d959ca2c.png"
+        "src": "../api/uploads/0953e23b-59ea-dcc9-ed1a-39e9d959ca2c.png"
       },
       "bulletSpeed": 500
+    }
+  },
+  "Friar": {
+    "name": "Friar",
+    "description": "big-ass friar",
+    "spritesheet": {
+      "name": "friar",
+      "type": "Enemies",
+      "width": 150,
+      "height": 180,
+      "key": "1ec9459c-9980-0826-0e8f-5db065a1caf4",
+      "src": "../api/uploads/1ec9459c-9980-0826-0e8f-5db065a1caf4.png"
+    },
+    "moveFrames": "0",
+    "moveFps": "10",
+    "attackFrames": "0",
+    "attackFps": "10",
+    "health": 15,
+    "damage": 3,
+    "moveSpeed": 200,
+    "movePattern": "Follow",
+    "attackPattern": {
+      "key": "Ranged",
+      "cooldown": 240,
+      "bullet": {
+        "type": "Bullets",
+        "name": "skull",
+        "width": 40,
+        "height": 40,
+        "key": "0953e23b-59ea-dcc9-ed1a-39e9d959ca2c",
+        "src": "../api/uploads/0953e23b-59ea-dcc9-ed1a-39e9d959ca2c.png"
+      },
+      "bulletSpeed": 700
     }
   }
 }

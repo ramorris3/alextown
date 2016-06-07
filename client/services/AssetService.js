@@ -25,13 +25,13 @@ app.service('AssetService',
       }
 
       // save img and get key (filename)
-      $http.post('api/save/img', {img: imgSrc})
+      $http.post('../api/save/img', {img: imgSrc, name: spriteData.name})
         .success(function(data) {
           // update spriteData with img reference
           spriteData.key = data.key;
           spriteData.src = data.src;
           
-          $http.post('api/save/asset', spriteData)
+          $http.post('../api/save/asset', spriteData)
             .success(function(data) {
               MessageService.setFlashMessage(data.message);
               allAssets = data.allAssetData;
@@ -61,7 +61,7 @@ app.service('AssetService',
     };
 
     function init() {
-      $http.get('api/assets')
+      $http.get('../api/assets')
         .success(function(data) {
           allAssets = data.allAssetData;
           LoaderService.assets = true;

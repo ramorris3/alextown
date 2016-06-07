@@ -11,17 +11,8 @@ var fs = require('fs'); // for writing to files
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
-// get cmd line arguments
-var port;
-if (process.argv[2]) {
-  if (process.argv[2] === 'editor') {
-    app.use(express.static('client/editor'));
-    port = 2000;
-  }
-} else {
-  app.use(express.static('client/game'));
-  port = 2001;
-}
+app.use('/editor', express.static('client/editor'));
+app.use('/game', express.static('client/game'));
 
 ///////////////////
 // API ENDPOINTS //
@@ -83,7 +74,7 @@ router.post('/save/img', function(req, res) {
   console.log(imgBuffer);
 
   // get filepath
-  var key = guid();
+  var key = req.body.name + '-' + guid();
   var filename = key + '.png';
   var filepath = path.join(__dirname,'uploads/',filename);
   console.log('Writing image to ' + filepath + '...')
@@ -95,7 +86,7 @@ router.post('/save/img', function(req, res) {
         res.status(500).send({message: 'There was a problem saving the image file.'});
       }
       console.log('\nImage was successfully saved!\n');
-      var apiSrc = 'api/uploads/' + filename;
+      var apiSrc = '../api/uploads/' + filename;
       res.status(200).send({
         message: 'Your asset\'s image was successfully saved to the server!',
         src: apiSrc,
@@ -308,6 +299,8 @@ function decodeBase64Image(dataString) {
 ////////////////
 // RUN SERVER //
 ////////////////
+
+var port = process.env.PORT || 2000;
 
 app.listen(port, function() {
   console.log('app listening on port ' + port + '...');

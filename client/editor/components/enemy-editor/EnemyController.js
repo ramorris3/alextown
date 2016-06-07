@@ -72,7 +72,7 @@ app.controller('EnemyController',
         "width": 50,
         "height": 50,
         "key": "stairfex",
-        "src": "api/uploads/stairfex.png"
+        "src": "../api/uploads/stairfex.png"
       },
       // animations
       moveFrames: [0,1],
@@ -89,7 +89,7 @@ app.controller('EnemyController',
           "width": 12,
           "height": 12,
           "key": "blue-bullet",
-          "src": "api/uploads/blue-bullet.png"
+          "src": "../api/uploads/blue-bullet.png"
         },
         bulletSpeed: 700 // px per second
       }
@@ -175,7 +175,7 @@ app.controller('EnemyController',
         editor.load.image('floor', 'assets/editor_floor.png');
 
         // load debris/dust sprites
-        editor.load.spritesheet('death', 'api/uploads/explode.png', 50, 50);
+        editor.load.spritesheet('death', '../api/uploads/explode.png', 50, 50);
 
         // load all saved assets
         AssetService.preloadAllAssets(editor);

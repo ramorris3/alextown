@@ -11,7 +11,7 @@ app.controller('GameController',
         game.load.image('floor', 'assets/floor.png');
 
         // load FX sprites
-        game.load.spritesheet('death', 'api/uploads/explode.png', 50, 50);
+        game.load.spritesheet('death', '../api/uploads/explode.png', 50, 50);
 
         // load all character spritesheets
         AssetService.preloadAllAssets(game);

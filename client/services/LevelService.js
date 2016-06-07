@@ -14,7 +14,7 @@ app.service('LevelService', [
 
     self.saveLevel = function(filename, level, data) {
       // request to server to save the level data
-      $http.post('api/save/stage', { 'filename': filename, 'level': level, 'data': data })
+      $http.post('../api/save/stage', { 'filename': filename, 'level': level, 'data': data })
         .success(function(data) {
           MessageService.setFlashMessage(data.message, false);
         })
@@ -24,7 +24,7 @@ app.service('LevelService', [
     };
 
     function init() {
-      $http.get('api/stages')
+      $http.get('../api/stages')
         .success(function(data) {
           // set currentLevel
           currentLevel = data.levelData.data;

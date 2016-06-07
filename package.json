@@ -3,8 +3,7 @@
   "description": "An RPG shmup with style",
   "version": "0.1.0",
   "scripts": {
-    "game": "nodemon server.js",
-    "editor": "nodemon server.js editor"
+    "start": "nodemon server.js"
   },
   "dependencies": {
     "body-parser": "^1.15.1",

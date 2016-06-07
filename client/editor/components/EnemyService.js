@@ -38,7 +38,6 @@ app.service('EnemyService',
         .error(function(data) {
           MessageService.setFlashMessage(data.message, true);
         });
-      }
     };
 
 
@@ -341,7 +340,7 @@ app.service('EnemyService',
       $http.get('/api/enemies')
         .success(function(data) {
           allEnemies = data.allEnemyData;
-          MessageService.setFlashMessage('Choose an enemy from the list or build your own.  Then click "spawn" to test it out.', false);
+          console.log('all enemy data loaded.');
         })
         .error(function(data) {
           MessageService.setFlashMessage(data.message, true);

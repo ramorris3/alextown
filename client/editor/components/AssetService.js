@@ -49,14 +49,11 @@ app.service('AssetService',
       for (var category in allAssets) {
         if (allAssets.hasOwnProperty(category)) {
           var assets = allAssets[category];
-          console.log(assets);
           for (var asset in assets) {
             if (assets.hasOwnProperty(asset)) {
               var obj = assets[asset];
-              console.log(obj);
               // load to the game
               game.load.spritesheet(obj.key, obj.src, obj.width, obj.height);
-              console.log('loaded ' + obj.key);
             }
           }
         }

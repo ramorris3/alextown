@@ -25,9 +25,9 @@ app.service('MessageService',
         }
       }
       flashMessage.visible = true;
-      // hide after 3s
+        // hide after 3s
       setTimeout(
-        function(){ 
+        function(){
           $rootScope.$apply(function() {
             self.hideFlashMessage(); 
           });

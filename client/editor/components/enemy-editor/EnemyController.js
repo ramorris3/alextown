@@ -2,6 +2,9 @@ app.controller('EnemyController',
   ['$http', '$scope', 'AssetService', 'DamageService', 'FileReader', 'EnemyService', 'MessageService', 'PlayerService', 
   function($http, $scope, AssetService, DamageService, FileReader, EnemyService, MessageService, PlayerService) {
 
+    // init message
+    MessageService.setFlashMessage('Choose an enemy from the list or build your own.  Then click "spawn" to test it out.', false);
+
     ////////////////////////////
     // MODEL VARS AND METHODS //
     ////////////////////////////

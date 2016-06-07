@@ -1,29 +1,48 @@
 app.controller('LevelController', 
-  ['$http', '$scope', 'LevelService',
-  function($http, $scope, LevelService) {
+  ['$http', '$scope', 'AssetService', 'EnemyService', 'LevelService', 'MessageService',
+  function($http, $scope, AssetService, EnemyService, LevelService, MessageService) {
 
-    //////////////////
-    // INITIAL VARS //
-    //////////////////
+    // init message
+    MessageService.setFlashMessage('Choose an enemy from the "Enemies" dropdown to get started.', false);
+
+    ///////////////////////////
+    // VIEW VARS AND METHODS //
+    ///////////////////////////
 
     var self = this;
+    $scope.showDebug = false;
+    $scope.getAllEnemies = EnemyService.getAllEnemies;
+    $scope.currentEnemy = {};
+    // saves the grid to a .json file
+    $scope.saveLevel = function() {
+      // get filename and level number
+      if (!filename) {
+        filename = prompt('What do you want to name the file? (Exclude file extension.)');
 
-    $scope.enemies = [
-      {
-        name: 'Chomper',
-        description: 'Can\'t deal damage, but they slow on contact.'
-      },
-      {
-        name: 'Charger',
-        description: 'Temperamental enemies who will charge when in range.'
-      },
-      {
-        name: 'Rook',
-        description: 'Sharpshooters who deal damage from a distance.'
+        // don't save if no filename given
+        if (!filename) {
+          alert('File was not saved.');
+          return;
+        }
+
+        filename = filename.replace(/\W/g, '');
+        if (filename === '') {
+          alert('You must include at least one alphanumeric character in the filename.  File was not saved.');
+          return;
+        }
+
+        filename += '.json';
+        level = prompt('What level will this be (int)?');
+        // don't save if level is invalid
+        if (isNaN(level) || level === null) {
+          alert('Must enter integer for level number.  File not saved.');
+          return;
+        }
       }
-    ];
 
-    $scope.currentEnemy = $scope.enemies[0];
+      // save the level
+      LevelService.saveLevel(filename, level, self.grid);
+    };
 
 
     //////////////////////////////
@@ -43,8 +62,8 @@ app.controller('LevelController',
       editor.load.image('stageLeft', 'assets/stage_left.png');
       editor.load.bitmapFont('carrier_command', 'assets/carrier_command.png', 'assets/carrier_command.xml');
 
-      // enemies
-      editor.load.spritesheet('chomper', 'assets/chomper_2.png', 24, 36);
+      // spritesheets
+      AssetService.preloadAllAssets(editor);
     }
 
     // editor vars
@@ -183,20 +202,24 @@ app.controller('LevelController',
 
     // places a creature at the current highlight gridloc
     function placeCreature() {
-      if (!highlight.alive) return;
+      if (!highlight.alive || !$scope.currentEnemy.spritesheet) return;
       gridLoc = getGridLocation(highlight.x, highlight.y);
       if (self.grid[gridLoc.x][gridLoc.y] === '0') {
         // place chomper on grid model
-        self.grid[gridLoc.x][gridLoc.y] = 'Z';
+        self.grid[gridLoc.x][gridLoc.y] = $scope.currentEnemy.name;
 
-        // place chomper on GUI at center of highlight
-        var creature = editor.add.sprite(gridLoc.x * tileSize, gridLoc.y * tileSize, 'chomper');
+        // place creature on GUI at center of highlight
+        var creature = editor.add.sprite(gridLoc.x * tileSize, gridLoc.y * tileSize, $scope.currentEnemy.spritesheet.key);
         // center chomper
         creature.x = (gridLoc.x * tileSize) + (highlight.width / 2) - (creature.width / 2);
         creature.y = (gridLoc.y * tileSize) + (highlight.height / 2) - (creature.height / 2);
         // play chomper animation
-        creature.animations.add('chomp', [0,1,2,3,4,5], 10, true);
-        creature.animations.play('chomp');
+        var moveFrames = $scope.currentEnemy.moveFrames.split(',');
+        for (i = 0; i < moveFrames.length; i++) {
+          moveFrames[i] = parseInt(moveFrames[i], 10);
+        }
+        creature.animations.add('move', moveFrames, $scope.currentEnemy.moveFps, true);
+        creature.animations.play('move');
       }
     }
 
@@ -214,49 +237,6 @@ app.controller('LevelController',
       }
       frameText.text = 'FRAME: ' + viewFrame + '/' + maxFrames;
     }
-
-
-    //////////////////
-    // VIEW METHODS //
-    //////////////////
-
-    // saves the grid to a .json file
-    $scope.saveLevel = function() {
-      // get filename and level number
-      if (!filename) {
-        filename = prompt('What do you want to name the file? (Exclude file extension.)');
-
-        // don't save if no filename given
-        if (!filename) {
-          alert('File was not saved.');
-          return;
-        }
-
-        filename = filename.replace(/\W/g, '');
-        if (filename === '') {
-          alert('You must include at least one alphanumeric character in the filename.  File was not saved.');
-          return;
-        }
-
-        filename += '.json';
-        level = prompt('What level will this be (int)?');
-        // don't save if level is invalid
-        if (isNaN(level) || level === null) {
-          alert('Must enter integer for level number.  File not saved.');
-          return;
-        }
-      }
-
-      // save the level
-      LevelService.saveLevel(filename, level, self.grid);
-    };
-
-    $scope.cancelSave = function() {
-      var really = confirm('Are you sure you want to cancel?  The level will reset to a default empty level.');
-      if (really) {
-
-      }
-    };
 
     //////////////////////////
     // OTHER HELPER METHODS //

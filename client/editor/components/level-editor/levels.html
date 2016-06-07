@@ -1,18 +1,35 @@
 <div class="level-bg bg">
   <div id="phaser-frame"></div>
   <div class="settings-frame">
-    <!-- FULL LIST -->
-    <!-- <p ng-repeat="(name, description) in enemies">{{description}}</p> -->
-
-    <!-- SELECT ONE ENEMY -->
-    <!-- <select ng-model="currentEnemy" ng-options="enemy as enemy.name for enemy in enemies">
-    </select>
-    <p>name: {{currentEnemy.name}}<br/>description: {{currentEnemy.description}}</p> -->
 
     <!-- Saving -->
-    <div class="save-btn-wrap">
-      <span class="light-btn" ng-click="cancelSave()">Cancel</span>
-      <span class="dark-btn" ng-click="saveLevel()">Save Level</span>
+    <div class="btn-row">
+      <div class="btn-wrap-right">
+        <span class="dark-btn" ng-click="saveLevel()">Save Level</span>
+      </div>
+    </div>
+
+    <!-- DEBUG ENEMY LIST -->
+    Debug enemies: <input type="checkbox" ng-model="showDebug" /><br />
+    <pre ng-show="showDebug">{{getAllEnemies() | json}}</pre>
+
+    <!-- SELECT ONE ENEMY -->
+    <div class="settings-row">
+      <p class="form-header">Choose an enemy</p>
+      <p><!-- Enemy selector -->
+        <label for="curr-enemy">Enemies:</label>
+        <select ng-model="currentEnemy" ng-options="enemy as name for (name, enemy) in getAllEnemies() track by name" id="curr-enemy"></select>
+    </div>
+
+    <!-- Current enemy profile -->
+    <div class="settings-row" ng-show="{{ currentEnemy }}">
+      <p class="form-header">Enemy bio</p>
+      <img ng-src="{{ currentEnemy.spritesheet.src }}" /><br />
+      <p><em><strong>Name:  </strong></em>{{ currentEnemy.name }}</p>
+      <p><em><strong>Description:  </strong></em>{{ currentEnemy.description }}</p>
+      <p><em><strong>Attack:  </strong></em>{{ currentEnemy.attackPattern.key }}</p>
+      <p><em><strong>Health:  </strong></em>{{ currentEnemy.health }}</p>
+      <p><em><strong>Damage:  </strong></em>{{ currentEnemy.damage }}</p>
     </div>
   </div>
 </div>

@@ -58,7 +58,7 @@
     },
     "moveSpeed": 250,
     "movePattern": "Default",
-    "health": 7,
+    "health": 3,
     "damage": 1,
     "moveFrames": "0,1,2,3",
     "moveFps": "10",

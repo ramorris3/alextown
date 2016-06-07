@@ -1,0 +1,26 @@
+html, body {
+  margin: 0;
+  padding: 0;
+}
+
+.bg {
+  min-height: 100vh;
+  width: 100%;
+  padding-top: 40px;
+  padding-bottom: 200px;
+  background: #008CFF;
+  background: -webkit-linear-gradient(#008CFF, white);
+  background: -o-linear-gradient(#008CFF, white);
+  background: -moz-linear-gradient(#008CFF, white);
+  background: linear-gradient(#008CFF, white);
+}
+
+#phaser-frame {
+  margin: 0 auto;
+  margin-bottom: 40px;
+  border: 5px solid white;
+  border-radius: 5px;
+  height: 500px;
+  width: 1000px;
+  background-color: #34444f;
+}

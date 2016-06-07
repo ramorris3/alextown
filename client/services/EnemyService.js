@@ -3,14 +3,17 @@
   and handles loading and saving enemies from/to the database
 */
 app.service('EnemyService', 
-  ['$http', '$rootScope', 'DamageService', 'MessageService',
-  function($http, $rootScope, DamageService, MessageService) {
+  ['$http', '$rootScope', 'DamageService', 'LoaderService', 'MessageService',
+  function($http, $rootScope, DamageService, LoaderService, MessageService) {
 
     var self = this;
 
     var allEnemies = {};
     self.getAllEnemies = function() {
       return allEnemies;
+    };
+    self.getEnemy = function(key) {
+      return allEnemies[key];
     };
 
     init();
@@ -340,7 +343,8 @@ app.service('EnemyService',
       $http.get('/api/enemies')
         .success(function(data) {
           allEnemies = data.allEnemyData;
-          console.log('all enemy data loaded.');
+          LoaderService.enemy = true;
+          LoaderService.loadHandler();
         })
         .error(function(data) {
           MessageService.setFlashMessage(data.message, true);

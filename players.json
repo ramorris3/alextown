@@ -1,0 +1,34 @@
+{
+  "stairfex": {
+    "name": "stairfex",
+    "description": "stairfex always beats morio",
+    "health": 20,
+    "damage": 1,
+    "moveSpeed": 300,
+    "spritesheet": {
+      "type": "Players",
+      "name": "Stairfex",
+      "width": 50,
+      "height": 50,
+      "key": "stairfex",
+      "src": "api/uploads/stairfex.png"
+    },
+    "moveFrames": [0,1],
+    "moveFps": 10,
+    "attackFrames": [2,3],
+    "attackFps": 10,
+    "attackPattern": {
+      "key": "Ranged",
+      "cooldown": 10,
+      "bullet": {
+        "type": "Bullets",
+        "name": "Blue",
+        "width": 12,
+        "height": 12,
+        "key": "blue-bullet",
+        "src": "api/uploads/blue-bullet.png"
+      },
+      "bulletSpeed": 700
+    }
+  }
+}

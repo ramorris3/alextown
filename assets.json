@@ -17,6 +17,14 @@
       "height": 32,
       "key": "0985aaa0-135e-3555-2dda-5e58a66d6aca",
       "src": "api/uploads/0985aaa0-135e-3555-2dda-5e58a66d6aca.png"
+    },
+    "fuzzball": {
+      "type": "Enemies",
+      "name": "fuzzball",
+      "width": 50,
+      "height": 50,
+      "key": "4072065f-c88d-bc56-a820-3190da21cdd0",
+      "src": "api/uploads/4072065f-c88d-bc56-a820-3190da21cdd0.png"
     }
   },
   "Bullets": {

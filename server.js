@@ -20,7 +20,7 @@ if (process.argv[2]) {
   }
 } else {
   app.use(express.static('client/game'));
-  port = 3000;
+  port = 2001;
 }
 
 ///////////////////
@@ -57,6 +57,23 @@ router.post('/save/stage', function(req, res) {
   });
 
 });
+
+/* GET all levels from the "stages" folder */
+router.get('/stages', function(req, res) {
+  //get filepath
+  var filepath = 'stages/test.json';
+
+  fs.readFile(filepath, function(err, data) {
+    if (err) {
+      return res.status(500).send({message: 'There was a problem reading the level from stages.json'});
+    }
+    console.log('\nLevel data retrieved...\n');
+    res.status(200).send({
+      message: 'Successfully got level data!',
+      levelData: JSON.parse(data)
+    });
+  });
+})
 
 /* POST an image to the local server directory "uploads" */
 router.post('/save/img', function(req, res) {
@@ -185,6 +202,22 @@ router.post('/save/asset', function(req,res) {
     });
 
 });
+
+/* GET all players from the 'players.json' file */
+router.get('/players', function(req, res) {
+  var filepath = path.join(__dirname, 'players.json');
+  console.log('\nRetrieving players from ' + filepath + '...\n');
+
+  fs.readFile(filepath, function(err, data) {
+    if (err) {
+      console.log(err);
+      return res.status(500).send({message: 'There was a problem retrieving exising player data.'});
+    }
+
+    console.log('\nGot player data!  Writing response...\n');
+    res.status(200).send({message: 'Successfully got players.', allPlayerData: JSON.parse(data)});
+  })
+})
 
 /* GET all enemies from the 'enemies.json' file */
 router.get('/enemies', function(req, res) {

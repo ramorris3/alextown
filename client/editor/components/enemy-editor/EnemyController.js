@@ -110,6 +110,14 @@ app.controller('EnemyController',
         MessageService.setFlashMessage('Data from enemy form is corrupt.', true);
         return false;
       }
+      if (!data.name || !data.description) {
+        MessageService.setFlashMessage('You need to enter a name and a description for this enemy', true);
+        return false;
+      }
+      if (data.name === '0') {
+        MessageService.setFlashMessage('Choose a name other than "0."', true);
+        return false;
+      }
       // stats
       if (!data.health || !data.damage) {
         MessageService.setFlashMessage('You need to specify health and damage.', true);
@@ -122,11 +130,11 @@ app.controller('EnemyController',
       }
       // sprite
       if (!data.spritesheet) {
-        MessageService.setFlashMessage('You need to upload a spritesheet for this enemy.  (Save the enemy.)', true);
+        MessageService.setFlashMessage('You need to choose a spritesheet for this enemy.', true);
         return false;
       }
       if (!data.spritesheet.key || !data.spritesheet.src) {
-        MessageService.setFlashMessage('The spritesheet is missing a source and a key.', true);
+        MessageService.setFlashMessage('The spritesheet you chose is missing a source and a key.', true);
         return false;
       }
       if (!data.spritesheet.width || !data.spritesheet.height) {
@@ -165,10 +173,6 @@ app.controller('EnemyController',
       function preload() {
         // background tiles
         editor.load.image('floor', 'assets/editor_floor.png');
-
-        // preload bullets
-        editor.load.image('blue-bullet', 'api/uploads/blue-bullet.png');
-        editor.load.image('red-bullet', 'api/uploads/red-bullet.png');
 
         // load debris/dust sprites
         editor.load.spritesheet('death', 'api/uploads/explode.png', 50, 50);

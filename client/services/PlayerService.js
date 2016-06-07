@@ -1,7 +1,18 @@
 app.service('PlayerService', 
-  ['DamageService', function(DamageService) {
+  ['$http', 'DamageService', 'LoaderService', 
+  function($http, DamageService, LoaderService) {
 
     var self = this;
+
+    var allPlayers = {};
+    self.getAllPlayers = function() {
+      return allPlayers;
+    };
+    self.getPlayer = function(key) {
+      return allPlayers[key];
+    };
+
+    init();
 
     ///////////////////////
     // PLAYER OBJECT DEF //
@@ -171,5 +182,22 @@ app.service('PlayerService',
         }
       }, sprite.game);
     };
+
+    ///////////////////
+    // INIT FUNCTION //
+    ///////////////////
+
+    function init() {
+      $http.get('/api/players')
+        .success(function(data) {
+          allPlayers = data.allPlayerData;
+          LoaderService.player = true;
+          LoaderService.loadHandler();
+        })
+        .error(function(data) {
+          MessageService.setFlashMessage(data.message, true);
+        });
+    }
+
   }
 ]);

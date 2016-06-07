@@ -1,6 +1,6 @@
 app.service('AssetService',
-  ['$http', 'MessageService',
-  function($http, MessageService) {
+  ['$http', 'LoaderService', 'MessageService',
+  function($http, LoaderService, MessageService) {
     var self = this;
     var allAssets = {};
     self.getAllAssets = function() {
@@ -64,6 +64,8 @@ app.service('AssetService',
       $http.get('api/assets')
         .success(function(data) {
           allAssets = data.allAssetData;
+          LoaderService.assets = true;
+          LoaderService.loadHandler();
         })
         .error(function(data) {
           console.log('ERROR' + JSON.stringify(data));

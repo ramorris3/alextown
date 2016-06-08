@@ -130,5 +130,38 @@
       },
       "bulletSpeed": 700
     }
+  },
+  "Morio": {
+    "name": "Morio",
+    "description": "every game needs a morio",
+    "spritesheet": {
+      "type": "Enemies",
+      "name": "morio-guy",
+      "width": 50,
+      "height": 50,
+      "key": "morio-guy-d7aa5631-aa63-6040-0a60-cfbb6734c97e",
+      "src": "../api/uploads/morio-guy-d7aa5631-aa63-6040-0a60-cfbb6734c97e.png"
+    },
+    "moveFrames": "0,1,2,3",
+    "moveFps": "10",
+    "attackFrames": "0,1,2,3",
+    "attackFps": "20",
+    "health": 5,
+    "damage": 1,
+    "moveSpeed": 200,
+    "movePattern": "Default",
+    "attackPattern": {
+      "key": "Ranged",
+      "cooldown": 60,
+      "bullet": {
+        "type": "Bullets",
+        "name": "Red",
+        "width": 12,
+        "height": 12,
+        "key": "red-bullet",
+        "src": "../api/uploads/red-bullet.png"
+      },
+      "bulletSpeed": 350
+    }
   }
 }

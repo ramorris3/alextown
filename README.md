@@ -17,7 +17,7 @@
 9. To customize with the editor, go to `localhost:2000/editor`
 10. Have at it!
 
-[https://monosnap.com/file/7Na7FkHMq4UfPdMeu66j2I4f2YRAPN]
+Video demo: [https://monosnap.com/file/5qDuYLjbWlmR67HePtFWu4UNGYvuPC]
 
 *Notes:*
 - Images are uploaded to ~/uploads/ within the project.

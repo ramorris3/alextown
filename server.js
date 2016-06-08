@@ -28,41 +28,56 @@ router.get('/test', function(req, res) {
 
 /* POST a level.json file to the "stages" folder */
 router.post('/save/stage', function(req, res) {
+  var newLevel = req.body;
 
   // get the filepath
-  var filepath = 'stages/' + req.body.filename;
-  console.log('saving to ' + filepath + '...');
-  // create an object to save at "filepath"
-  var levelData = {};
-  levelData.level = req.body.level;
-  levelData.data = req.body.data;
+  var filepath = 'models/stages.json';
+  console.log('reading stages from ' + filepath + '...');
 
-  // write the levelData to the file
-  fs.writeFile(filepath, JSON.stringify(levelData, null, 2), function(err) {
-      if(err) {
-          console.log(err);
-          res.status(500).send({message: 'Well, shoot.  Something went wrong while trying to save the level.'});
-      }
-      console.log('\nFile was saved successfully!\n');
-      res.status(200).send({message: 'Your level was saved successfully as ~/' + filepath});
-  });
-
-});
-
-/* GET all levels from the "stages" folder */
-router.get('/stages', function(req, res) {
-  //get filepath
-  var filepath = 'stages/test.json';
-
+  // get existing levels data
   fs.readFile(filepath, function(err, data) {
     if (err) {
-      return res.status(500).send({message: 'There was a problem reading the level from stages.json'});
+      console.log(err);
+      return res.status(500).send({message: 'There was a problem reading the existing stages data.'});
     }
-    console.log('\nLevel data retrieved...\n');
-    res.status(200).send({
-      message: 'Successfully got level data!',
-      levelData: JSON.parse(data)
+    console.log('\nLevel data retrieved.  Adding new level...\n');
+    var allLevels = JSON.parse(data);
+    if (typeof allLevels !== 'object') {
+      console.log('\nERROR: \'allLevels\' is not valid JSON.\n');
+      return res.status(500).send({message: 'Existing level data is corrupt.  Level not saved.'});
+    }
+    allLevels[newLevel.number] = newLevel;
+    // write new model to file
+    fs.writeFile(filepath, JSON.stringify(allLevels, null, 2), function(err) {
+      if (err) {
+        console.log(err);
+        res.status(500).send({message: 'Something went wrong while trying to save the level.  Level not saved.'});
+      }
+      console.log('\nLevel was saved successfully!\n');
+      return res.status(200).send({message: '"Level ' + newLevel.number + ': ' + newLevel.title + '" was saved successfully.', allLevelData: allLevels});
     });
+  });
+});
+
+/* GET all levels from the "models/stages.json" file */
+router.get('/stages', function(req, res) {
+  // get the filepath
+  var filepath = 'models/stages.json';
+  console.log('reading stages from ' + filepath + '...');
+
+  // get existing levels data
+  fs.readFile(filepath, function(err, data) {
+    if (err) {
+      console.log(err);
+      return res.status(500).send({message: 'There was a problem reading the existing stages data.'});
+    }
+    console.log('\nLevel data retrieved.  Adding new level...\n');
+    var allLevels = JSON.parse(data);
+    if (typeof allLevels !== 'object') {
+      console.log('\nERROR: \'allLevels\' is not valid JSON.\n');
+      return res.status(500).send({message: 'Existing level data is corrupt.  Level not saved.'});
+    }
+    return res.status(200).send({message: 'Got all levels.', allLevelData: allLevels});
   });
 })
 
@@ -126,7 +141,7 @@ router.get('/uploads/:filename', function(req, res) {
 router.get('/assets', function(req,res) {
 
   // get filepath
-  filepath = path.join(__dirname,'assets.json');
+  filepath = path.join(__dirname,'models/assets.json');
 
   // read file
   console.log('\nReading asset data from file ' + filepath + '...\n');
@@ -140,14 +155,12 @@ router.get('/assets', function(req,res) {
       console.log('\nGot asset data.  Writing response...\n');
       // get subsection of assets, if requested
       var allAssets = JSON.parse(data);
-      var type = req.query.type;
-      console.log(type);
-      console.log(allAssets[type]);
-      if (type && allAssets[type]) {
-        allAssets = allAssets[type];
+      if (typeof allAssets !== 'object') {
+        console.log('\nERROR: \'assets\' is not valid JSON.\n');
+        return res.status(500).send({message: 'Existing asset data is corrupt.  Could not get assets.'});
       }
 
-      res.status(200).send({message: 'Successfully got asset data.', allAssetData: allAssets});
+      return res.status(200).send({message: 'Successfully got asset data.', allAssetData: allAssets});
     });
 
 });
@@ -158,7 +171,7 @@ router.post('/save/asset', function(req,res) {
   var newAsset = req.body;
 
   // get filepath
-  filepath = path.join(__dirname, 'assets.json');
+  filepath = path.join(__dirname, 'models/assets.json');
 
   // read file
   console.log('\nReading asset data from file ' + filepath + '...\n');
@@ -199,7 +212,7 @@ router.post('/save/asset', function(req,res) {
 
 /* GET all players from the 'players.json' file */
 router.get('/players', function(req, res) {
-  var filepath = path.join(__dirname, 'players.json');
+  var filepath = path.join(__dirname, 'models/players.json');
   console.log('\nRetrieving players from ' + filepath + '...\n');
 
   fs.readFile(filepath, function(err, data) {
@@ -215,7 +228,7 @@ router.get('/players', function(req, res) {
 
 /* GET all enemies from the 'enemies.json' file */
 router.get('/enemies', function(req, res) {
-  var filepath = path.join(__dirname,'enemies.json');
+  var filepath = path.join(__dirname,'models/enemies.json');
   console.log('\nRetrieving enemies from ' + filepath + '...\n');
 
   fs.readFile(filepath, function(err, data) {
@@ -237,7 +250,7 @@ router.post('/save/enemies', function(req, res) {
   console.log(newEnemy);
 
   // get filepath
-  var filepath = path.join(__dirname,'enemies.json');
+  var filepath = path.join(__dirname,'models/enemies.json');
   console.log('\nReading enemy data from ' + filepath + '...\n');
 
   // get existing enemyData

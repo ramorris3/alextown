@@ -493,17 +493,22 @@ app.service('LevelService', [
 
     var self = this;
 
-    var currentLevel;
-    self.getCurrentLevel = function() {
-      return currentLevel;
+    var allLevels;
+    self.getAllLevels = function() {
+      return allLevels;
+    };
+
+    self.getLevel = function(num) {
+      return allLevels[num];
     };
 
     init();
 
-    self.saveLevel = function(filename, level, data) {
+    self.saveLevel = function(levelData) {
       // request to server to save the level data
-      $http.post('../api/save/stage', { 'filename': filename, 'level': level, 'data': data })
+      $http.post('../api/save/stage', levelData)
         .success(function(data) {
+          allLevels = data.allLevelData;
           MessageService.setFlashMessage(data.message, false);
         })
         .error(function(data) {
@@ -515,7 +520,7 @@ app.service('LevelService', [
       $http.get('../api/stages')
         .success(function(data) {
           // set currentLevel
-          currentLevel = data.levelData.data;
+          allLevels = data.allLevelData;
           LoaderService.level = true;
           LoaderService.loadHandler();
         })
@@ -826,9 +831,6 @@ app.controller('GameController',
       var game = new Phaser.Game(1000, 500, Phaser.CANVAS, 'phaser-frame', {preload: preload, create: create, update: update});
 
       function preload() {
-        // load background
-        game.load.image('floor', 'assets/floor.png');
-
         // load FX sprites
         game.load.spritesheet('death', '../api/uploads/explode.png', 50, 50);
 
@@ -841,13 +843,13 @@ app.controller('GameController',
       var player;
       var enemyGroup;
       var enemyTimer = 0;
-      var levelData = LevelService.getCurrentLevel();
+      var levelData = LevelService.getLevel(1);
       var levelCol = 0;
 
       function create() {
 
         // lay tiles
-        tiles = game.add.tileSprite(0, 0, game.width, game.height, 'floor');
+        tiles = game.add.tileSprite(0, 0, game.width, game.height, levelData.background.key);
         tiles.autoScroll(scrollSpeed, 0);
 
         // create death sprites
@@ -878,7 +880,7 @@ app.controller('GameController',
       function update() {
         // generate enemies
         enemyTimer++;
-        if (enemyTimer % 75 === 0) {
+        if (enemyTimer % 50 === 0) {
           spawnEnemy();
         }
 
@@ -924,7 +926,7 @@ app.controller('GameController',
       };
 
       function spawnEnemy() {
-        var col = levelData[levelCol];
+        var col = levelData.enemies[levelCol];
         for (var i = 0; i < col.length; i++) {
           var enemyData = EnemyService.getEnemy(col[i]);
           if (enemyData) {

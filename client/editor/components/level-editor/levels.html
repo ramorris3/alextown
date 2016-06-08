@@ -18,9 +18,16 @@
           <label for="title">Title:</label>
           <input ng-model="levelData.title" id="title" />
         </p>
+        <p><!-- Description -->
+          <label for="desc">Description:</label>
+          <input ng-model="levelData.description" id="desc" />
+        </p>
         <p><!-- Level number -->
           <label for="num">Number:</label>
-          <select ng-model="levelData.num" id="num" ng-options="num for num in levelNumbers"></select>
+          <select id="num"
+            ng-model="levelData.number"
+            ng-change="loadLevel()"
+            ng-options="num for num in levelNumbers"></select>
         </p>
         <p><!-- BackgroundTile -->
           <label for="bgtile">Background:</label>
@@ -29,7 +36,7 @@
             ng-options="bg as key for (key, bg) in getBackgrounds() track by key"
             ng-change="reloadEditorState()"></select>
         </p>
-        <p><em>You can add more backgrounds to this list using the <a ui-sref="assets">asset loader</a>.</em></p>
+        <p><em>You can add more backgrounds to this list using the <a ui-sref="asset">asset loader</a>.</em></p>
       </form>
     </div>
 
@@ -41,7 +48,7 @@
           <label for="curr-enemy">Enemies:</label>
           <select ng-model="currentEnemy" ng-options="enemy as name for (name, enemy) in getAllEnemies() track by name" id="curr-enemy"></select>
         </p>
-        <p><em>You can add more enemies to this list using the <a ui-sref="enemies">enemy editor</a>.</em></p>
+        <p><em>You can add more enemies to this list using the <a ui-sref="enemy">enemy editor</a>.</em></p>
       </form>
     </div>
 

@@ -12,41 +12,45 @@ app.controller('LevelController',
     var self = this;
     $scope.levelData = {};
       //title
+      //description
       //number
       //background (assetData)
     $scope.levelNumbers = [1,2,3,4,5,6,7,8,9,10];
     $scope.getBackgrounds = AssetService.getBackgrounds;
     $scope.getAllEnemies = EnemyService.getAllEnemies;
     $scope.currentEnemy = {};
-    // saves the grid to a .json file
-    $scope.saveLevel = function() {
-      // get filename and level number
-      if (!filename) {
-        filename = prompt('What do you want to name the file? (Exclude file extension.)');
 
-        // don't save if no filename given
-        if (!filename) {
-          alert('File was not saved.');
-          return;
-        }
-
-        filename = filename.replace(/\W/g, '');
-        if (filename === '') {
-          alert('You must include at least one alphanumeric character in the filename.  File was not saved.');
-          return;
-        }
-
-        filename += '.json';
-        level = prompt('What level will this be (int)?');
-        // don't save if level is invalid
-        if (isNaN(level) || level === null) {
-          alert('Must enter integer for level number.  File not saved.');
-          return;
-        }
+    function validData() {
+      var message;
+      if (!$scope.levelData.title || !$scope.levelData.description) {
+        message = 'You must enter a title and description for the level.';
+      } else if (!$scope.levelData.number) {
+        message = 'You need to choose a number for the level.';
+      } else if (!$scope.levelData.background) {
+        message = 'You need to choose a background tile for the level.';
+      } else if (!$scope.levelData.enemies || $scope.levelData.enemies.length < 1) {
+        message = 'Enemy grid data is corrupt';
+      } else {
+        return true;
       }
+      if (message) {
+        MessageService.setFlashMessage(message, true);
+        return false;
+      }
+    }
 
-      // save the level
-      LevelService.saveLevel(filename, level, self.grid);
+    // saves the levelData to a .json file
+    $scope.saveLevel = function() {
+      if (validData()) {
+        var levelData = angular.copy($scope.levelData);
+        LevelService.saveLevel(levelData);
+      }
+    };
+
+    $scope.loadLevel = function() {
+      var num = $scope.levelData.number;
+      $scope.levelData = LevelService.getLevel(num);
+      $scope.reloadEditorState();
     };
 
 
@@ -78,7 +82,7 @@ app.controller('LevelController',
     var cursor;
     var stageRight;
     var stageLeft;
-    self.grid = [];
+    $scope.levelData.enemies = [];
     var tileSize = 50;
     var prevMouseDown = false;
     var filename;
@@ -233,9 +237,9 @@ app.controller('LevelController',
     function placeCreature() {
       if (!highlight.alive || !$scope.currentEnemy.spritesheet) return;
       gridLoc = getGridLocation(highlight.x, highlight.y);
-      if (self.grid[gridLoc.x][gridLoc.y] === '0') {
+      if ($scope.levelData.enemies[gridLoc.x][gridLoc.y] === '0') {
         // place creature on grid model
-        self.grid[gridLoc.x][gridLoc.y] = $scope.currentEnemy.name;
+        $scope.levelData.enemies[gridLoc.x][gridLoc.y] = $scope.currentEnemy.name;
 
         // place creature on GUI
         var creature = editor.add.sprite(0, 0, $scope.currentEnemy.spritesheet.key);
@@ -281,22 +285,22 @@ app.controller('LevelController',
       var i, j;
 
       // empty grid
-      if (self.grid.length < 1) {
+      if ($scope.levelData.enemies.length < 1) {
         for (i = 0; i < editor.width * maxFrames; i += tileSize) {
           var list = [];
           for (j = 0; j < editor.height; j += tileSize) {
             list.push('0');
           }
-          self.grid.push(list);
+          $scope.levelData.enemies.push(list);
         }
         return;
       }
 
       // state reloaded, place existing enemies on grid
-      for (i = 0; i < self.grid.length; i++) {
-        for (j = 0; j < self.grid[i].length; j++) {
-          if (self.grid[i][j] !== '0') {
-            var currentEnemy = $scope.getAllEnemies()[self.grid[i][j]];
+      for (i = 0; i < $scope.levelData.enemies.length; i++) {
+        for (j = 0; j < $scope.levelData.enemies[i].length; j++) {
+          if ($scope.levelData.enemies[i][j] !== '0') {
+            var currentEnemy = $scope.getAllEnemies()[$scope.levelData.enemies[i][j]];
             // place creature on GUI
             var creature = editor.add.sprite(0, 0, currentEnemy.spritesheet.key);
             // add to rendering layer
@@ -323,7 +327,7 @@ app.controller('LevelController',
 
     // clear the level
     $scope.reset = function() {
-      self.grid = [];
+      $scope.levelData.enemies = [];
       initGrid();
       editor.state.start(editor.state.current);
     };

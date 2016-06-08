@@ -5,17 +5,22 @@ app.service('LevelService', [
 
     var self = this;
 
-    var currentLevel;
-    self.getCurrentLevel = function() {
-      return currentLevel;
+    var allLevels;
+    self.getAllLevels = function() {
+      return allLevels;
+    };
+
+    self.getLevel = function(num) {
+      return allLevels[num];
     };
 
     init();
 
-    self.saveLevel = function(filename, level, data) {
+    self.saveLevel = function(levelData) {
       // request to server to save the level data
-      $http.post('../api/save/stage', { 'filename': filename, 'level': level, 'data': data })
+      $http.post('../api/save/stage', levelData)
         .success(function(data) {
+          allLevels = data.allLevelData;
           MessageService.setFlashMessage(data.message, false);
         })
         .error(function(data) {
@@ -27,7 +32,7 @@ app.service('LevelService', [
       $http.get('../api/stages')
         .success(function(data) {
           // set currentLevel
-          currentLevel = data.levelData.data;
+          allLevels = data.allLevelData;
           LoaderService.level = true;
           LoaderService.loadHandler();
         })

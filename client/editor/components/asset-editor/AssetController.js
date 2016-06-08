@@ -12,8 +12,8 @@ app.controller('AssetController',
 
     $scope.assetTypes = [
       'Enemies',
-      'Bullets'
-      // backgrounds, etc.
+      'Bullets',
+      'Backgrounds'
     ];
 
     // load existing assets 

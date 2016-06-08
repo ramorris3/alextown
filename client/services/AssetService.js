@@ -17,6 +17,10 @@ app.service('AssetService',
       return allAssets.Enemies;
     };
 
+    self.getBackgrounds = function() {
+      return allAssets.Backgrounds;
+    };
+
     self.saveAsset = function(spriteData, imgSrc) {
       // check for dupes
       if (allAssets.hasOwnProperty(spriteData.name)) {

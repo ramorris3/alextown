@@ -10,7 +10,12 @@ app.controller('LevelController',
     ///////////////////////////
 
     var self = this;
-    $scope.showDebug = false;
+    $scope.levelData = {};
+      //title
+      //number
+      //background (assetData)
+    $scope.levelNumbers = [1,2,3,4,5,6,7,8,9,10];
+    $scope.getBackgrounds = AssetService.getBackgrounds;
     $scope.getAllEnemies = EnemyService.getAllEnemies;
     $scope.currentEnemy = {};
     // saves the grid to a .json file
@@ -49,11 +54,13 @@ app.controller('LevelController',
     // EDITOR DEF AND FUNCTIONS //
     //////////////////////////////
 
-    var editor = new Phaser.Game(1000, 500, Phaser.CANVAS, 'phaser-frame', {preload: preload, create: create, update: update}); 
+    var editor = new Phaser.Game(1000, 500, Phaser.CANVAS, 'phaser-frame', {preload: preload, create: create, update: update, render: render}); 
 
     function preload() {
-      // background
-      editor.load.image('floor', 'assets/editor_floor.png');
+      // default background
+      if (!$scope.levelData.background) {
+        editor.load.image('floor', 'assets/editor_floor.png');
+      }
 
       // GUI elements
       editor.load.image('highlight', 'assets/highlight.png');
@@ -79,36 +86,54 @@ app.controller('LevelController',
     var viewFrame = 0;
     var maxFrames = 20;
     var frameText;
+    var layers;
 
     function create() {
+
+      // rendering layers: sprites drawn in the order of layers object properties
+      layers = {
+        background: editor.add.group(),
+        enemies: editor.add.group(),
+        ui: editor.add.group()
+      };
+
       // init world
       editor.world.setBounds(0, 0, editor.width * maxFrames, editor.height);
-      editor.add.tileSprite(0, 0, editor.width * maxFrames, editor.height, 'floor');
+      // background (default if none selected)
+      var key = $scope.levelData.background ? $scope.levelData.background.key : 'floor';
+      var bg = editor.add.tileSprite(0, 0, editor.width * maxFrames, editor.height, key);
+      layers.background.add(bg);
 
       // init grid
-      for (i = 0; i < editor.width * maxFrames; i += tileSize) {
-        var list = [];
-        for (j = 0; j < editor.height; j += tileSize) {
-          list.push('0');
-        }
-        self.grid.push(list);
-      }
+      initGrid();
 
       // init GUI elements
       highlight = editor.add.sprite(0, 0, 'highlight');
       stageLeft = editor.add.sprite(8, editor.world.centerY - 16, 'stageLeft');
       stageRight = editor.add.sprite(editor.width - 40, editor.world.centerY - 16, 'stageRight');
       cursor = editor.add.sprite(editor.world.centerX, editor.world.centerY, 'cursor');
-      stageLeft.fixedToCamera = true;
-      stageRight.fixedToCamera = true;
-      cursor.fixedToCamera = true;
 
+      // enable physics
       editor.physics.enable(cursor, Phaser.Physics.ARCADE);
       editor.physics.enable(stageRight, Phaser.Physics.ARCADE);
       editor.physics.enable(stageLeft, Phaser.Physics.ARCADE);
 
+      // set bounding box for cursor
+      cursor.body.setSize(8, 8);
+
+      // fix GUI to camera
+      stageLeft.fixedToCamera = true;
+      stageRight.fixedToCamera = true;
+      cursor.fixedToCamera = true;
+
+      // add GUI elements to respective rendering layers
+      layers.background.add(highlight);
+      layers.ui.add(stageLeft);
+      layers.ui.add(stageRight);
+      layers.ui.add(cursor);
+
       // init HUD text
-      frameText = editor.add.bitmapText(10, 10, 'carrier_command', 'FRAME: ' + viewFrame + '/' + maxFrames, 20);
+      frameText = editor.add.bitmapText(10, 10, 'carrier_command', 'FRAME: ' + (viewFrame + 1).toString() + '/' + maxFrames, 20);
       frameText.fixedToCamera = true;
 
     }
@@ -167,6 +192,10 @@ app.controller('LevelController',
 
     }
 
+    function render() {
+      //editor.debug.body(cursor);
+    }
+
     ///////////////////////////
     // EDITOR HELPER METHODS //
     ///////////////////////////
@@ -205,15 +234,21 @@ app.controller('LevelController',
       if (!highlight.alive || !$scope.currentEnemy.spritesheet) return;
       gridLoc = getGridLocation(highlight.x, highlight.y);
       if (self.grid[gridLoc.x][gridLoc.y] === '0') {
-        // place chomper on grid model
+        // place creature on grid model
         self.grid[gridLoc.x][gridLoc.y] = $scope.currentEnemy.name;
 
-        // place creature on GUI at center of highlight
-        var creature = editor.add.sprite(gridLoc.x * tileSize, gridLoc.y * tileSize, $scope.currentEnemy.spritesheet.key);
-        // center chomper
-        creature.x = (gridLoc.x * tileSize) + (highlight.width / 2) - (creature.width / 2);
-        creature.y = (gridLoc.y * tileSize) + (highlight.height / 2) - (creature.height / 2);
-        // play chomper animation
+        // place creature on GUI
+        var creature = editor.add.sprite(0, 0, $scope.currentEnemy.spritesheet.key);
+
+        // center creature on tile
+        creature.anchor.setTo(0.5);
+        creature.x = (gridLoc.x * tileSize) + (tileSize / 2);
+        creature.y = (gridLoc.y * tileSize) + (tileSize / 2);
+
+        // add to rendering layer
+        layers.enemies.add(creature);
+
+        // play creature animation
         var moveFrames = $scope.currentEnemy.moveFrames.split(',');
         for (i = 0; i < moveFrames.length; i++) {
           moveFrames[i] = parseInt(moveFrames[i], 10);
@@ -225,17 +260,17 @@ app.controller('LevelController',
 
     function scrollRight() {
       viewFrame++;
-      if (viewFrame > maxFrames) {
-        viewFrame = maxFrames;
+      if (viewFrame > maxFrames - 1) {
+        viewFrame = maxFrames - 1;
       }
-      frameText.text = 'FRAME: ' + viewFrame + '/' + maxFrames;
+      frameText.text = 'FRAME: ' + (viewFrame + 1).toString() + '/' + maxFrames;
     }
     function scrollLeft() {
       viewFrame--;
       if (viewFrame < 0) {
         viewFrame = 0;
       }
-      frameText.text = 'FRAME: ' + viewFrame + '/' + maxFrames;
+      frameText.text = 'FRAME: ' + (viewFrame + 1).toString() + '/' + maxFrames;
     }
 
     //////////////////////////
@@ -243,23 +278,55 @@ app.controller('LevelController',
     //////////////////////////
 
     function initGrid() {
-      for (i = 0; i < editor.width * maxFrames; i += tileSize) {
-        var list = [];
-        for (j = 0; j < editor.height; j += tileSize) {
-          list.push('0');
+      var i, j;
+
+      // empty grid
+      if (self.grid.length < 1) {
+        for (i = 0; i < editor.width * maxFrames; i += tileSize) {
+          var list = [];
+          for (j = 0; j < editor.height; j += tileSize) {
+            list.push('0');
+          }
+          self.grid.push(list);
         }
-        self.grid.push(list);
+        return;
+      }
+
+      // state reloaded, place existing enemies on grid
+      for (i = 0; i < self.grid.length; i++) {
+        for (j = 0; j < self.grid[i].length; j++) {
+          if (self.grid[i][j] !== '0') {
+            var currentEnemy = $scope.getAllEnemies()[self.grid[i][j]];
+            // place creature on GUI
+            var creature = editor.add.sprite(0, 0, currentEnemy.spritesheet.key);
+            // add to rendering layer
+            layers.enemies.add(creature);
+            // center creature
+            creature.anchor.setTo(0.5);
+            creature.x = (i * tileSize) + (tileSize / 2);
+            creature.y = (j * tileSize) + (tileSize / 2);
+            // play creature animation
+            var moveFrames = currentEnemy.moveFrames.split(",");
+            for (var k = 0; k < moveFrames.length; k++) {
+               moveFrames[k] = parseInt(moveFrames[k], 10);
+            }
+            creature.animations.add('move', moveFrames, currentEnemy.moveFps, true);
+            creature.animations.play('move');
+          }
+        }
       }
     }
 
-    function reloadEditorState() {
+    $scope.reloadEditorState = function() {
       editor.state.start(editor.state.current);
-    }
+    };
 
-    function resetLevel() {
+    // clear the level
+    $scope.reset = function() {
+      self.grid = [];
       initGrid();
-      reloadEditorState();
-    }
+      editor.state.start(editor.state.current);
+    };
 
   }
 ]);

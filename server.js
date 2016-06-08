@@ -176,6 +176,9 @@ router.post('/save/asset', function(req,res) {
         console.log('\nERROR: \'assets\' is not valid JSON.\n');
         return res.status(500).send({message: 'Existing asset data is corrupt.  Asset not saved.'});
       }
+      if (!assets[newAsset.type]) {
+        assets[newAsset.type] = {};
+      }
       assets[newAsset.type][newAsset.name] = newAsset;
       console.log(assets);
 

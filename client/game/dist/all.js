@@ -18,6 +18,10 @@ app.service('AssetService',
       return allAssets.Enemies;
     };
 
+    self.getBackgrounds = function() {
+      return allAssets.Backgrounds;
+    };
+
     self.saveAsset = function(spriteData, imgSrc) {
       // check for dupes
       if (allAssets.hasOwnProperty(spriteData.name)) {
@@ -874,7 +878,7 @@ app.controller('GameController',
       function update() {
         // generate enemies
         enemyTimer++;
-        if (enemyTimer % 120 === 0) {
+        if (enemyTimer % 75 === 0) {
           spawnEnemy();
         }
 
@@ -907,15 +911,16 @@ app.controller('GameController',
         return !character.invincible;
       };
 
-      // kill bullet, damage enemy
+      // kill bullet, damage character (player or enemy)
       var hitCharacterHandler = function(character, bullet) {
         bullet.kill();
         // create "bullet dust"
         DamageService.takeDamage(character, 1);
       };
 
-      var hitPlayerHandler = function(character) {
-        DamageService.takeDamage(character, 1);
+      // player takes damage if hit by enemy
+      var hitPlayerHandler = function(player) {
+        DamageService.takeDamage(player, 1);
       };
 
       function spawnEnemy() {

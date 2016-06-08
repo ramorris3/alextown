@@ -41,6 +41,14 @@
       "height": 50,
       "key": "moriobd1523ad-d65b-06ea-2f85-cb0ddaa81c0c",
       "src": "../api/uploads/moriobd1523ad-d65b-06ea-2f85-cb0ddaa81c0c.png"
+    },
+    "morio2": {
+      "type": "Enemies",
+      "name": "morio2",
+      "width": 50,
+      "height": 50,
+      "key": "morio2-9d83c3ab-00cf-28c7-efbb-2f9158420572",
+      "src": "../api/uploads/morio2-9d83c3ab-00cf-28c7-efbb-2f9158420572.png"
     }
   },
   "Bullets": {
@@ -67,6 +75,16 @@
       "height": 40,
       "key": "0953e23b-59ea-dcc9-ed1a-39e9d959ca2c",
       "src": "../api/uploads/0953e23b-59ea-dcc9-ed1a-39e9d959ca2c.png"
+    }
+  },
+  "Backgrounds": {
+    "sand": {
+      "type": "Backgrounds",
+      "name": "sand",
+      "width": 50,
+      "height": 50,
+      "key": "sand-71ef604c-4800-0a7e-09f3-bb4d8bd2b3c3",
+      "src": "../api/uploads/sand-71ef604c-4800-0a7e-09f3-bb4d8bd2b3c3.png"
     }
   }
 }

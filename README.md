@@ -12,8 +12,10 @@
     - This runs the JS linter/minifier.  It concatenates all javascript and CSS files in client/editor, minifies them, and puts them each one file: `dist/all.min.js` and `dist/all.min.css`
     - If you want to run/test the project while you are writing code, just type `gulp` instead of `gulp build`, and then leave it running in the terminal.  `gulp build` builds the dist files and quits, but `gulp` builds the files, and then rebuilds them whenever it detects a change in your code.
     - For more details, look at `gulpfile.js` in the root folder.
-7. Type `npm run editor` to spin up the editor server
-8. Go to `localhost:2000` in your browser and have at it!
+7. Type `npm start` to spin up the editor server
+8. To play the game, go to `localhost:2000/game`
+9. To customize with the editor, go to `localhost:2000/editor`
+10. Have at it!
 
 [https://monosnap.com/file/7Na7FkHMq4UfPdMeu66j2I4f2YRAPN]
 

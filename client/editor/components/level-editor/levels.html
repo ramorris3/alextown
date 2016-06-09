@@ -10,6 +10,19 @@
       </div>
     </div>
 
+    <div class="settings-row">
+      <p class="form-header">Which level are you editing?</p>
+      <form>
+        <p><!-- Level number -->
+          <label for="num">Number:</label>
+          <select id="num"
+            ng-model="levelData.number"
+            ng-change="loadLevel()"
+            ng-options="num for num in levelNumbers"></select>
+        </p>
+      </form>
+    </div>
+
     <!-- Level info -->
     <div class="settings-row">
       <p class="form-header">Level Information</p>
@@ -21,13 +34,6 @@
         <p><!-- Description -->
           <label for="desc">Description:</label>
           <input ng-model="levelData.description" id="desc" />
-        </p>
-        <p><!-- Level number -->
-          <label for="num">Number:</label>
-          <select id="num"
-            ng-model="levelData.number"
-            ng-change="loadLevel()"
-            ng-options="num for num in levelNumbers"></select>
         </p>
         <p><!-- BackgroundTile -->
           <label for="bgtile">Background:</label>

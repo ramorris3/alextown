@@ -57,6 +57,22 @@
       "height": 50,
       "key": "morio-guy-d7aa5631-aa63-6040-0a60-cfbb6734c97e",
       "src": "../api/uploads/morio-guy-d7aa5631-aa63-6040-0a60-cfbb6734c97e.png"
+    },
+    "Wolf": {
+      "name": "Wolf",
+      "width": 43,
+      "height": 30,
+      "type": "Enemies",
+      "key": "Wolf-d595bd9b-155c-89b2-dc5c-fd69d5bdcaed",
+      "src": "../api/uploads/Wolf-d595bd9b-155c-89b2-dc5c-fd69d5bdcaed.png"
+    },
+    "grass2": {
+      "type": "Enemies",
+      "name": "grass2",
+      "width": 200,
+      "height": 200,
+      "key": "grass2-c668f41b-7c2f-795a-e2d6-1d565d5c4d9a",
+      "src": "../api/uploads/grass2-c668f41b-7c2f-795a-e2d6-1d565d5c4d9a.png"
     }
   },
   "Bullets": {
@@ -101,6 +117,22 @@
       "height": 200,
       "key": "grass-869054c7-fc87-8354-ab91-826f94e5bc48",
       "src": "../api/uploads/grass-869054c7-fc87-8354-ab91-826f94e5bc48.png"
+    },
+    "Forest": {
+      "width": 70,
+      "height": 500,
+      "name": "Forest",
+      "type": "Backgrounds",
+      "key": "Forest-72951181-eaf4-b1a8-86d3-d18aea63022f",
+      "src": "../api/uploads/Forest-72951181-eaf4-b1a8-86d3-d18aea63022f.png"
+    },
+    "grass2": {
+      "type": "Backgrounds",
+      "name": "grass2",
+      "width": 200,
+      "height": 200,
+      "key": "grass2-5b1e6142-ef6d-c997-2ac0-15f6bf77d52c",
+      "src": "../api/uploads/grass2-5b1e6142-ef6d-c997-2ac0-15f6bf77d52c.png"
     }
   }
 }

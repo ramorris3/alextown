@@ -163,5 +163,32 @@
       },
       "bulletSpeed": 350
     }
+  },
+  "Wolf": {
+    "name": "Wolf",
+    "description": "just a wolf",
+    "spritesheet": {
+      "name": "Wolf",
+      "width": 43,
+      "height": 30,
+      "type": "Enemies",
+      "key": "Wolf-d595bd9b-155c-89b2-dc5c-fd69d5bdcaed",
+      "src": "../api/uploads/Wolf-d595bd9b-155c-89b2-dc5c-fd69d5bdcaed.png"
+    },
+    "moveFrames": "0,1,2,3",
+    "moveFps": "10",
+    "attackFrames": "0,1,2,3",
+    "attackFps": "20",
+    "health": 3,
+    "damage": 1,
+    "moveSpeed": 300,
+    "movePattern": "Follow",
+    "attackPattern": {
+      "key": "Charge",
+      "cooldown": 250,
+      "chargeSpeed": 800,
+      "duration": 25,
+      "range": 300
+    }
   }
 }

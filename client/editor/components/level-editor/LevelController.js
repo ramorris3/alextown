@@ -49,8 +49,11 @@ app.controller('LevelController',
 
     $scope.loadLevel = function() {
       var num = $scope.levelData.number;
-      $scope.levelData = LevelService.getLevel(num);
-      $scope.reloadEditorState();
+      var existingLevelData = LevelService.getLevel(num);
+      if (existingLevelData) {
+        $scope.levelData = existingLevelData;
+        $scope.reloadEditorState();
+      }
     };
 
 
@@ -88,7 +91,7 @@ app.controller('LevelController',
     var filename;
     var level;
     var viewFrame = 0;
-    var maxFrames = 20;
+    var maxFrames = 1;
     var frameText;
     var layers;
 
@@ -139,6 +142,8 @@ app.controller('LevelController',
       // init HUD text
       frameText = editor.add.bitmapText(10, 10, 'carrier_command', 'FRAME: ' + (viewFrame + 1).toString() + '/' + maxFrames, 20);
       frameText.fixedToCamera = true;
+
+      editor.camera.x = viewFrame * editor.width;
 
     }
 

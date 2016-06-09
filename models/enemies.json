@@ -179,7 +179,7 @@
     "moveFps": "10",
     "attackFrames": "0,1,2,3",
     "attackFps": "20",
-    "health": 3,
+    "health": 2,
     "damage": 1,
     "moveSpeed": 300,
     "movePattern": "Follow",

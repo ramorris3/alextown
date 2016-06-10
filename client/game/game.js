@@ -43,8 +43,8 @@ app.controller('GameController',
           // create player bullet pool
           game.allPlayerBullets = game.add.group();
 
-          // create player sprite (default to stairfex for now)
-          var playerData = PlayerService.getPlayer('stairfex');
+          // create player sprite (default to knight for now)
+          var playerData = PlayerService.getPlayer('knight');
           this.player = new PlayerService.Player(game, 50, game.world.centerY, playerData);
 
           // create enemy bullet pool

@@ -1,12 +1,12 @@
 {
   "Players": {
-    "Stairfex": {
+    "knight": {
       "type": "Players",
-      "name": "Stairfex",
-      "width": 50,
-      "height": 50,
-      "key": "stairfex",
-      "src": "../api/uploads/stairfex.png"
+      "name": "knight",
+      "width": 64,
+      "height": 64,
+      "key": "knight",
+      "src": "../api/uploads/knight.png"
     }
   },
   "Enemies": {
@@ -73,6 +73,38 @@
       "height": 200,
       "key": "grass2-c668f41b-7c2f-795a-e2d6-1d565d5c4d9a",
       "src": "../api/uploads/grass2-c668f41b-7c2f-795a-e2d6-1d565d5c4d9a.png"
+    },
+    "Smallfriar": {
+      "type": "Enemies",
+      "name": "Smallfriar",
+      "width": 33,
+      "height": 50,
+      "key": "Smallfriar-6cbac21c-2df1-d8f5-43e9-1fce11335eaa",
+      "src": "../api/uploads/Smallfriar-6cbac21c-2df1-d8f5-43e9-1fce11335eaa.png"
+    },
+    "smallfriar2x": {
+      "type": "Enemies",
+      "name": "smallfriar2x",
+      "width": 66,
+      "height": 100,
+      "key": "smallfriar2x-6b54301b-2b21-9b6a-cf69-ffdf24e1a513",
+      "src": "../api/uploads/smallfriar2x-6b54301b-2b21-9b6a-cf69-ffdf24e1a513.png"
+    },
+    "newskull": {
+      "type": "Enemies",
+      "name": "newskull",
+      "width": 64,
+      "height": 64,
+      "key": "newskull-5260ac26-72fd-c612-275e-d4e24ff033b1",
+      "src": "../api/uploads/newskull-5260ac26-72fd-c612-275e-d4e24ff033b1.png"
+    },
+    "slime": {
+      "type": "Enemies",
+      "name": "slime",
+      "width": 64,
+      "height": 60,
+      "key": "slime-33605ea3-4a2c-00f1-61f6-5bf6e2a7270e",
+      "src": "../api/uploads/slime-33605ea3-4a2c-00f1-61f6-5bf6e2a7270e.png"
     }
   },
   "Bullets": {

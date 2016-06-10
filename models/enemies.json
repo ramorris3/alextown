@@ -37,11 +37,11 @@
     "description": "Hydralisk who throws skulls heh heh",
     "spritesheet": {
       "type": "Enemies",
-      "name": "hydra_sheet",
-      "width": 32,
-      "height": 32,
-      "key": "0985aaa0-135e-3555-2dda-5e58a66d6aca",
-      "src": "../api/uploads/0985aaa0-135e-3555-2dda-5e58a66d6aca.png"
+      "name": "Smallfriar",
+      "width": 33,
+      "height": 50,
+      "key": "Smallfriar-6cbac21c-2df1-d8f5-43e9-1fce11335eaa",
+      "src": "../api/uploads/Smallfriar-6cbac21c-2df1-d8f5-43e9-1fce11335eaa.png"
     },
     "attackPattern": {
       "key": "Ranged",
@@ -56,7 +56,7 @@
       },
       "bulletSpeed": 350
     },
-    "moveSpeed": 250,
+    "moveSpeed": 150,
     "movePattern": "Default",
     "health": 3,
     "damage": 1,
@@ -188,6 +188,33 @@
       "cooldown": 250,
       "chargeSpeed": 800,
       "duration": 25,
+      "range": 300
+    }
+  },
+  "Slime": {
+    "name": "Slime",
+    "description": "Really slow until they charge.",
+    "spritesheet": {
+      "type": "Enemies",
+      "name": "slime",
+      "width": 64,
+      "height": 60,
+      "key": "slime-33605ea3-4a2c-00f1-61f6-5bf6e2a7270e",
+      "src": "../api/uploads/slime-33605ea3-4a2c-00f1-61f6-5bf6e2a7270e.png"
+    },
+    "moveFrames": "6,7,8",
+    "moveFps": "10",
+    "attackFrames": "6,7,8",
+    "attackFps": "20",
+    "health": 6,
+    "damage": 1,
+    "moveSpeed": 150,
+    "movePattern": "Follow",
+    "attackPattern": {
+      "key": "Charge",
+      "cooldown": 250,
+      "chargeSpeed": 800,
+      "duration": 30,
       "range": 300
     }
   }

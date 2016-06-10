@@ -1,21 +1,21 @@
 {
-  "stairfex": {
-    "name": "stairfex",
-    "description": "stairfex always beats morio",
+  "knight": {
+    "name": "knight",
+    "description": "knight always beats morio",
     "health": 20,
     "damage": 1,
     "moveSpeed": 300,
     "spritesheet": {
       "type": "Players",
-      "name": "Stairfex",
-      "width": 50,
-      "height": 50,
-      "key": "stairfex",
-      "src": "api/uploads/stairfex.png"
+      "name": "knight",
+      "width": 64,
+      "height": 64,
+      "key": "knight",
+      "src": "api/uploads/knight.png"
     },
-    "moveFrames": [0,1],
+    "moveFrames": [0,1,2],
     "moveFps": 10,
-    "attackFrames": [2,3],
+    "attackFrames": [0,1,2],
     "attackFps": 10,
     "attackPattern": {
       "key": "Ranged",

@@ -57,8 +57,8 @@ app.controller('EnemyController',
     */
     var playerData = {
       // General
-      name: 'stairfex', // NAME MUST BE UNIQUE
-      description: 'stairfex always beats morio',
+      name: 'knight', // NAME MUST BE UNIQUE
+      description: 'knight always beats morio',
       // stats
       health: 20,
       damage: 1,
@@ -68,16 +68,16 @@ app.controller('EnemyController',
       // main sheet contains move, attack, and damaged animations
       spritesheet: {
         "type": "Players",
-        "name": "Stairfex",
-        "width": 50,
-        "height": 50,
-        "key": "stairfex",
-        "src": "../api/uploads/stairfex.png"
+        "name": "knight",
+        "width": 64,
+        "height": 64,
+        "key": "knight",
+        "src": "../api/uploads/knight.png"
       },
       // animations
-      moveFrames: [0,1],
+      moveFrames: [0,1,2],
       moveFps: 10,
-      attackFrames: [2,3],
+      attackFrames: [0,1,2],
       attackFps: 10,
       // attack patterns
       attackPattern: {

@@ -10,94 +10,6 @@
     }
   },
   "Enemies": {
-    "hydra_sheet": {
-      "type": "Enemies",
-      "name": "hydra_sheet",
-      "width": 32,
-      "height": 32,
-      "key": "0985aaa0-135e-3555-2dda-5e58a66d6aca",
-      "src": "../api/uploads/0985aaa0-135e-3555-2dda-5e58a66d6aca.png"
-    },
-    "fuzzball": {
-      "type": "Enemies",
-      "name": "fuzzball",
-      "width": 50,
-      "height": 50,
-      "key": "4072065f-c88d-bc56-a820-3190da21cdd0",
-      "src": "../api/uploads/4072065f-c88d-bc56-a820-3190da21cdd0.png"
-    },
-    "friar": {
-      "name": "friar",
-      "type": "Enemies",
-      "width": 150,
-      "height": 180,
-      "key": "1ec9459c-9980-0826-0e8f-5db065a1caf4",
-      "src": "../api/uploads/1ec9459c-9980-0826-0e8f-5db065a1caf4.png"
-    },
-    "morio": {
-      "name": "morio",
-      "type": "Enemies",
-      "width": 50,
-      "height": 50,
-      "key": "moriobd1523ad-d65b-06ea-2f85-cb0ddaa81c0c",
-      "src": "../api/uploads/moriobd1523ad-d65b-06ea-2f85-cb0ddaa81c0c.png"
-    },
-    "morio2": {
-      "type": "Enemies",
-      "name": "morio2",
-      "width": 50,
-      "height": 50,
-      "key": "morio2-9d83c3ab-00cf-28c7-efbb-2f9158420572",
-      "src": "../api/uploads/morio2-9d83c3ab-00cf-28c7-efbb-2f9158420572.png"
-    },
-    "morio-guy": {
-      "type": "Enemies",
-      "name": "morio-guy",
-      "width": 50,
-      "height": 50,
-      "key": "morio-guy-d7aa5631-aa63-6040-0a60-cfbb6734c97e",
-      "src": "../api/uploads/morio-guy-d7aa5631-aa63-6040-0a60-cfbb6734c97e.png"
-    },
-    "Wolf": {
-      "name": "Wolf",
-      "width": 43,
-      "height": 30,
-      "type": "Enemies",
-      "key": "Wolf-d595bd9b-155c-89b2-dc5c-fd69d5bdcaed",
-      "src": "../api/uploads/Wolf-d595bd9b-155c-89b2-dc5c-fd69d5bdcaed.png"
-    },
-    "grass2": {
-      "type": "Enemies",
-      "name": "grass2",
-      "width": 200,
-      "height": 200,
-      "key": "grass2-c668f41b-7c2f-795a-e2d6-1d565d5c4d9a",
-      "src": "../api/uploads/grass2-c668f41b-7c2f-795a-e2d6-1d565d5c4d9a.png"
-    },
-    "Smallfriar": {
-      "type": "Enemies",
-      "name": "Smallfriar",
-      "width": 33,
-      "height": 50,
-      "key": "Smallfriar-6cbac21c-2df1-d8f5-43e9-1fce11335eaa",
-      "src": "../api/uploads/Smallfriar-6cbac21c-2df1-d8f5-43e9-1fce11335eaa.png"
-    },
-    "smallfriar2x": {
-      "type": "Enemies",
-      "name": "smallfriar2x",
-      "width": 66,
-      "height": 100,
-      "key": "smallfriar2x-6b54301b-2b21-9b6a-cf69-ffdf24e1a513",
-      "src": "../api/uploads/smallfriar2x-6b54301b-2b21-9b6a-cf69-ffdf24e1a513.png"
-    },
-    "newskull": {
-      "type": "Enemies",
-      "name": "newskull",
-      "width": 64,
-      "height": 64,
-      "key": "newskull-5260ac26-72fd-c612-275e-d4e24ff033b1",
-      "src": "../api/uploads/newskull-5260ac26-72fd-c612-275e-d4e24ff033b1.png"
-    },
     "slime": {
       "type": "Enemies",
       "name": "slime",
@@ -123,48 +35,16 @@
       "height": 12,
       "key": "red-bullet",
       "src": "../api/uploads/red-bullet.png"
-    },
-    "skull": {
-      "type": "Bullets",
-      "name": "skull",
-      "width": 40,
-      "height": 40,
-      "key": "0953e23b-59ea-dcc9-ed1a-39e9d959ca2c",
-      "src": "../api/uploads/0953e23b-59ea-dcc9-ed1a-39e9d959ca2c.png"
     }
   },
   "Backgrounds": {
-    "sand": {
+    "Grass": {
       "type": "Backgrounds",
-      "name": "sand",
-      "width": 50,
-      "height": 50,
-      "key": "sand-71ef604c-4800-0a7e-09f3-bb4d8bd2b3c3",
-      "src": "../api/uploads/sand-71ef604c-4800-0a7e-09f3-bb4d8bd2b3c3.png"
-    },
-    "grass": {
-      "type": "Backgrounds",
-      "name": "grass",
-      "width": 200,
-      "height": 200,
-      "key": "grass-869054c7-fc87-8354-ab91-826f94e5bc48",
-      "src": "../api/uploads/grass-869054c7-fc87-8354-ab91-826f94e5bc48.png"
-    },
-    "Forest": {
-      "width": 70,
+      "name": "Grass",
+      "width": 1000,
       "height": 500,
-      "name": "Forest",
-      "type": "Backgrounds",
-      "key": "Forest-72951181-eaf4-b1a8-86d3-d18aea63022f",
-      "src": "../api/uploads/Forest-72951181-eaf4-b1a8-86d3-d18aea63022f.png"
-    },
-    "grass2": {
-      "type": "Backgrounds",
-      "name": "grass2",
-      "width": 200,
-      "height": 200,
-      "key": "grass2-5b1e6142-ef6d-c997-2ac0-15f6bf77d52c",
-      "src": "../api/uploads/grass2-5b1e6142-ef6d-c997-2ac0-15f6bf77d52c.png"
+      "key": "Grass-bb30d310-445f-94e3-1e59-893434b12fcd",
+      "src": "../api/uploads/Grass-bb30d310-445f-94e3-1e59-893434b12fcd.png"
     }
   }
 }

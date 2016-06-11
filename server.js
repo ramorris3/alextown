@@ -203,7 +203,7 @@ router.post('/save/asset', function(req,res) {
         }
 
         console.log('\nAsset data successfully written to ' + filepath + '!\n');
-        return res.status(200).send({message: 'Your asset was successfully saved to the database!', allAssetData: assets});
+        return res.status(200).send({message: '"' + newAsset.name + '" was successfully saved to the database!', allAssetData: assets});
       });
 
     });
@@ -279,7 +279,7 @@ router.post('/save/enemies', function(req, res) {
       }
 
       console.log('\nEnemy data successfully written to ' + filepath + '!\n');
-      return res.status(200).send({message: 'Your enemy was successfully saved to the database!', allEnemyData: enemies});
+      return res.status(200).send({message: '"'+ newEnemy.name + '" was successfully saved to the database!', allEnemyData: enemies});
     });
   });
 });

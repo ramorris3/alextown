@@ -676,6 +676,13 @@ app.service('PlayerService',
       this.animations.add('move', data.moveFrames, data.moveFps);
       this.animations.add('attack', data.attackFrames, data.attackFps);
       this.animations.add('damage', data.damageFrames, data.damageFps);
+      // shadow
+      var shadow = this.game.add.sprite(0, 32, 'shadow');
+      shadow.anchor.setTo(0.5, 0.5);
+      this.addChild(shadow);
+
+      //var shadow = this.addChild(this.game.add.sprite(0, this.height / 2), 'shadow');
+
       // physics
       this.game.physics.enable(this, Phaser.Physics.ARCADE);
       this.body.collideWorldBounds = true;
@@ -865,6 +872,7 @@ app.controller('GameController',
         preload: function() {
           // load FX sprites
           game.load.spritesheet('death', '../api/uploads/explode.png', 50, 50);
+          game.load.image('shadow', '../api/uploads/shadow.png');
 
           // load all character spritesheets
           AssetService.preloadAllAssets(game);

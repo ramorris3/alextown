@@ -13,6 +13,7 @@ app.controller('GameController',
         preload: function() {
           // load FX sprites
           game.load.spritesheet('death', '../api/uploads/explode.png', 50, 50);
+          game.load.image('shadow', '../api/uploads/shadow.png');
 
           // load all character spritesheets
           AssetService.preloadAllAssets(game);

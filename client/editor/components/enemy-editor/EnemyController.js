@@ -176,6 +176,7 @@ app.controller('EnemyController',
 
         // load debris/dust sprites
         editor.load.spritesheet('death', '../api/uploads/explode.png', 50, 50);
+        editor.load.spritesheet('shadow', '../api/uploads/shadow.png');
 
         // load all saved assets
         AssetService.preloadAllAssets(editor);

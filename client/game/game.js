@@ -20,15 +20,26 @@ app.controller('GameController',
         },
 
         create: function() {
+          // vars
           var scrollSpeed = -100;
           this.enemyTimer = 0;
           this.levelData = PersistenceService.getCurrentLevel(game);
           this.levelCol = 0;
           this.pendingNextLevel = false;
 
+          // rendering layers
+          game.layers = {
+            background: game.add.group(),
+            shadows: game.add.group(),
+            player: game.add.group(),
+            enemies: game.add.group(),
+            fx: game.add.group()
+          };
+
           // lay tiles
           game.tiles = game.add.tileSprite(0, 0, game.width, game.height, this.levelData.background.key);
           game.tiles.autoScroll(scrollSpeed, 0);
+          game.layers.background.add(game.tiles);
 
           // create death sprites
           game.deathAnimations = game.add.group();

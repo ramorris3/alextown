@@ -14,9 +14,17 @@
       "type": "Enemies",
       "name": "slime",
       "width": 64,
-      "height": 60,
-      "key": "slime-33605ea3-4a2c-00f1-61f6-5bf6e2a7270e",
-      "src": "../api/uploads/slime-33605ea3-4a2c-00f1-61f6-5bf6e2a7270e.png"
+      "height": 34,
+      "key": "slime",
+      "src": "../api/uploads/slime.png"
+    },
+    "Skeleton": {
+      "type": "Enemies",
+      "name": "Skeleton",
+      "width": 64,
+      "height": 58,
+      "key": "Skeleton",
+      "src": "../api/uploads/Skeleton.png"
     }
   },
   "Bullets": {
@@ -35,6 +43,14 @@
       "height": 12,
       "key": "red-bullet",
       "src": "../api/uploads/red-bullet.png"
+    },
+    "dagger-left": {
+      "type": "Bullets",
+      "name": "dagger-left",
+      "width": 64,
+      "height": 22,
+      "key": "dagger-left",
+      "src": "../api/uploads/dagger-left.png"
     }
   },
   "Backgrounds": {

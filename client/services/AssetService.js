@@ -23,9 +23,12 @@ app.service('AssetService',
 
     self.saveAsset = function(spriteData, imgSrc) {
       // check for dupes
-      if (allAssets.hasOwnProperty(spriteData.name)) {
-        MessageService.setFlashMessage('There is already an img asset named "' + spriteData.name + '."  Asset was not saved (must have a unique name).');
-        return;
+      var assetType = allAssets[spriteData.type];
+      if (assetType.hasOwnProperty(spriteData.name)) {
+        if (!confirm('There is already an asset of type "' + spriteData.type + '" named "' + spriteData.name + '."  Do you want to overwrite it?')) {
+          MessageService.setFlashMessage('Asset was not saved.', true);
+          return;
+        }
       }
 
       // save img and get key (filename)

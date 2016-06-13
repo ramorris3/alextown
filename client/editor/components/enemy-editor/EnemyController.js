@@ -186,8 +186,18 @@ app.controller('EnemyController',
         // allow timing for debug output
         editor.time.advancedTiming = true;
 
+        // rendering layers
+        editor.layers = {
+          background: editor.add.group(),
+          shadows: editor.add.group(),
+          player: editor.add.group(),
+          enemies: editor.add.group(),
+          fx: editor.add.group()
+        };
+
         // lay tiles
         tiles = editor.add.tileSprite(0, 0, editor.width, editor.height, 'floor');
+        editor.layers.background.add(tiles);
 
         // create player bullet pool
         editor.allPlayerBullets = editor.add.group();

@@ -89,7 +89,7 @@ router.post('/save/img', function(req, res) {
   console.log(imgBuffer);
 
   // get filepath
-  var key = req.body.name + '-' + guid();
+  var key = req.body.name;
   var filename = key + '.png';
   var filepath = path.join(__dirname,'uploads/',filename);
   console.log('Writing image to ' + filepath + '...')

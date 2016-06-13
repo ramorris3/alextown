@@ -22,6 +22,7 @@ app.service('PlayerService',
       this.game = game;
 
       // create sprite
+      console.log(data.moveFrames);
       Phaser.Sprite.call(this, this.game, x, y, data.spritesheet.key);
       // init animations
       this.animations.add('move', data.moveFrames, data.moveFps);
@@ -30,7 +31,15 @@ app.service('PlayerService',
       // shadow
       var shadow = this.game.add.sprite(0, 32, 'shadow');
       shadow.anchor.setTo(0.5, 0.5);
-      this.addChild(shadow);
+      this.game.layers.shadows.add(shadow);
+      var player = this;
+      shadow.update = function() {
+        this.x = player.x;
+        this.y = player.y + (player.height / 2);
+        if (player.health <= 0) {
+          this.pendingDestroy = true;
+        }
+      };
 
       //var shadow = this.addChild(this.game.add.sprite(0, this.height / 2), 'shadow');
 
@@ -62,6 +71,9 @@ app.service('PlayerService',
         this.bullets.setAll('anchor.y', 0.5);
         this.bullets.setAll('outOfBoundsKill', true);
         this.game.physics.enable(this.bullets, Phaser.Physics.ARCADE);
+        // for (var bullet in this.bullets) {
+        //   bullet.animations.add('fly');
+        // }
         this.game.allPlayerBullets.add(this.bullets);
         // bullet speed
         this.bulletSpeed = this.attackPattern.bulletSpeed;
@@ -166,6 +178,7 @@ app.service('PlayerService',
             bullet.outOfBoundsKill = true;
             bullet.reset(this.x, this.y);
             bullet.body.velocity.x = this.bulletSpeed;
+            //bullet.animations.play('fly', 10, true);
           }
         }
       // MELEE ???

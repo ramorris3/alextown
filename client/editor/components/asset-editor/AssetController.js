@@ -28,31 +28,23 @@ app.controller('AssetController',
     };
 
     function validInput() {
-      var valid = true;
-      var message = '';
-      if (!$scope.spriteData.height || !$scope.spriteData.width) {
-        message = 'You must specify frame width and height.';
-        valid = false;
-      } else if (!$scope.spriteData.name) {
-        message = 'You must specify a name for the image.';
-        valid = false;
-      } else if (!$scope.spriteData.type) {
-        message = 'You must choose an asset type.';
-        valid = false;
-      } else if (!$scope.previewSrc) {
-        message = 'You must upload an asset.';
-        valid = false;
+      var errMsg = 'All fields are required.';
+      if (!$scope.spriteData) {
+        MessageService.setFlashMessage(errMsg, true);
+        return false;
       }
-      if (!valid) {
-        MessageService.setFlashMessage(message, true);
+      var data = $scope.spriteData;
+      if (!data.height || !data.width || !data.name || !data.type || !$scope.previewSrc) {
+        MessageService.setFlashMessage(errMsg, true);
+        return false;
       }
-      return valid;
+      return true;
     }
 
     $scope.saveAsset = function() {
-      // if (validInput()) {
+      if (validInput()) {
         AssetService.saveAsset($scope.spriteData, $scope.previewSrc);
-      // }
+      }
     };
   }
 ])

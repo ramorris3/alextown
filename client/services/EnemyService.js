@@ -67,6 +67,18 @@ app.service('EnemyService',
       }
       this.animations.add('move', moveFrames, data.moveFps);
       this.animations.add('attack', attackFrames, data.attackFps);
+      // shadow
+      var shadow = this.game.add.sprite(0, 32, 'shadow');
+      shadow.anchor.setTo(0.5, 0.5);
+      this.game.layers.shadows.add(shadow);
+      var enemy = this;
+      shadow.update = function() {
+        this.x = enemy.x;
+        this.y = enemy.y + (enemy.height / 2);
+        if (enemy.health <= 0) {
+          this.pendingDestroy = true;
+        }
+      };
 
       // init target
       this.target = playerSprite;
@@ -228,13 +240,29 @@ app.service('EnemyService',
           sprite.cooldownClock = 0;
           // create bullet pool
           sprite.bullets = sprite.game.add.group();
-          sprite.bullets.createMultiple(30, sprite.attackPattern.bullet.key);
-          sprite.bullets.setAll('anchor.x', 0.5);
-          sprite.bullets.setAll('anchor.y', 0.5);
-          sprite.bullets.setAll('outOfBoundsKill', true);
-          sprite.game.physics.enable(sprite.bullets, Phaser.Physics.ARCADE);
+          for (var i = 0; i < 30; i++) {
+            var bullet = sprite.game.add.sprite(0, 0, sprite.attackPattern.bullet.key);
+            bullet.anchor.setTo(0.5, 0.5);
+            bullet.outOfBoundsKill = true;
+            sprite.game.physics.enable(bullet, Phaser.Physics.ARCADE);
+            bullet.bulletSpeed = sprite.attackPattern.bulletSpeed;
+            bullet.animations.add('fly');
+            bullet.kill();
+            sprite.bullets.add(bullet);
+          }
           sprite.game.allEnemyBullets.add(sprite.bullets);
-          sprite.bulletSpeed = sprite.attackPattern.bulletSpeed;
+
+          // sprite.bullets.createMultiple(30, sprite.attackPattern.bullet.key);
+          // sprite.bullets.setAll('anchor.x', 0.5);
+          // sprite.bullets.setAll('anchor.y', 0.5);
+          // sprite.bullets.setAll('outOfBoundsKill', true);
+          // sprite.game.physics.enable(sprite.bullets, Phaser.Physics.ARCADE);
+          // sprite.game.allEnemyBullets.add(sprite.bullets);
+          // sprite.bulletSpeed = sprite.attackPattern.bulletSpeed;
+          // for (var bullet in sprite.bullets) {
+          //   bullet.animations.add('fly');
+          //   bullet.animations.play('fly', 10, true);
+          // }
 
           sprite.fireBullet = function() {
             sprite.cooldownClock = sprite.cooldown;
@@ -244,7 +272,8 @@ app.service('EnemyService',
               bullet.checkWorldBounds = true;
               bullet.outOfBoundsKill = true;
               bullet.reset(sprite.x, sprite.y);
-              bullet.body.velocity.x = -sprite.bulletSpeed;
+              bullet.body.velocity.x = -bullet.bulletSpeed;
+              bullet.animations.play('fly', 10, true);
             }
           };
 

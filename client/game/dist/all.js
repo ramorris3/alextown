@@ -24,9 +24,12 @@ app.service('AssetService',
 
     self.saveAsset = function(spriteData, imgSrc) {
       // check for dupes
-      if (allAssets.hasOwnProperty(spriteData.name)) {
-        MessageService.setFlashMessage('There is already an img asset named "' + spriteData.name + '."  Asset was not saved (must have a unique name).');
-        return;
+      var assetType = allAssets[spriteData.type];
+      if (assetType.hasOwnProperty(spriteData.name)) {
+        if (!confirm('There is already an asset of type "' + spriteData.type + '" named "' + spriteData.name + '."  Do you want to overwrite it?')) {
+          MessageService.setFlashMessage('Asset was not saved.', true);
+          return;
+        }
       }
 
       // save img and get key (filename)
@@ -200,6 +203,18 @@ app.service('EnemyService',
       }
       this.animations.add('move', moveFrames, data.moveFps);
       this.animations.add('attack', attackFrames, data.attackFps);
+      // shadow
+      var shadow = this.game.add.sprite(0, 32, 'shadow');
+      shadow.anchor.setTo(0.5, 0.5);
+      this.game.layers.shadows.add(shadow);
+      var enemy = this;
+      shadow.update = function() {
+        this.x = enemy.x;
+        this.y = enemy.y + (enemy.height / 2);
+        if (enemy.health <= 0) {
+          this.pendingDestroy = true;
+        }
+      };
 
       // init target
       this.target = playerSprite;
@@ -361,13 +376,29 @@ app.service('EnemyService',
           sprite.cooldownClock = 0;
           // create bullet pool
           sprite.bullets = sprite.game.add.group();
-          sprite.bullets.createMultiple(30, sprite.attackPattern.bullet.key);
-          sprite.bullets.setAll('anchor.x', 0.5);
-          sprite.bullets.setAll('anchor.y', 0.5);
-          sprite.bullets.setAll('outOfBoundsKill', true);
-          sprite.game.physics.enable(sprite.bullets, Phaser.Physics.ARCADE);
+          for (var i = 0; i < 30; i++) {
+            var bullet = sprite.game.add.sprite(0, 0, sprite.attackPattern.bullet.key);
+            bullet.anchor.setTo(0.5, 0.5);
+            bullet.outOfBoundsKill = true;
+            sprite.game.physics.enable(bullet, Phaser.Physics.ARCADE);
+            bullet.bulletSpeed = sprite.attackPattern.bulletSpeed;
+            bullet.animations.add('fly');
+            bullet.kill();
+            sprite.bullets.add(bullet);
+          }
           sprite.game.allEnemyBullets.add(sprite.bullets);
-          sprite.bulletSpeed = sprite.attackPattern.bulletSpeed;
+
+          // sprite.bullets.createMultiple(30, sprite.attackPattern.bullet.key);
+          // sprite.bullets.setAll('anchor.x', 0.5);
+          // sprite.bullets.setAll('anchor.y', 0.5);
+          // sprite.bullets.setAll('outOfBoundsKill', true);
+          // sprite.game.physics.enable(sprite.bullets, Phaser.Physics.ARCADE);
+          // sprite.game.allEnemyBullets.add(sprite.bullets);
+          // sprite.bulletSpeed = sprite.attackPattern.bulletSpeed;
+          // for (var bullet in sprite.bullets) {
+          //   bullet.animations.add('fly');
+          //   bullet.animations.play('fly', 10, true);
+          // }
 
           sprite.fireBullet = function() {
             sprite.cooldownClock = sprite.cooldown;
@@ -377,7 +408,8 @@ app.service('EnemyService',
               bullet.checkWorldBounds = true;
               bullet.outOfBoundsKill = true;
               bullet.reset(sprite.x, sprite.y);
-              bullet.body.velocity.x = -sprite.bulletSpeed;
+              bullet.body.velocity.x = -bullet.bulletSpeed;
+              bullet.animations.play('fly', 10, true);
             }
           };
 
@@ -671,6 +703,7 @@ app.service('PlayerService',
       this.game = game;
 
       // create sprite
+      console.log(data.moveFrames);
       Phaser.Sprite.call(this, this.game, x, y, data.spritesheet.key);
       // init animations
       this.animations.add('move', data.moveFrames, data.moveFps);
@@ -679,7 +712,15 @@ app.service('PlayerService',
       // shadow
       var shadow = this.game.add.sprite(0, 32, 'shadow');
       shadow.anchor.setTo(0.5, 0.5);
-      this.addChild(shadow);
+      this.game.layers.shadows.add(shadow);
+      var player = this;
+      shadow.update = function() {
+        this.x = player.x;
+        this.y = player.y + (player.height / 2);
+        if (player.health <= 0) {
+          this.pendingDestroy = true;
+        }
+      };
 
       //var shadow = this.addChild(this.game.add.sprite(0, this.height / 2), 'shadow');
 
@@ -711,6 +752,9 @@ app.service('PlayerService',
         this.bullets.setAll('anchor.y', 0.5);
         this.bullets.setAll('outOfBoundsKill', true);
         this.game.physics.enable(this.bullets, Phaser.Physics.ARCADE);
+        // for (var bullet in this.bullets) {
+        //   bullet.animations.add('fly');
+        // }
         this.game.allPlayerBullets.add(this.bullets);
         // bullet speed
         this.bulletSpeed = this.attackPattern.bulletSpeed;
@@ -815,6 +859,7 @@ app.service('PlayerService',
             bullet.outOfBoundsKill = true;
             bullet.reset(this.x, this.y);
             bullet.body.velocity.x = this.bulletSpeed;
+            //bullet.animations.play('fly', 10, true);
           }
         }
       // MELEE ???
@@ -879,15 +924,26 @@ app.controller('GameController',
         },
 
         create: function() {
+          // vars
           var scrollSpeed = -100;
           this.enemyTimer = 0;
           this.levelData = PersistenceService.getCurrentLevel(game);
           this.levelCol = 0;
           this.pendingNextLevel = false;
 
+          // rendering layers
+          game.layers = {
+            background: game.add.group(),
+            shadows: game.add.group(),
+            player: game.add.group(),
+            enemies: game.add.group(),
+            fx: game.add.group()
+          };
+
           // lay tiles
           game.tiles = game.add.tileSprite(0, 0, game.width, game.height, this.levelData.background.key);
           game.tiles.autoScroll(scrollSpeed, 0);
+          game.layers.background.add(game.tiles);
 
           // create death sprites
           game.deathAnimations = game.add.group();

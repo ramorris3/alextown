@@ -11,6 +11,7 @@ app.controller('AssetController',
       // type
 
     $scope.assetTypes = [
+      'Players',
       'Enemies',
       'Bullets',
       'Backgrounds'

@@ -59,6 +59,14 @@
       "height": 22,
       "key": "dagger-left",
       "src": "../api/uploads/dagger-left.png"
+    },
+    "dagger-right": {
+      "type": "Bullets",
+      "name": "dagger-right",
+      "width": 64,
+      "height": 22,
+      "key": "dagger-right",
+      "src": "../api/uploads/dagger-right.png"
     }
   },
   "Backgrounds": {

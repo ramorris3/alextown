@@ -1,0 +1,60 @@
+<div class="weapon-bg bg">
+
+  <div class="settings-frame">
+
+    <!-- DEBUG -->
+    <div class="settings-row">
+      <pre>{{ weaponData | json}}</pre>
+    </div>
+
+    <div class="settings-row">
+      <p><em>All weapons created here are only available to the player.  Enemies have their own attack configurations.</em></p>
+    </div>
+
+    <!-- Save button -->
+    <div class="btn-row">
+      <div class="btn-wrap-right">
+        <span class="dark-btn" ng-click="saveWeapon()">Save Weapon</span>
+      </div>
+    </div>
+
+    <div class="settings-row">
+     <p class="form-header">Settings</p>
+     <form>
+      <p><!-- name -->
+        <label for="name">Name:</label>
+        <input ng-model="weaponData.name" id="name"/>
+      </p>
+      <p><!-- Description -->
+        <label for="description">Description:</label>
+        <input ng-model="weaponData.description" id="description"/>
+      </p>
+      <p><!-- Rarity -->
+        <label for="rarity">Rarity:</label>
+        <select ng-model="weaponData.rarity" ng-options="rarity for rarity in getRarities() track by rarity" id="rarity"></select>
+      </p>
+      <p><!-- Player class -->
+        <label for="class">Class:</label>
+        <select ng-model="weaponData.class" ng-options="name as name for (name, player) in getAllPlayers() track by name" id="class"></select>
+      </p>
+      <p><!-- Fire pattern key -->
+        <label for="pattern">Fire Pattern:</label>
+        <select ng-model="weaponData.firePattern" ng-options="name as name for (name, pattern) in getPatterns() track by name" id="pattern"></select>
+      </p>
+     </form>
+    </div>
+
+    <div class="settings-row">
+      <p class="form-header">Spritesheet</p>
+      <p><em>You can choose from preloaded spritesheets.  To add your own spritesheets to this list, go to the <a ui-sref="asset">asset loader.</a></em></p>
+      <form>
+        <p><!-- sprite file -->
+          <label for="spritesheet">Spritesheet:</label>
+          <select ng-model="weaponData.spritesheet" ng-options="sprite as name for (name,sprite) in getSprites() track by name" id="spritesheet"></select><br />
+          <img class="preview-img" ng-src="{{ weaponData.spritesheet.src }}" />
+        </p>
+      </form>
+    </div>
+
+  </div>
+</div>

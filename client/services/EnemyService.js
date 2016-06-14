@@ -246,23 +246,12 @@ app.service('EnemyService',
             bullet.outOfBoundsKill = true;
             sprite.game.physics.enable(bullet, Phaser.Physics.ARCADE);
             bullet.bulletSpeed = sprite.attackPattern.bulletSpeed;
+            bullet.damage = sprite.damage;
             bullet.animations.add('fly');
             bullet.kill();
             sprite.bullets.add(bullet);
           }
           sprite.game.allEnemyBullets.add(sprite.bullets);
-
-          // sprite.bullets.createMultiple(30, sprite.attackPattern.bullet.key);
-          // sprite.bullets.setAll('anchor.x', 0.5);
-          // sprite.bullets.setAll('anchor.y', 0.5);
-          // sprite.bullets.setAll('outOfBoundsKill', true);
-          // sprite.game.physics.enable(sprite.bullets, Phaser.Physics.ARCADE);
-          // sprite.game.allEnemyBullets.add(sprite.bullets);
-          // sprite.bulletSpeed = sprite.attackPattern.bulletSpeed;
-          // for (var bullet in sprite.bullets) {
-          //   bullet.animations.add('fly');
-          //   bullet.animations.play('fly', 10, true);
-          // }
 
           sprite.fireBullet = function() {
             sprite.cooldownClock = sprite.cooldown;

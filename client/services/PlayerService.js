@@ -1,6 +1,6 @@
 app.service('PlayerService', 
-  ['$http', 'DamageService', 'LoaderService', 
-  function($http, DamageService, LoaderService) {
+  ['$http', 'DamageService', 'LoaderService', 'WeaponService',
+  function($http, DamageService, LoaderService, WeaponService) {
 
     var self = this;
 
@@ -22,12 +22,10 @@ app.service('PlayerService',
       this.game = game;
 
       // create sprite
-      console.log(data.moveFrames);
       Phaser.Sprite.call(this, this.game, x, y, data.spritesheet.key);
       // init animations
       this.animations.add('move', data.moveFrames, data.moveFps);
-      this.animations.add('attack', data.attackFrames, data.attackFps);
-      this.animations.add('damage', data.damageFrames, data.damageFps);
+
       // shadow
       var shadow = this.game.add.sprite(0, 32, 'shadow');
       shadow.anchor.setTo(0.5, 0.5);
@@ -41,8 +39,6 @@ app.service('PlayerService',
         }
       };
 
-      //var shadow = this.addChild(this.game.add.sprite(0, this.height / 2), 'shadow');
-
       // physics
       this.game.physics.enable(this, Phaser.Physics.ARCADE);
       this.body.collideWorldBounds = true;
@@ -54,34 +50,18 @@ app.service('PlayerService',
       this.flashing = false;
       this.flashTimer = 0;
 
-      // configuration
+      // stats and movement configuration
       this.health = data.health;
       this.damage = data.damage;
       this.maxSpeed = data.moveSpeed;
       this.diagSpeed = this.maxSpeed / Math.sqrt(2);
       this.acceleration = 1500;
-      this.attackPattern = data.attackPattern;
-      this.cooldown = this.attackPattern.cooldown;
-      this.cooldownClock = 0;
-      if (this.attackPattern.key === 'Ranged') {
-        // create bullet pool
-        this.bullets = this.game.add.group();
-        this.bullets.createMultiple(30, this.attackPattern.bullet.key);
-        this.bullets.setAll('anchor.x', 0.5);
-        this.bullets.setAll('anchor.y', 0.5);
-        this.bullets.setAll('outOfBoundsKill', true);
-        this.game.physics.enable(this.bullets, Phaser.Physics.ARCADE);
-        // for (var bullet in this.bullets) {
-        //   bullet.animations.add('fly');
-        // }
-        this.game.allPlayerBullets.add(this.bullets);
-        // bullet speed
-        this.bulletSpeed = this.attackPattern.bulletSpeed;
-      }
-      // melee?
 
-      // state config
-      this.currentState = this.defaultState;
+      // weapon
+      this.weaponData = WeaponService.getWeapon('Wave of Knives');
+      this.weapon = WeaponService.getFirePattern(this.weaponData.firePattern);
+      this.weapon.create(this.game, this.weaponData);
+      console.log(this.weapon);
 
       // controls
       this.cursors = this.game.input.keyboard.createCursorKeys();
@@ -98,13 +78,12 @@ app.service('PlayerService',
 
       DamageService.flash(this);
 
-      // tick the attack cooldown clock
-      if (this.cooldownClock > 0) {
-        this.cooldownClock--;
-      }
+      this.move();
+      this.animations.play('move');
 
-      // state function (includes animation)
-      this.currentState();
+      if (this.isAttacking()) {
+        this.weapon.fire(this.game, this);
+      }
     };
 
 
@@ -144,63 +123,6 @@ app.service('PlayerService',
 
     self.Player.prototype.isAttacking = function() {
       return this.game.input.keyboard.isDown(Phaser.Keyboard.SPACEBAR);
-    };
-
-    /////////////////////
-    // STATE FUNCTIONS //
-    /////////////////////
-
-    self.Player.prototype.defaultState = function() {
-      // move the player and play move animation
-      this.move();
-      this.animations.play('move');
-
-      // switch states
-      // if attacking
-      if (this.isAttacking()) {
-        this.currentState = this.attackState;
-      }
-    };
-
-    self.Player.prototype.attackState = function() {
-      // can move while firing
-      this.move();
-
-      // RANGED ATTACK
-      if (this.attackPattern.key === 'Ranged') { 
-        if (!this.cooldownClock) { // cooldown inactive
-          // fire bullet
-          this.cooldownClock = this.cooldown;
-          var bullet = this.bullets.getFirstDead();
-          if (bullet) {
-            bullet.revive();
-            bullet.checkWorldBounds = true;
-            bullet.outOfBoundsKill = true;
-            bullet.reset(this.x, this.y);
-            bullet.body.velocity.x = this.bulletSpeed;
-            //bullet.animations.play('fly', 10, true);
-          }
-        }
-      // MELEE ???
-      // AOE ???
-
-      // UNSPECIFIED
-      } else {
-        throw new Error('Attack-pattern key not recognized in PlayerService.js');
-      }
-
-      this.animations.play('attack');
-
-      // STATE ROUTING
-      // go back to default if animation is finished
-      var sprite = this;
-      this.animations.currentAnim.onComplete.add(function() {
-        if (sprite.isAttacking()) {
-          sprite.currentState = sprite.attackState;
-        } else {
-          sprite.currentState = sprite.defaultState;
-        }
-      }, sprite.game);
     };
 
     ///////////////////

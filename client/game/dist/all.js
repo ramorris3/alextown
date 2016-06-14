@@ -382,23 +382,12 @@ app.service('EnemyService',
             bullet.outOfBoundsKill = true;
             sprite.game.physics.enable(bullet, Phaser.Physics.ARCADE);
             bullet.bulletSpeed = sprite.attackPattern.bulletSpeed;
+            bullet.damage = sprite.damage;
             bullet.animations.add('fly');
             bullet.kill();
             sprite.bullets.add(bullet);
           }
           sprite.game.allEnemyBullets.add(sprite.bullets);
-
-          // sprite.bullets.createMultiple(30, sprite.attackPattern.bullet.key);
-          // sprite.bullets.setAll('anchor.x', 0.5);
-          // sprite.bullets.setAll('anchor.y', 0.5);
-          // sprite.bullets.setAll('outOfBoundsKill', true);
-          // sprite.game.physics.enable(sprite.bullets, Phaser.Physics.ARCADE);
-          // sprite.game.allEnemyBullets.add(sprite.bullets);
-          // sprite.bulletSpeed = sprite.attackPattern.bulletSpeed;
-          // for (var bullet in sprite.bullets) {
-          //   bullet.animations.add('fly');
-          //   bullet.animations.play('fly', 10, true);
-          // }
 
           sprite.fireBullet = function() {
             sprite.cooldownClock = sprite.cooldown;
@@ -580,6 +569,7 @@ app.service('LoaderService',
     self.enemy = false;
     self.level = false;
     self.player = false;
+    self.weapon = false;
 
     var loaderFunctions = [];
 
@@ -680,8 +670,8 @@ app.service('PersistenceService',
   }
 ]);
 app.service('PlayerService', 
-  ['$http', 'DamageService', 'LoaderService', 
-  function($http, DamageService, LoaderService) {
+  ['$http', 'DamageService', 'LoaderService', 'WeaponService',
+  function($http, DamageService, LoaderService, WeaponService) {
 
     var self = this;
 
@@ -703,12 +693,10 @@ app.service('PlayerService',
       this.game = game;
 
       // create sprite
-      console.log(data.moveFrames);
       Phaser.Sprite.call(this, this.game, x, y, data.spritesheet.key);
       // init animations
       this.animations.add('move', data.moveFrames, data.moveFps);
-      this.animations.add('attack', data.attackFrames, data.attackFps);
-      this.animations.add('damage', data.damageFrames, data.damageFps);
+
       // shadow
       var shadow = this.game.add.sprite(0, 32, 'shadow');
       shadow.anchor.setTo(0.5, 0.5);
@@ -722,8 +710,6 @@ app.service('PlayerService',
         }
       };
 
-      //var shadow = this.addChild(this.game.add.sprite(0, this.height / 2), 'shadow');
-
       // physics
       this.game.physics.enable(this, Phaser.Physics.ARCADE);
       this.body.collideWorldBounds = true;
@@ -735,34 +721,18 @@ app.service('PlayerService',
       this.flashing = false;
       this.flashTimer = 0;
 
-      // configuration
+      // stats and movement configuration
       this.health = data.health;
       this.damage = data.damage;
       this.maxSpeed = data.moveSpeed;
       this.diagSpeed = this.maxSpeed / Math.sqrt(2);
       this.acceleration = 1500;
-      this.attackPattern = data.attackPattern;
-      this.cooldown = this.attackPattern.cooldown;
-      this.cooldownClock = 0;
-      if (this.attackPattern.key === 'Ranged') {
-        // create bullet pool
-        this.bullets = this.game.add.group();
-        this.bullets.createMultiple(30, this.attackPattern.bullet.key);
-        this.bullets.setAll('anchor.x', 0.5);
-        this.bullets.setAll('anchor.y', 0.5);
-        this.bullets.setAll('outOfBoundsKill', true);
-        this.game.physics.enable(this.bullets, Phaser.Physics.ARCADE);
-        // for (var bullet in this.bullets) {
-        //   bullet.animations.add('fly');
-        // }
-        this.game.allPlayerBullets.add(this.bullets);
-        // bullet speed
-        this.bulletSpeed = this.attackPattern.bulletSpeed;
-      }
-      // melee?
 
-      // state config
-      this.currentState = this.defaultState;
+      // weapon
+      this.weaponData = WeaponService.getWeapon('Wave of Knives');
+      this.weapon = WeaponService.getFirePattern(this.weaponData.firePattern);
+      this.weapon.create(this.game, this.weaponData);
+      console.log(this.weapon);
 
       // controls
       this.cursors = this.game.input.keyboard.createCursorKeys();
@@ -779,13 +749,12 @@ app.service('PlayerService',
 
       DamageService.flash(this);
 
-      // tick the attack cooldown clock
-      if (this.cooldownClock > 0) {
-        this.cooldownClock--;
-      }
+      this.move();
+      this.animations.play('move');
 
-      // state function (includes animation)
-      this.currentState();
+      if (this.isAttacking()) {
+        this.weapon.fire(this.game, this);
+      }
     };
 
 
@@ -827,63 +796,6 @@ app.service('PlayerService',
       return this.game.input.keyboard.isDown(Phaser.Keyboard.SPACEBAR);
     };
 
-    /////////////////////
-    // STATE FUNCTIONS //
-    /////////////////////
-
-    self.Player.prototype.defaultState = function() {
-      // move the player and play move animation
-      this.move();
-      this.animations.play('move');
-
-      // switch states
-      // if attacking
-      if (this.isAttacking()) {
-        this.currentState = this.attackState;
-      }
-    };
-
-    self.Player.prototype.attackState = function() {
-      // can move while firing
-      this.move();
-
-      // RANGED ATTACK
-      if (this.attackPattern.key === 'Ranged') { 
-        if (!this.cooldownClock) { // cooldown inactive
-          // fire bullet
-          this.cooldownClock = this.cooldown;
-          var bullet = this.bullets.getFirstDead();
-          if (bullet) {
-            bullet.revive();
-            bullet.checkWorldBounds = true;
-            bullet.outOfBoundsKill = true;
-            bullet.reset(this.x, this.y);
-            bullet.body.velocity.x = this.bulletSpeed;
-            //bullet.animations.play('fly', 10, true);
-          }
-        }
-      // MELEE ???
-      // AOE ???
-
-      // UNSPECIFIED
-      } else {
-        throw new Error('Attack-pattern key not recognized in PlayerService.js');
-      }
-
-      this.animations.play('attack');
-
-      // STATE ROUTING
-      // go back to default if animation is finished
-      var sprite = this;
-      this.animations.currentAnim.onComplete.add(function() {
-        if (sprite.isAttacking()) {
-          sprite.currentState = sprite.attackState;
-        } else {
-          sprite.currentState = sprite.defaultState;
-        }
-      }, sprite.game);
-    };
-
     ///////////////////
     // INIT FUNCTION //
     ///////////////////
@@ -903,20 +815,186 @@ app.service('PlayerService',
   }
 ]);
 app.service('WeaponService',
-  function()
+  ['$http', 'LoaderService', 'MessageService',
+  function($http, LoaderService, MessageService)
   {
     var self = this;
+    var allWeapons = {};
     self.getAllWeapons = function() {
+      return allWeapons;
+    };
+    self.getWeapon = function(key) {
+      return allWeapons[key];
+    };
 
+    self.getRarities = function() {
+      return [
+        'Common',
+        'Rare',
+        'Legendary'
+      ];
+    };
+
+    init();
+
+    self.saveWeapon = function(weaponData) {
+      // check for existing weapons
+      if (allWeapons.hasOwnProperty(weaponData.name)) {
+        var overwrite = confirm('There is already a weapon called "' + weaponData.name + '." Do you want to overwrite this weapon?');
+        if (!overwrite) {
+          MessageService.setFlashMessage('Weapon was not saved.', true);
+          return;
+        }
+      }
+
+      // save the weapon
+      $http.post('../api/save/weapons', weaponData)
+        .success(function(data) {
+          MessageService.setFlashMessage(data.message, false);
+          // reload weapons
+          allWeapons = data.allWeaponData;
+        })
+        .error(function(data) {
+          MessageService.setFlashMessage(data.message, true);
+        });
+    };
+
+
+    ///////////////////////
+    // BULLET BASE CLASS //
+    ///////////////////////
+
+    var Bullet = function (game, key) {
+
+        Phaser.Sprite.call(this, game, 0, 0, key);
+        this.animations.add('fly');
+
+        this.texture.baseTexture.scaleMode = PIXI.scaleModes.NEAREST;
+
+        this.anchor.set(0.5);
+
+        game.physics.enable(this, Phaser.Physics.ARCADE);
+
+        this.checkWorldBounds = true;
+        this.outOfBoundsKill = true;
+        this.exists = false;
+
+        this.tracking = false;
+        this.scaleSpeed = 0;
+
+    };
+
+    Bullet.prototype = Object.create(Phaser.Sprite.prototype);
+    Bullet.prototype.constructor = self.Bullet;
+
+    Bullet.prototype.fire = function(x, y, angle, speed, gx, gy) {
+
+      gx = gx || 0;
+      gy = gy || 0;
+
+      this.reset(x, y);
+      this.scale.set(1);
+
+      this.game.physics.arcade.velocityFromAngle(angle, speed, this.body.velocity);
+
+      this.angle = angle;
+      this.body.gravity.set(gx, gy);
+
+      this.animations.play('fly', 10, true);
+    };
+
+    Bullet.prototype.update = function() {
+      if (this.tracking) {
+        this.rotation = Math.atan2(this.body.velocity.y, this.body.velocity.x);
+      }
+
+      if (this.scaleSpeed > 0)
+      {
+        this.scale.x += this.scaleSpeed;
+        this.scale.y += this.scaleSpeed;
+      }
+    };
+
+    var firePatterns = {};
+
+    ////////////////////////////////////////////////////
+    //  A single bullet is fired in front of the ship //
+    ////////////////////////////////////////////////////
+
+    firePatterns.SingleBullet = {
+      create: function(game, weaponData) {
+        game.allPlayerBullets = game.add.group();
+        this.nextFire = 0;
+        this.bulletSpeed = 600;
+        this.fireRate = 200;
+
+        for (var i = 0; i < 64; i++)
+        {
+          game.allPlayerBullets.add(new Bullet(game, weaponData.spritesheet.key));
+        }
+      },
+      fire: function(game, source) {
+        if (game.time.time < this.nextFire) { return; }
+        var x = source.x + 10;
+        var y = source.y + 10;
+
+        game.allPlayerBullets.getFirstExists(false).fire(x, y, 0, this.bulletSpeed, 0, 0);
+
+        this.nextFire = game.time.time + this.fireRate;
+      }
+    };
+
+    /////////////////////////////////////////////////////////
+    //  Radius shot, 8 bullets in a circle from the player //
+    /////////////////////////////////////////////////////////
+
+    firePatterns.Radius = {
+      create: function(game, weaponData) {
+        game.allPlayerBullets = game.add.group();
+        this.nextFire = 0;
+        this.bulletSpeed = 600;
+        this.fireRate = 200;
+
+        for (var i = 0; i < 96; i++)
+        {
+          game.allPlayerBullets.add(new Bullet(game, weaponData.spritesheet.key));
+        }
+      },
+      fire: function(game, source) {
+        if (game.time.time < this.nextFire) { return; }
+
+        var x = source.x + 10;
+        var y = source.y + 10;
+
+        // create 8 bullets
+        for (var i = 0; i < 8; i++) {
+          game.allPlayerBullets.getFirstExists(false).fire(x, y, i*45, this.bulletSpeed, 0, 0);
+        }
+
+        this.nextFire = game.time.time + this.fireRate;
+      }
+    };
+
+    self.getFirePatterns = function() {
+      return firePatterns;
+    };
+    self.getFirePattern = function(key) {
+      return firePatterns[key];
+    };
+
+    function init() {
+      $http.get('/api/weapons')
+        .success(function(data) {
+          allWeapons = data.allWeaponData;
+          LoaderService.weapon = true;
+          LoaderService.loadHandler();
+        })
+        .error(function(data) {
+          MessageService.setFlashMessage(data.message, true);
+        });
     }
-    self.currentWeapon = function() {
-
-    }
-
-    self.Weapon = function(game, playerSprite)
-
   }
-);
+]);
 app.controller('GameController', 
   ['AssetService', 'DamageService', 'EnemyService', 'LevelService', 'LoaderService', 'PersistenceService', 'PlayerService',
   function(AssetService, DamageService, EnemyService, LevelService, LoaderService, PersistenceService, PlayerService) {
@@ -971,11 +1049,8 @@ app.controller('GameController',
           }
           game.physics.enable(game.deathAnimations, Phaser.Physics.ARCADE);
 
-          // create player bullet pool
-          game.allPlayerBullets = game.add.group();
-
-          // create player sprite (default to knight for now)
-          var playerData = PlayerService.getPlayer('knight');
+          // create player sprite (default to mage for now)
+          var playerData = PlayerService.getPlayer('Mage');
           this.player = new PlayerService.Player(game, 50, game.world.centerY, playerData);
 
           // create enemy bullet pool
@@ -992,16 +1067,11 @@ app.controller('GameController',
             spawnEnemy(this);
           }
 
-          var i;
-          var subgroup;
-          // enemy/player-bullet collision handling 
-          for (i = 0; i < game.allPlayerBullets.children.length; i++) {
-            subgroup = game.allPlayerBullets.children[i];
-            game.physics.arcade.overlap(this.enemyGroup, subgroup, hitCharacterHandler, hitCharacterProcess);
-          }
+          // enemy/player-bullet collision handling
+          game.physics.arcade.overlap(this.enemyGroup, game.allPlayerBullets, hitCharacterHandler, hitCharacterProcess);
 
           // player/enemy-bullet collision handling
-          for (i = 0; i < game.allEnemyBullets.children.length; i++) {
+          for (var i = 0; i < game.allEnemyBullets.children.length; i++) {
             subgroup = game.allEnemyBullets.children[i];
             game.physics.arcade.overlap(this.player, subgroup, hitCharacterHandler, hitCharacterProcess);
           }
@@ -1156,9 +1226,7 @@ app.controller('GameController',
 
       var prelevelState = {
         create: function() {
-          console.log('here');
           var levelData = PersistenceService.getCurrentLevel(game);
-          console.log(levelData);
           var scrollSpeed = -100;
 
           this.bg = game.add.tileSprite(0, 0, game.width, game.height, levelData.background.key);
@@ -1202,7 +1270,6 @@ app.controller('GameController',
 
       var winState = {
         create: function() {
-          console.log('WIN STATE STARTED');
           var menuText = game.add.bitmapText(game.world.centerX, game.world.centerY, 'carrier_command', 'You win!', 32);
           menuText.anchor.setTo(0.5,0.5);
 

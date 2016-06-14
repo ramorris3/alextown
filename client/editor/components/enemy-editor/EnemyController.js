@@ -51,48 +51,23 @@ app.controller('EnemyController',
 
     /*
       PLAYER DATA IS HARD-CODED FOR NOW
-      Player assets and data objects are local vars
-      because they will not be manipulated by the UI,
-      they will be loaded by PlayerService (eventually)
     */
     var playerData = {
-      // General
-      name: 'knight', // NAME MUST BE UNIQUE
-      description: 'knight always beats morio',
-      // stats
-      health: 20,
-      damage: 1,
-      // movement
-      moveSpeed: 300,
-      // Assets (preload)
-      // main sheet contains move, attack, and damaged animations
-      spritesheet: {
+      "name": "Knight",
+      "description": "knight always beats morio",
+      "health": 20,
+      "damage": 1,
+      "moveSpeed": 300,
+      "spritesheet": {
         "type": "Players",
         "name": "knight",
         "width": 64,
         "height": 64,
         "key": "knight",
-        "src": "../api/uploads/knight.png"
+        "src": "api/uploads/knight.png"
       },
-      // animations
-      moveFrames: [0,1,2],
-      moveFps: 10,
-      attackFrames: [0,1,2],
-      attackFps: 10,
-      // attack patterns
-      attackPattern: {
-        key: 'Ranged',
-        cooldown: 10, // num frames
-        bullet: {
-          "type": "Bullets",
-          "name": "Blue",
-          "width": 12,
-          "height": 12,
-          "key": "blue-bullet",
-          "src": "../api/uploads/blue-bullet.png"
-        },
-        bulletSpeed: 700 // px per second
-      }
+      "moveFrames": [0,1,2],
+      "moveFps": 10
     };
 
     // saves the enemy
@@ -233,13 +208,8 @@ app.controller('EnemyController',
           spawnEnemy();
         }
 
-        var i;
-        var subgroup;
-        // enemy/player-bullet collision handling 
-        for (i = 0; i < editor.allPlayerBullets.children.length; i++) {
-          subgroup = editor.allPlayerBullets.children[i];
-          editor.physics.arcade.overlap(enemyGroup, subgroup, hitCharacterHandler, hitCharacterProcess);
-        }
+        // enemy/player-bullet collision handling
+        editor.physics.arcade.overlap(enemyGroup, editor.allPlayerBullets, hitCharacterHandler, hitCharacterProcess);
 
         // player/enemy-bullet collision handling
         for (i = 0; i < editor.allEnemyBullets.children.length; i++) {

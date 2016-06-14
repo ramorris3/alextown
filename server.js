@@ -12,6 +12,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
 app.use('/editor', express.static('client/editor'));
+app.use('/', express.static('client/game'));
 app.use('/game', express.static('client/game'));
 
 ///////////////////
@@ -280,8 +281,7 @@ router.get('/weapons', function(req, res) {
     }
 
     console.log('\nGot weapons data!  Writing response...\n');
-    res.status(200).send({message: 'Successfully got weapons.'}, allWeaponData: JSON.parse(data)});
-    }
+    res.status(200).send({message: 'Successfully got weapons.', allWeaponData: JSON.parse(data)});
   });
 });
 

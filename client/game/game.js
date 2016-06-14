@@ -52,11 +52,8 @@ app.controller('GameController',
           }
           game.physics.enable(game.deathAnimations, Phaser.Physics.ARCADE);
 
-          // create player bullet pool
-          game.allPlayerBullets = game.add.group();
-
-          // create player sprite (default to knight for now)
-          var playerData = PlayerService.getPlayer('knight');
+          // create player sprite (default to mage for now)
+          var playerData = PlayerService.getPlayer('Mage');
           this.player = new PlayerService.Player(game, 50, game.world.centerY, playerData);
 
           // create enemy bullet pool
@@ -73,16 +70,11 @@ app.controller('GameController',
             spawnEnemy(this);
           }
 
-          var i;
-          var subgroup;
-          // enemy/player-bullet collision handling 
-          for (i = 0; i < game.allPlayerBullets.children.length; i++) {
-            subgroup = game.allPlayerBullets.children[i];
-            game.physics.arcade.overlap(this.enemyGroup, subgroup, hitCharacterHandler, hitCharacterProcess);
-          }
+          // enemy/player-bullet collision handling
+          game.physics.arcade.overlap(this.enemyGroup, game.allPlayerBullets, hitCharacterHandler, hitCharacterProcess);
 
           // player/enemy-bullet collision handling
-          for (i = 0; i < game.allEnemyBullets.children.length; i++) {
+          for (var i = 0; i < game.allEnemyBullets.children.length; i++) {
             subgroup = game.allEnemyBullets.children[i];
             game.physics.arcade.overlap(this.player, subgroup, hitCharacterHandler, hitCharacterProcess);
           }
@@ -237,9 +229,7 @@ app.controller('GameController',
 
       var prelevelState = {
         create: function() {
-          console.log('here');
           var levelData = PersistenceService.getCurrentLevel(game);
-          console.log(levelData);
           var scrollSpeed = -100;
 
           this.bg = game.add.tileSprite(0, 0, game.width, game.height, levelData.background.key);
@@ -283,7 +273,6 @@ app.controller('GameController',
 
       var winState = {
         create: function() {
-          console.log('WIN STATE STARTED');
           var menuText = game.add.bitmapText(game.world.centerX, game.world.centerY, 'carrier_command', 'You win!', 32);
           menuText.anchor.setTo(0.5,0.5);
 

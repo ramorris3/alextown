@@ -1,6 +1,6 @@
 {
-  "knight": {
-    "name": "knight",
+  "Knight": {
+    "name": "Knight",
     "description": "knight always beats morio",
     "health": 20,
     "damage": 1,
@@ -14,21 +14,23 @@
       "src": "api/uploads/knight.png"
     },
     "moveFrames": [0,1,2],
-    "moveFps": 10,
-    "attackFrames": [0,1,2],
-    "attackFps": 10,
-    "attackPattern": {
-      "key": "Ranged",
-      "cooldown": 10,
-      "bullet": {
-        "type": "Bullets",
-        "name": "Blue",
-        "width": 12,
-        "height": 12,
-        "key": "blue-bullet",
-        "src": "api/uploads/blue-bullet.png"
-      },
-      "bulletSpeed": 700
-    }
+    "moveFps": 10
+  },
+  "Mage": {
+    "name": "Mage",
+    "description": "knight always beats morio",
+    "health": 20,
+    "damage": 1,
+    "moveSpeed": 350,
+    "spritesheet": {
+      "type": "Players",
+      "name": "mage",
+      "width": 64,
+      "height": 62,
+      "key": "mage",
+      "src": "api/uploads/mage.png"
+    },
+    "moveFrames": [0,1,2],
+    "moveFps": 10
   }
 }

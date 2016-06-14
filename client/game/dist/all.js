@@ -902,6 +902,21 @@ app.service('PlayerService',
 
   }
 ]);
+app.service('WeaponService',
+  function()
+  {
+    var self = this;
+    self.getAllWeapons = function() {
+
+    }
+    self.currentWeapon = function() {
+
+    }
+
+    self.Weapon = function(game, playerSprite)
+
+  }
+);
 app.controller('GameController', 
   ['AssetService', 'DamageService', 'EnemyService', 'LevelService', 'LoaderService', 'PersistenceService', 'PlayerService',
   function(AssetService, DamageService, EnemyService, LevelService, LoaderService, PersistenceService, PlayerService) {

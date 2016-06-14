@@ -16,6 +16,7 @@ app.service('LoaderService',
     self.enemy = false;
     self.level = false;
     self.player = false;
+    self.weapon = false;
 
     var loaderFunctions = [];
 

@@ -224,7 +224,66 @@ router.get('/players', function(req, res) {
     console.log('\nGot player data!  Writing response...\n');
     res.status(200).send({message: 'Successfully got players.', allPlayerData: JSON.parse(data)});
   })
-})
+});
+
+/* POST weapon to the 'weapons.json' file */
+router.post('/save/weapons', function(req, res) {
+  // get weapon data
+  var newWeapon = req.body;
+  console.log('\nSAVING WEAPON:\n');
+  console.log(newWeapon);
+
+  // get filepath
+  var filepath = path.join(__dirname,'models/weapons.json');
+  console.log('\nReading weapon data from ' + filepath + '...\n');
+
+  // get existing enemyData
+  fs.readFile(filepath, function(err, data) {
+    if (err) {
+      console.log(err);
+      return res.status(500).send({message: 'There was a problem retrieving existing weapons data.'});
+    }
+
+    // add enemy to existing enemy data
+    console.log('\nGot weapons data from ' + filepath + '...\n');
+    var weapons = JSON.parse(data);
+    if (typeof weapons !== 'object') {
+      console.log('\nERROR: \'weapons\' is not a JSON object.\n');
+      return res.status(500).send({message: 'Existing weapons data is corrupt.  Weapon not saved.'});
+    }
+    weapons[newWeapon.name] = newWeapon;
+    console.log(weapons);
+
+    // write enemy data to file
+    console.log('\nNew weapon added.  Writing to file ' + filepath + '...\n');
+    fs.writeFile(filepath, JSON.stringify(weapons, null, 2), function(err) {
+      if (err) {
+        console.log(err);
+        return res.status(500).send({message: 'There was a problem writing your weapon to the file.'});
+      }
+
+      console.log('\nWeapon data successfully written to ' + filepath + '!\n');
+      return res.status(200).send({message: '"'+ newWeapon.name + '" was successfully saved to the database!', allWeaponData: weapons});
+    });
+  });
+});
+
+/* GET all weapons from the 'weapons.json' file */
+router.get('/weapons', function(req, res) {
+  var filepath = path.join(__dirname, 'models/weapons.json');
+  console.log('\nRetrieving weapons from ' + filepath + '...\n');
+
+  fs.readFile(filepath, function(err, data) {
+    if (err) {
+      console.log(err);
+      return res.status(500).send({message: 'There was a problem retrieving existing weapons data.'});
+    }
+
+    console.log('\nGot weapons data!  Writing response...\n');
+    res.status(200).send({message: 'Successfully got weapons.'}, allWeaponData: JSON.parse(data)});
+    }
+  });
+});
 
 /* GET all enemies from the 'enemies.json' file */
 router.get('/enemies', function(req, res) {

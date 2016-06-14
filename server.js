@@ -13,7 +13,6 @@ app.use(bodyParser.json());
 
 app.use('/editor', express.static('client/editor'));
 app.use('/', express.static('client/game'));
-app.use('/game', express.static('client/game'));
 
 ///////////////////
 // API ENDPOINTS //

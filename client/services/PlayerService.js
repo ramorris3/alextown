@@ -61,7 +61,6 @@ app.service('PlayerService',
       this.weaponData = WeaponService.getWeapon('Wave of Knives');
       this.weapon = WeaponService.getFirePattern(this.weaponData.firePattern);
       this.weapon.create(this.game, this.weaponData);
-      console.log(this.weapon);
 
       // controls
       this.cursors = this.game.input.keyboard.createCursorKeys();

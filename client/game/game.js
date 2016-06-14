@@ -1,6 +1,6 @@
 app.controller('GameController', 
-  ['AssetService', 'DamageService', 'EnemyService', 'LevelService', 'LoaderService', 'PersistenceService', 'PlayerService',
-  function(AssetService, DamageService, EnemyService, LevelService, LoaderService, PersistenceService, PlayerService) {
+  ['AssetService', 'BossService', 'DamageService', 'EnemyService', 'LevelService', 'LoaderService', 'PersistenceService', 'PlayerService',
+  function(AssetService, BossService, DamageService, EnemyService, LevelService, LoaderService, PersistenceService, PlayerService) {
 
     // wait for everything to load... then define game states
     LoaderService.addLoaderFunction(function() {
@@ -14,6 +14,9 @@ app.controller('GameController',
           // load FX sprites
           game.load.spritesheet('death', '../api/uploads/explode.png', 50, 50);
           game.load.image('shadow', '../api/uploads/shadow.png');
+
+          // load all boss assets
+          BossService.preloadBossAssets(game);
 
           // load all character spritesheets
           AssetService.preloadAllAssets(game);
@@ -60,10 +63,30 @@ app.controller('GameController',
           game.allEnemyBullets = game.add.group();
 
           // create enemy sprite group
-          this.enemyGroup = game.add.group();
+          game.enemyGroup = game.add.group();
         },
 
         update: function() {
+          // check if boss is dead.  If so, move to next level
+          // if (this.boss) {
+          //   if (this.boss.health <= 0) {
+          //     // player invincible
+          //     this.player.invincible = true;
+
+          //     // set fadeout to end level
+          //     game.time.events.add(5000, function() {
+          //       var fadeout = game.add.tween(game.tiles).to({ alpha: 0 }, 500, "Linear", true, 0);
+          //       fadeout.onComplete.add(function() {
+          //         game.time.events.add(1000, function() {
+          //           PersistenceService.nextLevel(game);
+          //         });
+          //       });
+          //     });
+
+          //     return;
+          //   }
+          // }
+
           // generate enemies
           this.enemyTimer++;
           if (this.enemyTimer % 20 === 0) {
@@ -71,7 +94,7 @@ app.controller('GameController',
           }
 
           // enemy/player-bullet collision handling
-          game.physics.arcade.overlap(this.enemyGroup, game.allPlayerBullets, hitCharacterHandler, hitCharacterProcess);
+          game.physics.arcade.overlap(game.enemyGroup, game.allPlayerBullets, hitCharacterHandler, hitCharacterProcess);
 
           // player/enemy-bullet collision handling
           for (var i = 0; i < game.allEnemyBullets.children.length; i++) {
@@ -80,9 +103,9 @@ app.controller('GameController',
           }
 
           // player/enemy collision handling
-          game.physics.arcade.overlap(this.player, this.enemyGroup, hitPlayerHandler, hitCharacterProcess);
+          game.physics.arcade.overlap(this.player, game.enemyGroup, hitPlayerHandler, hitCharacterProcess);
           // enemy/enemy collision handling
-          game.physics.arcade.collide(this.enemyGroup);
+          game.physics.arcade.collide(game.enemyGroup);
         }
       };
 
@@ -107,16 +130,22 @@ app.controller('GameController',
 
       function spawnEnemy(state) {
         var col = state.levelData.enemies[state.levelCol];
-        if (!col) {
+        if (!col && !state.pendingNextLevel) {
+          // done spawning enemies, spawn boss
           state.pendingNextLevel = true;
-          game.time.events.add(5000, function() {
-            var fadeout = game.add.tween(game.tiles).to({ alpha: 0 }, 500, "Linear", true, 0);
-            fadeout.onComplete.add(function() {
-              game.time.events.add(1000, function() {
-                PersistenceService.nextLevel(game);
-              });
-            });
-          });
+          var boss = new BossService.Biscione(game, game.width, 250);
+          game.enemyGroup.add(boss);
+          //state.boss = new BossService.getBosses().Biscione(game, game.width, game.world.centerY);
+
+          // state.pendingNextLevel = true;
+          // game.time.events.add(5000, function() {
+          //   var fadeout = game.add.tween(game.tiles).to({ alpha: 0 }, 500, "Linear", true, 0);
+          //   fadeout.onComplete.add(function() {
+          //     game.time.events.add(1000, function() {
+          //       PersistenceService.nextLevel(game);
+          //     });
+          //   });
+          // });
         } else if (!state.pendingNextLevel) {
           for (var i = 0; i < col.length; i++) {
             var enemyData = EnemyService.getEnemy(col[i]);
@@ -129,7 +158,7 @@ app.controller('GameController',
                 state.player // target sprite
               );
               enemy.y = (i * 50) + (enemy.height / 2); // position enemy vertically
-              state.enemyGroup.add(enemy);
+              game.enemyGroup.add(enemy);
             }
           }
           state.levelCol++;

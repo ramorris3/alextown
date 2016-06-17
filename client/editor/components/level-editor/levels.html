@@ -1,0 +1,72 @@
+<div class="level-bg bg">
+  <div id="phaser-frame"></div>
+  <div class="settings-frame">
+
+    <!-- Saving -->
+    <div class="btn-row">
+      <div class="btn-wrap-right">
+        <span class="dark-btn" ng-click="reset()">Clear Enemies</span>
+        <span class="dark-btn" ng-click="saveLevel()">Save Level</span>
+      </div>
+    </div>
+
+    <div class="settings-row">
+      <p class="form-header">Which level are you editing?</p>
+      <form>
+        <p><!-- Level number -->
+          <label for="num">Number:</label>
+          <select id="num"
+            ng-model="levelData.number"
+            ng-change="loadLevel()"
+            ng-options="num for num in levelNumbers"></select>
+        </p>
+      </form>
+    </div>
+
+    <!-- Level info -->
+    <div class="settings-row">
+      <p class="form-header">Level Information</p>
+      <form>
+        <p><!-- Title -->
+          <label for="title">Title:</label>
+          <input ng-model="levelData.title" id="title" />
+        </p>
+        <p><!-- Description -->
+          <label for="desc">Description:</label>
+          <input ng-model="levelData.description" id="desc" />
+        </p>
+        <p><!-- BackgroundTile -->
+          <label for="bgtile">Background:</label>
+          <select id="bgtile" 
+            ng-model="levelData.background"
+            ng-options="bg as key for (key, bg) in getBackgrounds() track by key"
+            ng-change="reloadEditorState()"></select>
+        </p>
+        <p><em>You can add more backgrounds to this list using the <a ui-sref="asset">asset loader</a>.</em></p>
+      </form>
+    </div>
+
+    <!-- SELECT ONE ENEMY -->
+    <div class="settings-row">
+      <p class="form-header">Enemies</p>
+      <form>
+        <p><!-- Enemy selector -->
+          <label for="curr-enemy">Enemies:</label>
+          <select ng-model="currentEnemy" ng-options="enemy as name for (name, enemy) in getAllEnemies() track by name" id="curr-enemy"></select>
+        </p>
+        <p><em>You can add more enemies to this list using the <a ui-sref="enemy">enemy editor</a>.</em></p>
+      </form>
+    </div>
+
+    <!-- Current enemy profile -->
+    <div class="settings-row" ng-show="{{ currentEnemy }}">
+      <p class="form-header">Enemy bio</p>
+      <img ng-src="{{ currentEnemy.spritesheet.src }}" /><br />
+      <p>Name:  {{ currentEnemy.name }}</p>
+      <p>Description:  {{ currentEnemy.description }}</p>
+      <p>Attack:  {{ currentEnemy.attackPattern.key }}</p>
+      <p>Health:  {{ currentEnemy.health }}</p>
+      <p>Damage:  {{ currentEnemy.damage }}</p>
+    </div>
+  </div>
+</div>

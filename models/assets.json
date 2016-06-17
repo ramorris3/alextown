@@ -1,0 +1,82 @@
+{
+  "Players": {
+    "knight": {
+      "type": "Players",
+      "name": "knight",
+      "width": 64,
+      "height": 64,
+      "key": "knight",
+      "src": "../api/uploads/knight.png"
+    },
+    "mage": {
+      "type": "Players",
+      "name": "mage",
+      "width": 64,
+      "height": 62,
+      "key": "mage",
+      "src": "../api/uploads/mage.png"
+    }
+  },
+  "Enemies": {
+    "slime": {
+      "type": "Enemies",
+      "name": "slime",
+      "width": 64,
+      "height": 34,
+      "key": "slime",
+      "src": "../api/uploads/slime.png"
+    },
+    "Skeleton": {
+      "type": "Enemies",
+      "name": "Skeleton",
+      "width": 64,
+      "height": 58,
+      "key": "Skeleton",
+      "src": "../api/uploads/Skeleton.png"
+    }
+  },
+  "Bullets": {
+    "Blue": {
+      "type": "Bullets",
+      "name": "Blue",
+      "width": 12,
+      "height": 12,
+      "key": "blue-bullet",
+      "src": "../api/uploads/blue-bullet.png"
+    },
+    "Red": {
+      "type": "Bullets",
+      "name": "Red",
+      "width": 12,
+      "height": 12,
+      "key": "red-bullet",
+      "src": "../api/uploads/red-bullet.png"
+    },
+    "dagger-left": {
+      "type": "Bullets",
+      "name": "dagger-left",
+      "width": 64,
+      "height": 22,
+      "key": "dagger-left",
+      "src": "../api/uploads/dagger-left.png"
+    },
+    "dagger-right": {
+      "type": "Bullets",
+      "name": "dagger-right",
+      "width": 64,
+      "height": 22,
+      "key": "dagger-right",
+      "src": "../api/uploads/dagger-right.png"
+    }
+  },
+  "Backgrounds": {
+    "Grass": {
+      "type": "Backgrounds",
+      "name": "Grass",
+      "width": 1000,
+      "height": 500,
+      "key": "Grass-bb30d310-445f-94e3-1e59-893434b12fcd",
+      "src": "../api/uploads/Grass-bb30d310-445f-94e3-1e59-893434b12fcd.png"
+    }
+  }
+}

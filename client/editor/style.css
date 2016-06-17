@@ -1,0 +1,174 @@
+body, html {
+  font-family: sans-serif;
+  font-weight: 300;
+  font-size: 14px;
+  margin: 0;
+  padding: 0;
+}
+
+.nav {
+  display: block;
+  border-bottom: 1px solid #425766;
+  border-top: 1px solid #425766;
+  padding: 40px 55px;
+  background: #34444f;
+}
+
+.nav-buttons-wrap {
+  width: 1010px;
+  margin: 0 auto;
+  position: relative;
+}
+
+.nav a, .nav a:hover, .nav a:visited, .nav a:active {
+  font-weight: 300;
+  font-size: 18px;
+  color: white;
+  text-decoration: none;
+  margin-right: 32px;
+  border: solid 3px white;
+  border-radius: 5px;
+  padding: 10px;
+}
+
+.nav a:hover, .nav a:active {
+  background-color: white;
+  color: #34444f;
+}
+
+.dark-btn {
+  display: inline-block;
+  font-weight: 300;
+  font-size: 18px;
+  text-decoration: none;
+  margin-right: 5px;
+  margin-left: 5px;
+  border-radius: 5px;
+  padding: 10px;
+  cursor: pointer;
+  color: white;
+  background: #B80048;
+}
+
+.dark-btn:hover {
+  background: #980068;
+  cursor: pointer;
+  background: -webkit-linear-gradient(#B80048, #980068);
+  background: -o-linear-gradient(#B80048, #980068);
+  background: -moz-linear-gradient(#B80048, #980068);
+  background: linear-gradient(#B80048, #980068);
+}
+
+.bg {
+  min-height: calc(100vh - 183px);
+}
+
+#phaser-frame {
+  margin: 0 auto;
+  margin-bottom: 40px;
+  border: 5px solid white;
+  border-radius: 5px;
+  height: 500px;
+  width: 1000px;
+  background-color: #34444f;
+}
+
+canvas {
+  cursor: none;
+}
+
+.settings-frame {
+  position: relative;
+  margin: 0 auto;
+  padding: 40px;
+  min-height: 400px;
+  width: 930px;
+  background: #34444f;
+  border-radius: 5px;
+  background: white;
+}
+
+.btn-row {
+  width: 100%;
+  min-height: 47px;
+}
+
+.btn-wrap-right {
+  float: right;
+}
+
+.btn-wrap-left {
+  float: left;
+}
+
+.btn-wrap-right span, .btn-wrap-left span {
+  display: inline-block;
+}
+
+.center {
+  text-align: center;
+}
+
+.settings-row {
+  width: 930px;
+  margin-top: 10px;
+  margin-bottom: 10px;
+  border-bottom: 1px solid #EFF0F1;
+  padding: 20px 0px;
+  color: #6a737c;
+}
+
+a, a:visited, a:active {
+  color: #B80048;
+  text-decoration: none;
+  font-weight: bold;
+}
+
+a:hover {
+  text-decoration: underline;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.form-header {
+  font-weight: 400;
+  text-transform: capitalize;
+  font-style: italic;
+  width: 100%;
+}
+
+form {
+  width: 470px;
+  display: inline-block;
+}
+
+form p {
+  line-height: 33px;
+}
+
+form input {
+  float: right;
+  width: 350px;
+  padding: 8px;
+  border-radius: 3px;
+}
+
+form select {
+  float: right;
+  width: 370px;
+  border-radius: 3px;
+  height: 33px;
+}
+
+input {
+  color: #6a737c;
+}
+
+.radio, .radio-label {
+  float: left;
+}
+
+pre {
+  white-space: pre-wrap;
+}
+

@@ -1,0 +1,183 @@
+<div class="enemy-bg bg">
+  <div id="phaser-frame"></div>
+
+  <div class="settings-frame">
+
+    <!-- Reload button, save/cancel buttons -->
+    <div class="btn-row">
+      <div class="btn-wrap-left">
+        <span class="dark-btn" ng-click="reloadEditor()">Spawn</span>
+      </div>
+      <div class="btn-wrap-right">
+        <span class="dark-btn" ng-click="saveEnemy()">Save Enemy</span>
+      </div>
+    </div>
+
+    <!-- DEBUG -->
+    <div class="settings-row">
+      <p class="form-header">Editor Settings</p>
+      <form>
+        <p>
+          <label for="spawn">Spawn Timer:</label>
+          <input ng-model="spawnTimer" id="spawn" type="number" />
+        </p>
+      </form>
+      <p><!-- Debug output -->
+        <label for="debug">Show Debug:</label>
+        <input ng-model="showDebug" id="debug" type="checkbox" />
+      </p>
+      <pre ng-show="showDebug">ENEMY_DATA_OBJECT = {{ enemyData | json }}</pre>
+    </div>
+
+    <!-- List of existing enemies -->
+    <div class="settings-row">
+      <p class="form-header">Enemies</p>
+      <p><em>Leave this dropdown blank unless you want to edit an existing enemy.</em></p>
+      <form>
+        <p>
+          <label for="enemy">Enemy:</label>
+          <select id="enemy"
+                  ng-model="enemyData"
+                  ng-options="data as name for (name, data) in getAllEnemies() track by name">
+          </select>
+        </p>
+      </form>
+    </div>
+
+    <!-- General info -->
+    <div class="settings-row">
+      <p class="form-header">General</p>
+      <form>
+        <p><!-- name -->
+          <label for="name">Name:</label>
+          <input ng-model="enemyData.name" id="name"/>
+        </p>
+        <p><!-- description -->
+          <label for="description">Description:</label>
+          <input ng-model="enemyData.description" id="description"/>
+        </p>
+      </form>
+    </div>
+
+    <!-- spritesheet image uploading -->
+    <div class="settings-row">
+      <p class="form-header">Spritesheet</p>
+      <p><em>You can choose from any preloaded spritesheets.  To add your own spritesheets to this list, go to the <a ui-sref="asset">asset loader.</a></em></p>
+      <form>
+        <p><!-- sprite file -->
+          <label for="spritesheet">Spritesheet:</label>
+          <select ng-model="enemyData.spritesheet" ng-options="sprite as name for (name, sprite) in getSprites() track by name" id="spritesheet"></select><br />
+          <img class="preview-img" ng-src="{{ enemyData.spritesheet.src }}" />
+        </p>
+      </form>
+    </div>
+
+    <!-- Animation frames -->
+    <div class="settings-row">
+      <p class="form-header">Animations</p>
+      <p><em>Enter frames as a comma-separated list of integers.</em></p>
+      <form>
+        <p><!-- move frames -->
+          <label for="moveframes">Move Frames:</label>
+          <input ng-model="enemyData.moveFrames" id="moveframes" type="text" />
+        </p>
+        <p><!-- move fps -->
+          <label for="movefps">Move FPS:</label>
+          <input ng-model="enemyData.moveFps" id="movefps" type="text" />
+        </p>
+        <p><!-- attack frames -->
+          <label for="attackframes">Attack Frames:</label>
+          <input ng-model="enemyData.attackFrames" id="attackframes" type="text" />
+        </p>
+        <p><!-- attack fps -->
+          <label for="attackfps">Attack FPS:</label>
+          <input ng-model="enemyData.attackFps" id="attackfps" type="text" />
+        </p>
+      </form>
+    </div>
+
+    <!-- Stats -->
+    <div class="settings-row">
+      <p class="form-header">Stats</p>
+      <form>
+        <p><!-- health -->
+          <label for="health">Health:</label>
+          <input ng-model="enemyData.health" id="health" type="number" />
+        </p>
+        <p><!-- Damage -->
+          <label for="damage">Damage:</label>
+          <input ng-model="enemyData.damage" id="damage" type="number" />
+        </p>
+      </form>
+    </div>
+
+    <!-- Enemy movement script -->
+    <div class="settings-row">
+      <p class="form-header">movement</p>
+      <form>
+        <p><!-- movement speed -->
+          <label for="moveSpeed">Speed:</label>
+          <input ng-model="enemyData.moveSpeed" id="moveSpeed" type="number" />
+        </p>
+        <p><!-- Type -->
+          <label for="move-type">Type:</label>
+          <select ng-model="enemyData.movePattern" ng-options="option for option in moveOptions" id="move-type">
+          </select>
+        </p>
+      </form>
+    </div>
+
+    <!-- Enemy Attack behavior -->
+    <div class="settings-row">
+      <p class="form-header">attack</p>
+      <form>
+        <p><!-- Attack options -->
+          <label for="attack-option">Type:</label>
+          <select ng-model="enemyData.attackPattern"
+                  ng-options="attackOption as key for (key, attackOption) in enemyAttackOptions"
+                  id="attack-option">
+          </select>
+        </p>
+        <!-- Melee Options -->
+        <div ng-show="enemyData.attackPattern.key === 'Charge'">
+          <p><!-- cooldown -->
+            <label for="melee-cooldown">Cooldown:</label>
+            <input ng-model="enemyData.attackPattern.cooldown" id="melee-cooldown" type="number" />
+          </p>
+          <p><!-- chargeSpeed -->
+            <label for="charge-speed">Speed:</label>
+            <input ng-model="enemyData.attackPattern.chargeSpeed" id="charge-speed" type="number" />
+          </p>
+          <p><!-- charge duration -->
+            <label for="charge-dur">Duration:</label>
+            <input ng-model="enemyData.attackPattern.duration" id="charge-dur" type="number" />
+          </p>
+          <p><!-- Sight Range -->
+            <label for="charge-range">Sight Range:</label>
+            <input ng-model="enemyData.attackPattern.range" id="charge-range" type="number" />
+          </p>
+        </div>
+        <!-- Ranged Options -->
+        <div ng-show="enemyData.attackPattern.key === 'Ranged'">
+          <p><!-- cooldown -->
+            <label for="ranged-cooldown">Cooldown:</label>
+            <input ng-model="enemyData.attackPattern.cooldown" id="ranged-cooldown" type="number" />
+          </p>
+          <p><!-- Bullet speed -->
+            <label for="bullet-speed">Bullet Speed:</label>
+            <input ng-model="enemyData.attackPattern.bulletSpeed" id="bullet-speed" type="number">
+          </p>
+          <p><!-- Bullet Sprite -->
+            <label for="bullet-sprite">Bullet Sprite:</label>
+            <select ng-model="enemyData.attackPattern.bullet"
+                    ng-options="bullet as bulletName for (bulletName, bullet) in getBullets() track by bulletName"
+                    id="bullet-sprite">
+            </select>
+          </p>
+          <p><em>You can add more bullets to the "bullet sprite" list using the <a ui-sref="asset">asset loader</a>.</em></p>
+        </div>
+      </form>
+    </div>
+
+  </div> 
+</div>

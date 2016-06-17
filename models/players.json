@@ -1,0 +1,38 @@
+{
+  "Knight": {
+    "name": "Knight",
+    "level": 1,
+    "description": "knight always beats morio",
+    "health": 10,
+    "damage": 1,
+    "moveSpeed": 300,
+    "spritesheet": {
+      "type": "Players",
+      "name": "knight",
+      "width": 64,
+      "height": 64,
+      "key": "knight",
+      "src": "api/uploads/knight.png"
+    },
+    "moveFrames": [0,1,2],
+    "moveFps": 10
+  },
+  "Mage": {
+    "name": "Mage",
+    "level": 1,
+    "description": "knight always beats morio",
+    "health": 10,
+    "damage": 1,
+    "moveSpeed": 350,
+    "spritesheet": {
+      "type": "Players",
+      "name": "mage",
+      "width": 64,
+      "height": 62,
+      "key": "mage",
+      "src": "api/uploads/mage.png"
+    },
+    "moveFrames": [0,1,2],
+    "moveFps": 10
+  }
+}

@@ -1,0 +1,62 @@
+{
+  "Slime": {
+    "name": "Slime",
+    "description": "Really slow until they charge.",
+    "spritesheet": {
+      "type": "Enemies",
+      "name": "slime",
+      "width": 64,
+      "height": 34,
+      "key": "slime",
+      "src": "../api/uploads/slime.png"
+    },
+    "moveFrames": "0,1,2",
+    "moveFps": "10",
+    "attackFrames": "0,1,2",
+    "attackFps": "20",
+    "health": 2,
+    "damage": 1,
+    "moveSpeed": 150,
+    "movePattern": "Follow",
+    "attackPattern": {
+      "key": "Charge",
+      "cooldown": 250,
+      "chargeSpeed": 800,
+      "duration": 30,
+      "range": 300
+    }
+  },
+  "Skeleton": {
+    "name": "Skeleton",
+    "description": "Undead who throw knives.",
+    "spritesheet": {
+      "type": "Enemies",
+      "name": "Skeleton",
+      "width": 64,
+      "height": 58,
+      "key": "Skeleton",
+      "src": "../api/uploads/Skeleton.png"
+    },
+    "moveFrames": "0,1,2",
+    "moveFps": "10",
+    "attackFrames": "0,1,2",
+    "attackFps": "10",
+    "health": 1,
+    "damage": 1,
+    "moveSpeed": 250,
+    "movePattern": "Default",
+    "attackPattern": {
+      "key": "Ranged",
+      "cooldown": 60,
+      "bullet": {
+        "type": "Bullets",
+        "name": "dagger-left",
+        "width": 64,
+        "height": 22,
+        "key": "dagger-left",
+        "src": "../api/uploads/dagger-left.png"
+      },
+      "bulletSpeed": 600
+    }
+  }
+}

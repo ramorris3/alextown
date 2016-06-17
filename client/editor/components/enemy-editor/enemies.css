@@ -1,0 +1,19 @@
+.enemy-bg {
+  padding: 40px;
+  padding-bottom: 200px;
+  color: white;
+  background: #E8130C;
+  background: -webkit-linear-gradient(#E8130C, #FF380D);
+  background: -o-linear-gradient(#E8130C, #FF380D);
+  background: -moz-linear-gradient(#E8130C, #FF380D);
+  background: linear-gradient(#E8130C, #FF380D);
+}
+
+.enemy-bg .settings-frame {
+  color: black;
+}
+
+.preview-img {
+  height: 50px;
+  width: auto;
+}

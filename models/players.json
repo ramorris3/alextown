@@ -3,7 +3,7 @@
     "name": "Knight",
     "level": 1,
     "description": "knight always beats morio",
-    "health": 10,
+    "health": 50,
     "damage": 1,
     "moveSpeed": 300,
     "spritesheet": {
@@ -21,7 +21,7 @@
     "name": "Mage",
     "level": 1,
     "description": "knight always beats morio",
-    "health": 10,
+    "health": 50,
     "damage": 1,
     "moveSpeed": 350,
     "spritesheet": {

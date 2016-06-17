@@ -40,7 +40,8 @@ app.controller('GameController',
             shadows: game.add.group(),
             player: game.add.group(),
             enemies: game.add.group(),
-            fx: game.add.group()
+            fx: game.add.group(),
+            ui: game.add.group()
           };
 
           // lay tiles
@@ -69,6 +70,17 @@ app.controller('GameController',
 
           // create enemy sprite group
           game.enemyGroup = game.add.group();
+          game.layers.enemies.add(game.enemyGroup); //rendering layer
+
+          // create damage text group
+          game.damageNums = game.add.group();
+          for (i = 0; i < 99; i++) {
+            var dmgText = game.add.bitmapText(0, 0, 'carrier_command', '', 12);
+            dmgText.anchor.setTo(0.5, 0.5);
+            dmgText.kill();
+            game.damageNums.add(dmgText);
+          }
+          game.layers.ui.add(game.damageNums); // top rendering layer
         },
 
         update: function() {
@@ -129,7 +141,7 @@ app.controller('GameController',
         if (!col) {
           // done spawning enemies, spawn boss (serpent 'Biscione' by default for now, will later be saved in levelData)
           state.bossSpawned = true;
-          var boss = new BossService.Biscione(game, game.width, 250);
+          var boss = new BossService.Biscione(game, game.width - 350, 250);
           // fade out and move to loot state if boss dead
           boss.events.onDestroy.add(function() {
             game.time.events.add(5000, function() {

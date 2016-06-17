@@ -149,13 +149,42 @@ app.service('DamageService', function() {
   
   // damage function for sprite and 
   self.takeDamage = function(sprite, damage, isPlayer) {
+    var game = sprite.game;
+
     // only damage if not invincible
     if (sprite.invincible) {
       return;
     }
     sprite.health -= damage;
+
+    // show damage numbers
+    if (game.damageNums) {
+      var dmgText = game.damageNums.getFirstDead();
+      if (dmgText) {
+        dmgText.revive();
+        dmgText.text = damage;
+        dmgText.outOfBoundsKill = true;
+        dmgText.reset(sprite.x, sprite.y);
+        dmgText.alpha = 1;
+        dmgText.grav = -0.1;
+        dmgText.ydx = 3.5;
+        dmgText.xdx = Math.random() * 1.5;
+        if (Math.random() >= 0.5) dmgText.xdx *= -1;
+        dmgText.update = function() {
+          dmgText.x = dmgText.x + dmgText.xdx;
+          dmgText.y -= dmgText.ydx;
+          dmgText.ydx += dmgText.grav;
+          dmgText.alpha -= 0.02;
+          if (dmgText.alpha <= 0) {
+            dmgText.kill();
+          }
+        };
+      }
+    }
+
+
     if (sprite.health <= 0) {
-      var deathSpr = sprite.game.deathAnimations.getFirstDead();
+      var deathSpr = game.deathAnimations.getFirstDead();
       if (deathSpr) {
         deathSpr.revive();
         deathSpr.checkWorldBounds = true;
@@ -167,7 +196,6 @@ app.service('DamageService', function() {
       sprite.pendingDestroy = true;
       if (isPlayer) {
         // player death
-        var game = sprite.game;
         var fadeout = game.add.tween(game.world).to({ alpha: 0 }, 2000, "Linear", true, 0);
         fadeout.onComplete.add(function() {
           game.state.start('lose');
@@ -179,14 +207,14 @@ app.service('DamageService', function() {
     if (isPlayer) {
       sprite.invincible = true;
       // set time to restore to vulnerable after
-      sprite.game.time.events.add(50, function() {
+      game.time.events.add(350, function() {
         sprite.invincible = false;
       }, sprite);
     }
 
     sprite.flashing = true;
     // set time to restore to 'not flashing'
-    sprite.game.time.events.add(500, function() {
+    game.time.events.add(500, function() {
       sprite.flashing = false;
     }, sprite);
   };
@@ -1223,7 +1251,8 @@ app.controller('GameController',
             shadows: game.add.group(),
             player: game.add.group(),
             enemies: game.add.group(),
-            fx: game.add.group()
+            fx: game.add.group(),
+            ui: game.add.group()
           };
 
           // lay tiles
@@ -1252,6 +1281,17 @@ app.controller('GameController',
 
           // create enemy sprite group
           game.enemyGroup = game.add.group();
+          game.layers.enemies.add(game.enemyGroup); //rendering layer
+
+          // create damage text group
+          game.damageNums = game.add.group();
+          for (i = 0; i < 99; i++) {
+            var dmgText = game.add.bitmapText(0, 0, 'carrier_command', '', 12);
+            dmgText.anchor.setTo(0.5, 0.5);
+            dmgText.kill();
+            game.damageNums.add(dmgText);
+          }
+          game.layers.ui.add(game.damageNums); // top rendering layer
         },
 
         update: function() {
@@ -1312,7 +1352,7 @@ app.controller('GameController',
         if (!col) {
           // done spawning enemies, spawn boss (serpent 'Biscione' by default for now, will later be saved in levelData)
           state.bossSpawned = true;
-          var boss = new BossService.Biscione(game, game.width, 250);
+          var boss = new BossService.Biscione(game, game.width - 350, 250);
           // fade out and move to loot state if boss dead
           boss.events.onDestroy.add(function() {
             game.time.events.add(5000, function() {

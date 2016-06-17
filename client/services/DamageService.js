@@ -3,13 +3,42 @@ app.service('DamageService', function() {
   
   // damage function for sprite and 
   self.takeDamage = function(sprite, damage, isPlayer) {
+    var game = sprite.game;
+
     // only damage if not invincible
     if (sprite.invincible) {
       return;
     }
     sprite.health -= damage;
+
+    // show damage numbers
+    if (game.damageNums) {
+      var dmgText = game.damageNums.getFirstDead();
+      if (dmgText) {
+        dmgText.revive();
+        dmgText.text = damage;
+        dmgText.outOfBoundsKill = true;
+        dmgText.reset(sprite.x, sprite.y);
+        dmgText.alpha = 1;
+        dmgText.grav = -0.1;
+        dmgText.ydx = 3.5;
+        dmgText.xdx = Math.random() * 1.5;
+        if (Math.random() >= 0.5) dmgText.xdx *= -1;
+        dmgText.update = function() {
+          dmgText.x = dmgText.x + dmgText.xdx;
+          dmgText.y -= dmgText.ydx;
+          dmgText.ydx += dmgText.grav;
+          dmgText.alpha -= 0.02;
+          if (dmgText.alpha <= 0) {
+            dmgText.kill();
+          }
+        };
+      }
+    }
+
+
     if (sprite.health <= 0) {
-      var deathSpr = sprite.game.deathAnimations.getFirstDead();
+      var deathSpr = game.deathAnimations.getFirstDead();
       if (deathSpr) {
         deathSpr.revive();
         deathSpr.checkWorldBounds = true;
@@ -21,7 +50,6 @@ app.service('DamageService', function() {
       sprite.pendingDestroy = true;
       if (isPlayer) {
         // player death
-        var game = sprite.game;
         var fadeout = game.add.tween(game.world).to({ alpha: 0 }, 2000, "Linear", true, 0);
         fadeout.onComplete.add(function() {
           game.state.start('lose');
@@ -33,14 +61,14 @@ app.service('DamageService', function() {
     if (isPlayer) {
       sprite.invincible = true;
       // set time to restore to vulnerable after
-      sprite.game.time.events.add(50, function() {
+      game.time.events.add(350, function() {
         sprite.invincible = false;
       }, sprite);
     }
 
     sprite.flashing = true;
     // set time to restore to 'not flashing'
-    sprite.game.time.events.add(500, function() {
+    game.time.events.add(500, function() {
       sprite.flashing = false;
     }, sprite);
   };

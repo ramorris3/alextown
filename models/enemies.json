@@ -58,5 +58,38 @@
       },
       "bulletSpeed": 600
     }
+  },
+  "Dragon": {
+    "name": "Dragon",
+    "description": "Scary dragon that shoots fireballs",
+    "spritesheet": {
+      "type": "Enemies",
+      "name": "Dragon",
+      "width": 64,
+      "height": 64,
+      "key": "Dragon",
+      "src": "../api/uploads/Dragon.png"
+    },
+    "moveFrames": "0,1,2",
+    "moveFps": "10",
+    "attackFrames": "0,1,2",
+    "attackFps": "10",
+    "health": 3,
+    "damage": 1,
+    "moveSpeed": 250,
+    "movePattern": "Follow",
+    "attackPattern": {
+      "key": "Ranged",
+      "cooldown": 120,
+      "bullet": {
+        "type": "Bullets",
+        "name": "Red",
+        "width": 12,
+        "height": 12,
+        "key": "red-bullet",
+        "src": "../api/uploads/red-bullet.png"
+      },
+      "bulletSpeed": 350
+    }
   }
 }

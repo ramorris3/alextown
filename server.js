@@ -251,8 +251,34 @@ router.post('/save/weapons', function(req, res) {
       console.log('\nERROR: \'weapons\' is not a JSON object.\n');
       return res.status(500).send({message: 'Existing weapons data is corrupt.  Weapon not saved.'});
     }
-    weapons[newWeapon.name] = newWeapon;
-    console.log(weapons);
+
+    // insert the weapon into the heirarchy
+    try {
+      var classGroup =  weapons[newWeapon.class] || {};
+      console.log('class:');
+      console.log(classGroup);
+      var levelGroup = classGroup[newWeapon.level] || {};
+      console.log('level:');
+      console.log(levelGroup);
+      var rareGroup = levelGroup[newWeapon.rarity] || {};
+      console.log('rarity:');
+      console.log(rareGroup);
+
+      rareGroup[newWeapon.name] = newWeapon;
+      levelGroup[newWeapon.rarity] = rareGroup;
+      classGroup[newWeapon.level] = levelGroup;
+      weapons[newWeapon.class] = classGroup;
+
+      console.log('weaponsData');
+      console.log(weapons);
+
+
+      //weapons[newWeapon.class][newWeapon.level][newWeapon.rarity] = newWeapon;
+      //console.log(weapons);
+    } catch(err) {
+      console.log(err);
+      return res.status(500).send({message: 'There was a problem adding your weapon to existing weapons data.'});
+    }
 
     // write enemy data to file
     console.log('\nNew weapon added.  Writing to file ' + filepath + '...\n');

@@ -1,8 +1,9 @@
 {
   "Knight": {
     "name": "Knight",
+    "level": 1,
     "description": "knight always beats morio",
-    "health": 20,
+    "health": 10,
     "damage": 1,
     "moveSpeed": 300,
     "spritesheet": {
@@ -18,8 +19,9 @@
   },
   "Mage": {
     "name": "Mage",
+    "level": 1,
     "description": "knight always beats morio",
-    "health": 20,
+    "health": 10,
     "damage": 1,
     "moveSpeed": 350,
     "spritesheet": {

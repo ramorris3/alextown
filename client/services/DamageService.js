@@ -2,7 +2,7 @@ app.service('DamageService', function() {
   var self = this;
   
   // damage function for sprite and 
-  self.takeDamage = function(sprite, damage) {
+  self.takeDamage = function(sprite, damage, isPlayer) {
     // only damage if not invincible
     if (sprite.invincible) {
       return;
@@ -19,17 +19,26 @@ app.service('DamageService', function() {
         deathSpr.animations.play('die', 10, false, true);
       }
       sprite.pendingDestroy = true;
+      if (isPlayer) {
+        // player death
+        var game = sprite.game;
+        var fadeout = game.add.tween(game.world).to({ alpha: 0 }, 2000, "Linear", true, 0);
+        fadeout.onComplete.add(function() {
+          game.state.start('lose');
+        });
+      }
     }
 
-    // toggle invincibility
-    sprite.invincible = true;
+    // toggle invincibility if player
+    if (isPlayer) {
+      sprite.invincible = true;
+      // set time to restore to vulnerable after
+      sprite.game.time.events.add(50, function() {
+        sprite.invincible = false;
+      }, sprite);
+    }
+
     sprite.flashing = true;
-
-    // set time to restore to vulnerable after
-    sprite.game.time.events.add(50, function() {
-      sprite.invincible = false;
-    }, sprite);
-
     // set time to restore to 'not flashing'
     sprite.game.time.events.add(500, function() {
       sprite.flashing = false;

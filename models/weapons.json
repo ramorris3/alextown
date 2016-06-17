@@ -1,47 +1,141 @@
 {
-  "Rusty Dagger": {
-    "name": "Rusty Dagger",
-    "description": "A brittle, old dagger.  Doesn't look too intimidating.",
-    "rarity": "Common",
-    "class": "Knight",
-    "firePattern": "SingleBullet",
-    "spritesheet": {
-      "type": "Bullets",
-      "name": "dagger-right",
-      "width": 64,
-      "height": 22,
-      "key": "dagger-right",
-      "src": "../api/uploads/dagger-right.png"
+  "Mage": {
+    "1": {
+      "Legendary": {
+        "Ice Storm Scepter": {
+          "name": "Ice Storm Scepter",
+          "description": "Once a gift to a proud king, this ornamented staff blasts a radius of deadly ice particles.",
+          "rarity": "Legendary",
+          "class": "Mage",
+          "level": 1,
+          "damageBoost": 5,
+          "firePattern": "Radius",
+          "spritesheet": {
+            "type": "Bullets",
+            "name": "Blue",
+            "width": 12,
+            "height": 12,
+            "key": "blue-bullet",
+            "src": "../api/uploads/blue-bullet.png"
+          }
+        }
+      },
+      "Common": {
+        "Rusty Dagger": {
+          "name": "Rusty Dagger",
+          "description": "This old, chipped dagger doesn't look too intimidating.",
+          "rarity": "Common",
+          "class": "Mage",
+          "level": 1,
+          "damageBoost": 0,
+          "firePattern": "SingleBullet",
+          "spritesheet": {
+            "type": "Bullets",
+            "name": "dagger-right",
+            "width": 64,
+            "height": 22,
+            "key": "dagger-right",
+            "src": "../api/uploads/dagger-right.png"
+          }
+        },
+        "Throwing Knife": {
+          "name": "Throwing Knife",
+          "description": "Not too shabby.",
+          "rarity": "Common",
+          "class": "Mage",
+          "level": 1,
+          "damageBoost": 2,
+          "firePattern": "SingleBullet",
+          "spritesheet": {
+            "type": "Bullets",
+            "name": "dagger-right",
+            "width": 64,
+            "height": 22,
+            "key": "dagger-right",
+            "src": "../api/uploads/dagger-right.png"
+          }
+        },
+        "Tome of Flame": {
+          "name": "Tome of Flame",
+          "description": "A commonplace incantation.",
+          "rarity": "Common",
+          "class": "Mage",
+          "level": 1,
+          "damageBoost": 3,
+          "firePattern": "SingleBullet",
+          "spritesheet": {
+            "type": "Bullets",
+            "name": "Red",
+            "width": 12,
+            "height": 12,
+            "key": "red-bullet",
+            "src": "../api/uploads/red-bullet.png"
+          }
+        }
+      },
+      "Rare": {
+        "Threatening Tome of Flame": {
+          "name": "Threatening Tome of Flame",
+          "description": "An intermediate flame spell.",
+          "rarity": "Rare",
+          "class": "Mage",
+          "level": 1,
+          "damageBoost": 2,
+          "firePattern": "Radius",
+          "spritesheet": {
+            "type": "Bullets",
+            "name": "Red",
+            "width": 12,
+            "height": 12,
+            "key": "red-bullet",
+            "src": "../api/uploads/red-bullet.png"
+          }
+        }
+      }
+    },
+    "30": {
+      "Legendary": {
+        "Godly Ice Storm Scepter": {
+          "name": "Godly Ice Storm Scepter",
+          "description": "Once a gift to a proud king, this ornamented staff blasts a radius of ice particles.",
+          "rarity": "Legendary",
+          "class": "Mage",
+          "level": 30,
+          "damageBoost": 580,
+          "firePattern": "Radius",
+          "spritesheet": {
+            "type": "Bullets",
+            "name": "Blue",
+            "width": 12,
+            "height": 12,
+            "key": "blue-bullet",
+            "src": "../api/uploads/blue-bullet.png"
+          }
+        }
+      }
     }
   },
-  "Ice Storm Scepter": {
-    "name": "Ice Storm Scepter",
-    "rarity": "Rare",
-    "description": "Once a gift to the king, this ornamented staff blasts a radius of ice particles.",
-    "class": "Mage",
-    "firePattern": "Radius",
-    "spritesheet": {
-      "type": "Bullets",
-      "name": "Blue",
-      "width": 12,
-      "height": 12,
-      "key": "blue-bullet",
-      "src": "../api/uploads/blue-bullet.png"
-    }
-  },
-  "Wave of Knives": {
-    "name": "Wave of Knives",
-    "description": "A warrior's incantation, this spell shoots knives in all directions around you.",
-    "rarity": "Rare",
-    "class": "Knight",
-    "firePattern": "Radius",
-    "spritesheet": {
-      "type": "Bullets",
-      "name": "dagger-right",
-      "width": 64,
-      "height": 22,
-      "key": "dagger-right",
-      "src": "../api/uploads/dagger-right.png"
+  "Knight": {
+    "1": {
+      "Common": {
+        "Rusty Dagger": {
+          "name": "Rusty Dagger",
+          "description": "This old, chipped dagger doesn't look too intimidating.",
+          "rarity": "Common",
+          "class": "Mage",
+          "level": 1,
+          "damageBoost": 0,
+          "firePattern": "SingleBullet",
+          "spritesheet": {
+            "type": "Bullets",
+            "name": "dagger-right",
+            "width": 64,
+            "height": 22,
+            "key": "dagger-right",
+            "src": "../api/uploads/dagger-right.png"
+          }
+        }
+      }
     }
   }
 }

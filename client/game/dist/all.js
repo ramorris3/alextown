@@ -107,6 +107,7 @@ app.service('BossService',
       this.game = game;
       Phaser.Sprite.call(this, this.game, x, y, 'biscione');
       this.anchor.setTo(0.5, 0.5);
+      this.alive = true;
       
       // init animations
       this.animations.add('move');
@@ -124,7 +125,7 @@ app.service('BossService',
       this.flashTimer = 0;
 
       // stats
-      this.health = 150;
+      this.health = 40;
       this.damage = 5;
 
       this.game.add.existing(this);
@@ -134,6 +135,7 @@ app.service('BossService',
     self.Biscione.prototype.constructor = self.Biscione;
 
     self.Biscione.prototype.update = function() {
+
       DamageService.flash(this);
       this.y += this.ySpeed;
       if (this.y >= this.game.height - (this.height / 2) || this.y <= this.height / 2) {
@@ -146,7 +148,7 @@ app.service('DamageService', function() {
   var self = this;
   
   // damage function for sprite and 
-  self.takeDamage = function(sprite, damage) {
+  self.takeDamage = function(sprite, damage, isPlayer) {
     // only damage if not invincible
     if (sprite.invincible) {
       return;
@@ -163,17 +165,26 @@ app.service('DamageService', function() {
         deathSpr.animations.play('die', 10, false, true);
       }
       sprite.pendingDestroy = true;
+      if (isPlayer) {
+        // player death
+        var game = sprite.game;
+        var fadeout = game.add.tween(game.world).to({ alpha: 0 }, 2000, "Linear", true, 0);
+        fadeout.onComplete.add(function() {
+          game.state.start('lose');
+        });
+      }
     }
 
-    // toggle invincibility
-    sprite.invincible = true;
+    // toggle invincibility if player
+    if (isPlayer) {
+      sprite.invincible = true;
+      // set time to restore to vulnerable after
+      sprite.game.time.events.add(50, function() {
+        sprite.invincible = false;
+      }, sprite);
+    }
+
     sprite.flashing = true;
-
-    // set time to restore to vulnerable after
-    sprite.game.time.events.add(50, function() {
-      sprite.invincible = false;
-    }, sprite);
-
     // set time to restore to 'not flashing'
     sprite.game.time.events.add(500, function() {
       sprite.flashing = false;
@@ -703,9 +714,39 @@ app.service('MessageService',
   }
 ]);
 app.service('PersistenceService', 
-  ['LevelService',
-  function(LevelService) {
+  ['LevelService', 'PlayerService', 'WeaponService',
+  function(LevelService, PlayerService, WeaponService) {
     var self = this;
+
+    var playerData = {};
+    self.getPlayerData = function() {
+      return PlayerService.getPlayer('Mage');
+    };
+
+    // hardcoded default weapon. changes when you equip something else
+    var currentWeapon = {
+      "name": "Starting Dagger",
+      "description": "This old, chipped dagger doesn't look too intimidating.",
+      "rarity": "Common",
+      "class": "Mage",
+      "level": 1,
+      "damageBoost": 0,
+      "firePattern": "SingleBullet",
+      "spritesheet": {
+        "type": "Bullets",
+        "name": "dagger-right",
+        "width": 64,
+        "height": 22,
+        "key": "dagger-right",
+        "src": "../game/assets/rusty-dagger.png"
+      }
+    };
+    self.getCurrentWeapon = function() {
+      return currentWeapon;
+    };
+    self.setCurrentWeapon = function(newWeapon) {
+      currentWeapon = newWeapon;
+    };
 
     var currentLevel = 1;
     self.getCurrentLevel = function(game) {
@@ -750,7 +791,7 @@ app.service('PlayerService',
     // PLAYER OBJECT DEF //
     ///////////////////////
 
-    self.Player = function(game, x, y, data) {
+    self.Player = function(game, x, y, data, weaponData) {
       this.game = game;
 
       // create sprite
@@ -790,7 +831,7 @@ app.service('PlayerService',
       this.acceleration = 1500;
 
       // weapon
-      this.weaponData = WeaponService.getWeapon('Wave of Knives');
+      this.weaponData = weaponData;
       this.weapon = WeaponService.getFirePattern(this.weaponData.firePattern);
       this.weapon.create(this.game, this.weaponData);
 
@@ -852,6 +893,7 @@ app.service('PlayerService',
       }
     };
 
+    // handle attack input
     self.Player.prototype.isAttacking = function() {
       return this.game.input.keyboard.isDown(Phaser.Keyboard.SPACEBAR);
     };
@@ -879,7 +921,8 @@ app.service('WeaponService',
   function($http, LoaderService, MessageService)
   {
     var self = this;
-    var allWeapons = {};
+    var allWeaponData; // 3D heirarchical, as stored in the database
+    var allWeapons = {}; // 1D mapped by name
     self.getAllWeapons = function() {
       return allWeapons;
     };
@@ -899,12 +942,19 @@ app.service('WeaponService',
 
     self.saveWeapon = function(weaponData) {
       // check for existing weapons
-      if (allWeapons.hasOwnProperty(weaponData.name)) {
-        var overwrite = confirm('There is already a weapon called "' + weaponData.name + '." Do you want to overwrite this weapon?');
-        if (!overwrite) {
-          MessageService.setFlashMessage('Weapon was not saved.', true);
-          return;
+      var weaponGroup;
+      try {
+        weaponGroup = allWeaponData[weaponData.class][weaponData.level][weaponData.rarity];
+        if (weaponGroup.hasOwnProperty(weaponData.name)) {
+          var overwrite = confirm('There is already a LV ' + weaponData.level + ' ' + weaponData.class + ' weapon called "' + weaponData.name + '." Do you want to overwrite this weapon?');
+          if (!overwrite) {
+            MessageService.setFlashMessage('Weapon was not saved.', true);
+            return;
+          }
         }
+      } catch (err) {
+        // weapon not found
+        console.log(err);
       }
 
       // save the weapon
@@ -912,11 +962,59 @@ app.service('WeaponService',
         .success(function(data) {
           MessageService.setFlashMessage(data.message, false);
           // reload weapons
-          allWeapons = data.allWeaponData;
+          allWeaponData = data.allWeaponData;
+          allWeapons = formatWeapons(allWeaponData);
         })
         .error(function(data) {
           MessageService.setFlashMessage(data.message, true);
         });
+    };
+
+    // get loot
+    self.getLoot = function(playerLevel, playerClass) {
+      var loot = [];
+      var rngesus;
+      var rarity;
+      var level;
+      var safety = 0;
+      while(loot.length < 5) {
+        // to avoid infinite loop (if there are no weapons in database)
+        if (safety++ >= 100) {
+          return [];
+        }
+        // choose the rarity for this weapon
+        rngesus = Math.random();
+        rarity = 'Common';
+        if (rngesus <= 0.10) {
+          rarity = 'Legendary';
+        } else if (rngesus <= 0.5) {
+          rarity = 'Rare';
+        }
+
+        // choose the level
+        var levelOffset = Math.floor(Math.random() * 3);
+        var upOrDown = Math.random() > 0.5 ? -1 : 1;
+        level = playerLevel + (levelOffset * upOrDown);
+        if (level < 1) level = 1;
+        if (level > 30) level = 30;
+
+        // get random weapon of given level and rarity
+        var weapon;
+        var weaponGroup;
+        var levelGroup = allWeaponData[playerClass][level];
+        if (levelGroup) {
+          weaponGroup = levelGroup[rarity];
+        }
+        if (weaponGroup) {
+          // get random weapon
+          var keys = Object.keys(weaponGroup);
+          weapon = weaponGroup[keys[ keys.length * Math.random() << 0]];
+          // add to loot
+          loot.push(weapon);
+        }
+      }
+
+      return loot;
     };
 
 
@@ -982,7 +1080,7 @@ app.service('WeaponService',
     ////////////////////////////////////////////////////
 
     firePatterns.SingleBullet = {
-      create: function(game, weaponData) {
+      create: function(game, weaponData, damage) {
         game.allPlayerBullets = game.add.group();
         this.nextFire = 0;
         this.bulletSpeed = 600;
@@ -990,7 +1088,8 @@ app.service('WeaponService',
 
         for (var i = 0; i < 64; i++)
         {
-          game.allPlayerBullets.add(new Bullet(game, weaponData.spritesheet.key));
+          var bullet = game.allPlayerBullets.add(new Bullet(game, weaponData.spritesheet.key));
+          bullet.damage = damage;
         }
       },
       fire: function(game, source) {
@@ -1009,7 +1108,7 @@ app.service('WeaponService',
     /////////////////////////////////////////////////////////
 
     firePatterns.Radius = {
-      create: function(game, weaponData) {
+      create: function(game, weaponData, damage) {
         game.allPlayerBullets = game.add.group();
         this.nextFire = 0;
         this.bulletSpeed = 600;
@@ -1017,7 +1116,8 @@ app.service('WeaponService',
 
         for (var i = 0; i < 96; i++)
         {
-          game.allPlayerBullets.add(new Bullet(game, weaponData.spritesheet.key));
+          var bullet = game.allPlayerBullets.add(new Bullet(game, weaponData.spritesheet.key));
+          bullet.damage = damage;
         }
       },
       fire: function(game, source) {
@@ -1045,7 +1145,8 @@ app.service('WeaponService',
     function init() {
       $http.get('/api/weapons')
         .success(function(data) {
-          allWeapons = data.allWeaponData;
+          allWeaponData = data.allWeaponData;
+          allWeapons = formatWeapons(allWeaponData);
           LoaderService.weapon = true;
           LoaderService.loadHandler();
         })
@@ -1053,11 +1154,36 @@ app.service('WeaponService',
           MessageService.setFlashMessage(data.message, true);
         });
     }
+
+    function formatWeapons(allWeaponData) {
+      var weapons = {};
+      for (var playerClass in allWeaponData) {
+        if (allWeaponData.hasOwnProperty(playerClass)) {
+          var levelGroup = allWeaponData[playerClass];
+          for (var level in levelGroup) {
+            if (levelGroup.hasOwnProperty(level)) {
+              var rarityGroup = levelGroup[level];
+              for (var rarity in rarityGroup) {
+                if (rarityGroup.hasOwnProperty(rarity)) {
+                  var weaponGroup = rarityGroup[rarity];
+                  for (var weapon in weaponGroup) {
+                    if (weaponGroup.hasOwnProperty(weapon)) {
+                      weapons[weapon] = weaponGroup[weapon];
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+      return weapons;
+    }
   }
 ]);
 app.controller('GameController', 
-  ['AssetService', 'BossService', 'DamageService', 'EnemyService', 'LevelService', 'LoaderService', 'PersistenceService', 'PlayerService',
-  function(AssetService, BossService, DamageService, EnemyService, LevelService, LoaderService, PersistenceService, PlayerService) {
+  ['AssetService', 'BossService', 'DamageService', 'EnemyService', 'LevelService', 'LoaderService', 'PersistenceService', 'PlayerService', 'WeaponService',
+  function(AssetService, BossService, DamageService, EnemyService, LevelService, LoaderService, PersistenceService, PlayerService, WeaponService) {
 
     // wait for everything to load... then define game states
     LoaderService.addLoaderFunction(function() {
@@ -1068,9 +1194,13 @@ app.controller('GameController',
 
       var gameplayState = {
         preload: function() {
+          // load google font
+          game.load.script('webfont', '//ajax.googleapis.com/ajax/libs/webfont/1/webfont.js');
+
           // load FX sprites
           game.load.spritesheet('death', '../api/uploads/explode.png', 50, 50);
           game.load.image('shadow', '../api/uploads/shadow.png');
+          game.load.image('cursor', 'assets/cursor.png');
 
           // load all boss assets
           BossService.preloadBossAssets(game);
@@ -1085,7 +1215,7 @@ app.controller('GameController',
           this.enemyTimer = 0;
           this.levelData = PersistenceService.getCurrentLevel(game);
           this.levelCol = 0;
-          this.pendingNextLevel = false;
+          this.bossSpawned = false;
 
           // rendering layers
           game.layers = {
@@ -1113,8 +1243,9 @@ app.controller('GameController',
           game.physics.enable(game.deathAnimations, Phaser.Physics.ARCADE);
 
           // create player sprite (default to mage for now)
-          var playerData = PlayerService.getPlayer('Mage');
-          this.player = new PlayerService.Player(game, 50, game.world.centerY, playerData);
+          var playerData = PersistenceService.getPlayerData();
+          var weaponData = PersistenceService.getCurrentWeapon();
+          this.player = new PlayerService.Player(game, 50, game.world.centerY, playerData, weaponData);
 
           // create enemy bullet pool
           game.allEnemyBullets = game.add.group();
@@ -1124,25 +1255,6 @@ app.controller('GameController',
         },
 
         update: function() {
-          // check if boss is dead.  If so, move to next level
-          // if (this.boss) {
-          //   if (this.boss.health <= 0) {
-          //     // player invincible
-          //     this.player.invincible = true;
-
-          //     // set fadeout to end level
-          //     game.time.events.add(5000, function() {
-          //       var fadeout = game.add.tween(game.tiles).to({ alpha: 0 }, 500, "Linear", true, 0);
-          //       fadeout.onComplete.add(function() {
-          //         game.time.events.add(1000, function() {
-          //           PersistenceService.nextLevel(game);
-          //         });
-          //       });
-          //     });
-
-          //     return;
-          //   }
-          // }
 
           // generate enemies
           this.enemyTimer++;
@@ -1151,16 +1263,16 @@ app.controller('GameController',
           }
 
           // enemy/player-bullet collision handling
-          game.physics.arcade.overlap(game.enemyGroup, game.allPlayerBullets, hitCharacterHandler, hitCharacterProcess);
+          game.physics.arcade.overlap(game.enemyGroup, game.allPlayerBullets, hitEnemyByBulletHandler);
 
           // player/enemy-bullet collision handling
           for (var i = 0; i < game.allEnemyBullets.children.length; i++) {
             subgroup = game.allEnemyBullets.children[i];
-            game.physics.arcade.overlap(this.player, subgroup, hitCharacterHandler, hitCharacterProcess);
+            game.physics.arcade.overlap(this.player, subgroup, hitPlayerByBulletHandler, hitPlayerProcess);
           }
 
           // player/enemy collision handling
-          game.physics.arcade.overlap(this.player, game.enemyGroup, hitPlayerHandler, hitCharacterProcess);
+          game.physics.arcade.overlap(this.player, game.enemyGroup, hitPlayerByEnemyHandler, hitPlayerProcess);
           // enemy/enemy collision handling
           game.physics.arcade.collide(game.enemyGroup);
         }
@@ -1169,40 +1281,50 @@ app.controller('GameController',
       /* GAMEPLAY HELPER METHODS */
 
       // collision is registered only if this func returns true
-      var hitCharacterProcess = function(character) {
-        return !character.invincible;
+      var hitPlayerProcess = function(player) {
+        return !player.invincible;
       };
 
-      // kill bullet, damage character (player or enemy)
-      var hitCharacterHandler = function(character, bullet) {
+      // kill bullet, damage enemy
+      var hitEnemyByBulletHandler = function(enemy, bullet) {
         bullet.kill();
         // create "bullet dust"
-        DamageService.takeDamage(character, 1);
+        DamageService.takeDamage(enemy, 1);
+      };
+
+      // kill bullet, damage player
+      var hitPlayerByBulletHandler = function(player, bullet) {
+        bullet.kill();
+        // create "bullet dust"
+        DamageService.takeDamage(player, bullet.damage, true);
       };
 
       // player takes damage if hit by enemy
-      var hitPlayerHandler = function(player) {
-        DamageService.takeDamage(player, 1);
+      var hitPlayerByEnemyHandler = function(player, enemy) {
+        DamageService.takeDamage(player, enemy.damage, true);
       };
 
       function spawnEnemy(state) {
+        if (state.bossSpawned) {
+          return;
+        }
         var col = state.levelData.enemies[state.levelCol];
-        if (!col && !state.pendingNextLevel) {
-          // done spawning enemies, spawn boss
-          state.pendingNextLevel = true;
+        if (!col) {
+          // done spawning enemies, spawn boss (serpent 'Biscione' by default for now, will later be saved in levelData)
+          state.bossSpawned = true;
           var boss = new BossService.Biscione(game, game.width, 250);
+          // fade out and move to loot state if boss dead
+          boss.events.onDestroy.add(function() {
+            game.time.events.add(5000, function() {
+              var fadeout = game.add.tween(game.tiles).to({ alpha: 0 }, 500, "Linear", true, 0);
+              fadeout.onComplete.add(function() {
+                game.time.events.add(1000, function() {
+                  game.state.start('loot');
+                });
+              });
+            });
+          });
           game.enemyGroup.add(boss);
-          //state.boss = new BossService.getBosses().Biscione(game, game.width, game.world.centerY);
-
-          // state.pendingNextLevel = true;
-          // game.time.events.add(5000, function() {
-          //   var fadeout = game.add.tween(game.tiles).to({ alpha: 0 }, 500, "Linear", true, 0);
-          //   fadeout.onComplete.add(function() {
-          //     game.time.events.add(1000, function() {
-          //       PersistenceService.nextLevel(game);
-          //     });
-          //   });
-          // });
         } else if (!state.pendingNextLevel) {
           for (var i = 0; i < col.length; i++) {
             var enemyData = EnemyService.getEnemy(col[i]);
@@ -1286,6 +1408,7 @@ app.controller('GameController',
 
       var mainMenuState = {
         create: function() {
+
           var menuText = game.add.bitmapText(game.world.centerX, game.world.centerY, 'carrier_command', 'Trace Italienne', 32);
           menuText.anchor.setTo(0.5,0.5);
 
@@ -1309,9 +1432,9 @@ app.controller('GameController',
         }
       };
 
-      //////////////////
-      // LEVEL SCREEN //
-      //////////////////
+      ////////////////////////
+      // LEVEL INTRO SCREEN //
+      ////////////////////////
 
       var prelevelState = {
         create: function() {
@@ -1350,6 +1473,203 @@ app.controller('GameController',
               }, this);
             }, this);
           }
+        }
+      };
+
+      ////////////////
+      // LOOT STATE //
+      ////////////////
+
+      var lootState = {
+        create: function() {
+          // title text
+          game.add.bitmapText(game.world.centerX, 32, 'carrier_command', 'You found weapons!', 32).anchor.setTo(0.5, 0.5);
+          var instruct = game.add.bitmapText(game.world.centerX, 64, 'carrier_command', 'Press SPACE to equip a weapon or ENTER to start the next level', 8);
+          instruct.anchor.setTo(0.5, 0.5);
+          var instructTween = game.add.tween(instruct).to({ alpha: 0.3 }, 500, "Linear", true, 0, -1, true);
+
+          // create player sprite to demo the weapon
+          var playerData = PersistenceService.getPlayerData();
+          var weaponData = PersistenceService.getCurrentWeapon();
+          var player = new PlayerService.Player(game, game.world.centerX, game.world.centerY, playerData, weaponData);
+          // override update function
+          player.update = function() {
+            this.animations.play('move');
+            this.weapon.fire(game, this);
+          };
+
+          // loot list
+          var loot = WeaponService.getLoot(playerData.level, playerData.name);
+          loot.unshift(weaponData);
+          var currentChoice = 0;
+
+          var weaponsList = game.add.bitmapText(22, game.world.height - 8, 'carrier_command', updateList(), 8);
+          weaponsList.anchor.setTo(0, 1);
+
+          // create cursor
+          var cursor = game.add.sprite(14, weaponsList.y - weaponsList.height + 11, 'cursor');
+          cursor.anchor.set(0.5);
+          var startPos = cursor.y;
+          game.add.tween(cursor).to({ alpha: 0 }, 100, "Linear", true, 0, -1, true);
+
+          // set controls
+          var up = game.input.keyboard.addKey(Phaser.Keyboard.UP);
+          var down = game.input.keyboard.addKey(Phaser.Keyboard.DOWN);
+          var enter = game.input.keyboard.addKey(Phaser.Keyboard.ENTER);
+          var space = game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
+
+          // go up in the list, move cursor
+          up.onDown.add(function() {
+            currentChoice--;
+            if (currentChoice < 0) {
+              currentChoice = loot.length - 1;
+            }
+            cursor.y = startPos + (currentChoice * 16);
+          });
+
+          // up down in the list, move cursor
+          down.onDown.add(function() {
+            currentChoice++;
+            if (currentChoice > loot.length - 1) {
+              currentChoice = 0;
+            }
+            cursor.y = startPos + (currentChoice * 16);
+          });
+
+          // go to next level on ENTER
+          enter.onDown.add(function() {
+            instructTween.timeScale = 5;
+            game.time.events.add(800, function() {
+              console.log(PersistenceService);
+              PersistenceService.nextLevel(game);
+            }, this);
+          });
+
+          // display info about equipped weapon
+          var weaponInfoText = game.add.bitmapText(game.width / 3 * 2, game.world.height - 24, 'carrier_command', updateInfo(), 8);
+          weaponInfoText.anchor.setTo(0, 1); // left aligned
+          weaponInfoText.maxWidth = game.width / 3;
+
+          // equip a weapon on SPACE
+          space.onDown.add(function() {
+            // set weapon in persistence service
+            weaponData = loot[currentChoice];
+            PersistenceService.setCurrentWeapon(weaponData);
+
+            // destroy and reload player
+            player.pendingDestroy = true;
+            player = new PlayerService.Player(game, game.world.centerX, game.world.centerY, playerData, weaponData);
+            // override update function
+            player.update = function() {
+              this.animations.play('move');
+              this.weapon.fire(game, this);
+            };
+
+            // refresh display text
+            weaponInfoText.text = updateInfo();
+            weaponsList.text = updateList();
+          });
+
+          // updating text functions
+          function updateList() {
+            var text = '-- LOOT --\n\n';
+            for (var i = 0; i < loot.length; i++) {
+              text += loot[i].name;
+              if (i === currentChoice) {
+                text += ' - equipped';
+              }
+              text += '\n\n';
+            }
+            return text;
+          }
+
+          function updateInfo() {
+            var text = '-- equipped --\n\n';
+            var weapon = loot[currentChoice];
+            text += 'Name: ' + weapon.name + '\n\n';
+            text += 'Rarity: ' + weapon.rarity + '\n\n';
+            text += 'Required LV: ' + weapon.level + '\n\n';
+            text += 'Damage: ' + weapon.damageBoost + '\n\n';
+            text += 'Attack Type: ' + weapon.firePattern + '\n\n';
+            return text;
+          }
+        }
+      };
+
+      ////////////////
+      // LOSE STATE //
+      ////////////////
+
+      var loseState = {
+        create: function() {
+          game.add.tween(game.world).to({ alpha: 1 }, 500, "Linear", true);
+          // header
+          game.add.bitmapText(game.world.centerX, game.world.centerY, 'carrier_command', 'You died', 32)
+            .anchor.setTo(0.5, 0.5);
+
+          // menu options
+          var retry = game.add.bitmapText(game.world.centerX, game.world.centerY + 96, 'carrier_command', 'Retry', 14);
+          retry.anchor.setTo(0.5, 0.5);
+          var quit = game.add.bitmapText(game.world.centerX, game.world.centerY + 124, 'carrier_command', 'Main Menu', 14);
+          quit.anchor.setTo(0.5, 0);
+
+          // create cursor
+          var cursor = game.add.sprite(
+            game.world.centerX - 96, // x
+            game.world.centerY + 96, // y
+            'cursor'); // sprite key
+          cursor.anchor.setTo(0.5, 0.5);
+          var startPos = cursor.y;
+          // game.add.tween(cursor).to({ alpha: 0 }, 100, "Linear", true, 0, -1, true);
+
+          var currentChoice = 0;
+          var selected = false;
+
+          // set controls
+          var up = game.input.keyboard.addKey(Phaser.Keyboard.UP);
+          var down = game.input.keyboard.addKey(Phaser.Keyboard.DOWN);
+          var enter = game.input.keyboard.addKey(Phaser.Keyboard.ENTER);
+          var space = game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
+
+          // go up in the list, move cursor
+          up.onDown.add(function() {
+            if (selected) return;
+            currentChoice--;
+            if (currentChoice < 0) {
+              currentChoice = 1;
+            }
+            cursor.y = startPos + (currentChoice * 36);
+          });
+
+          // up down in the list, move cursor
+          down.onDown.add(function() {
+            if (selected) return;
+            currentChoice++;
+            if (currentChoice > 1) {
+              currentChoice = 0;
+            }
+            cursor.y = startPos + (currentChoice * 36);
+          });
+
+          // event handler if enter or space is chosen
+          var onChoice = function() {
+            if (selected) return;
+            selected = true;
+            if (currentChoice === 0) {
+              game.add.tween(retry).to({ alpha: 0 }, 80, "Linear", true, 0, -1, true);
+              game.time.events.add(800, function() {
+                game.state.start('prelevel');
+              });
+            } else {
+              game.add.tween(quit).to({ alpha: 0 }, 80, "Linear", true, 0, -1, true);
+              game.time.events.add(800, function() {
+                game.state.start('mainMenu');
+              });
+            }
+          };
+
+          enter.onDown.add(onChoice);
+          space.onDown.add(onChoice);
         }
       };
 
@@ -1397,6 +1717,8 @@ app.controller('GameController',
       game.state.add('mainMenu', mainMenuState);
       game.state.add('prelevel', prelevelState);
       game.state.add('gameplay', gameplayState);
+      game.state.add('loot', lootState);
+      game.state.add('lose', loseState);
       game.state.add('win', winState);
 
       // launch

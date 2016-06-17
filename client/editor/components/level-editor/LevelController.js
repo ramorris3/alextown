@@ -61,6 +61,21 @@ app.controller('LevelController',
     // EDITOR DEF AND FUNCTIONS //
     //////////////////////////////
 
+    // editor vars
+    var highlight;
+    var cursor;
+    var stageRight;
+    var stageLeft;
+    $scope.levelData.enemies = [];
+    var tileSize = 50;
+    var prevMouseDown = false;
+    var filename;
+    var level;
+    var viewFrame = 0;
+    var maxFrames = 10;
+    var frameText;
+    var layers;
+
     var editor = new Phaser.Game(1000, 500, Phaser.CANVAS, 'phaser-frame', {preload: preload, create: create, update: update, render: render}); 
 
     function preload() {
@@ -80,23 +95,7 @@ app.controller('LevelController',
       AssetService.preloadAllAssets(editor);
     }
 
-    // editor vars
-    var highlight;
-    var cursor;
-    var stageRight;
-    var stageLeft;
-    $scope.levelData.enemies = [];
-    var tileSize = 50;
-    var prevMouseDown = false;
-    var filename;
-    var level;
-    var viewFrame = 0;
-    var maxFrames = 1;
-    var frameText;
-    var layers;
-
     function create() {
-
       // rendering layers: sprites drawn in the order of layers object properties
       layers = {
         background: editor.add.group(),

@@ -24,6 +24,7 @@ app.service('BossService',
       this.game = game;
       Phaser.Sprite.call(this, this.game, x, y, 'biscione');
       this.anchor.setTo(0.5, 0.5);
+      this.alive = true;
       
       // init animations
       this.animations.add('move');
@@ -41,7 +42,7 @@ app.service('BossService',
       this.flashTimer = 0;
 
       // stats
-      this.health = 150;
+      this.health = 40;
       this.damage = 5;
 
       this.game.add.existing(this);
@@ -51,6 +52,7 @@ app.service('BossService',
     self.Biscione.prototype.constructor = self.Biscione;
 
     self.Biscione.prototype.update = function() {
+
       DamageService.flash(this);
       this.y += this.ySpeed;
       if (this.y >= this.game.height - (this.height / 2) || this.y <= this.height / 2) {

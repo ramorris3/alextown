@@ -52,6 +52,23 @@ app.controller('EnemyController',
     /*
       PLAYER DATA IS HARD-CODED FOR NOW
     */
+    var weaponData = {
+      "name": "Rusty Dagger",
+      "description": "This old, chipped dagger doesn't look too intimidating.",
+      "rarity": "Common",
+      "class": "Mage",
+      "level": 1,
+      "damageBoost": 0,
+      "firePattern": "SingleBullet",
+      "spritesheet": {
+        "type": "Bullets",
+        "name": "dagger-right",
+        "width": 64,
+        "height": 22,
+        "key": "dagger-right",
+        "src": "../api/uploads/dagger-right.png"
+      }
+    };
     var playerData = {
       "name": "Knight",
       "description": "knight always beats morio",
@@ -189,7 +206,7 @@ app.controller('EnemyController',
         editor.physics.enable(editor.deathAnimations, Phaser.Physics.ARCADE);
 
         // create player sprite
-        player = new PlayerService.Player(editor, 50, editor.world.centerY, angular.copy(playerData), true);
+        player = new PlayerService.Player(editor, 50, editor.world.centerY, angular.copy(playerData), weaponData);
 
         // create enemy bullet pool
         editor.allEnemyBullets = editor.add.group();

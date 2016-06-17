@@ -3,7 +3,8 @@ app.service('WeaponService',
   function($http, LoaderService, MessageService)
   {
     var self = this;
-    var allWeapons = {};
+    var allWeaponData; // 3D heirarchical, as stored in the database
+    var allWeapons = {}; // 1D mapped by name
     self.getAllWeapons = function() {
       return allWeapons;
     };
@@ -23,12 +24,19 @@ app.service('WeaponService',
 
     self.saveWeapon = function(weaponData) {
       // check for existing weapons
-      if (allWeapons.hasOwnProperty(weaponData.name)) {
-        var overwrite = confirm('There is already a weapon called "' + weaponData.name + '." Do you want to overwrite this weapon?');
-        if (!overwrite) {
-          MessageService.setFlashMessage('Weapon was not saved.', true);
-          return;
+      var weaponGroup;
+      try {
+        weaponGroup = allWeaponData[weaponData.class][weaponData.level][weaponData.rarity];
+        if (weaponGroup.hasOwnProperty(weaponData.name)) {
+          var overwrite = confirm('There is already a LV ' + weaponData.level + ' ' + weaponData.class + ' weapon called "' + weaponData.name + '." Do you want to overwrite this weapon?');
+          if (!overwrite) {
+            MessageService.setFlashMessage('Weapon was not saved.', true);
+            return;
+          }
         }
+      } catch (err) {
+        // weapon not found
+        console.log(err);
       }
 
       // save the weapon
@@ -36,11 +44,59 @@ app.service('WeaponService',
         .success(function(data) {
           MessageService.setFlashMessage(data.message, false);
           // reload weapons
-          allWeapons = data.allWeaponData;
+          allWeaponData = data.allWeaponData;
+          allWeapons = formatWeapons(allWeaponData);
         })
         .error(function(data) {
           MessageService.setFlashMessage(data.message, true);
         });
+    };
+
+    // get loot
+    self.getLoot = function(playerLevel, playerClass) {
+      var loot = [];
+      var rngesus;
+      var rarity;
+      var level;
+      var safety = 0;
+      while(loot.length < 5) {
+        // to avoid infinite loop (if there are no weapons in database)
+        if (safety++ >= 100) {
+          return [];
+        }
+        // choose the rarity for this weapon
+        rngesus = Math.random();
+        rarity = 'Common';
+        if (rngesus <= 0.10) {
+          rarity = 'Legendary';
+        } else if (rngesus <= 0.5) {
+          rarity = 'Rare';
+        }
+
+        // choose the level
+        var levelOffset = Math.floor(Math.random() * 3);
+        var upOrDown = Math.random() > 0.5 ? -1 : 1;
+        level = playerLevel + (levelOffset * upOrDown);
+        if (level < 1) level = 1;
+        if (level > 30) level = 30;
+
+        // get random weapon of given level and rarity
+        var weapon;
+        var weaponGroup;
+        var levelGroup = allWeaponData[playerClass][level];
+        if (levelGroup) {
+          weaponGroup = levelGroup[rarity];
+        }
+        if (weaponGroup) {
+          // get random weapon
+          var keys = Object.keys(weaponGroup);
+          weapon = weaponGroup[keys[ keys.length * Math.random() << 0]];
+          // add to loot
+          loot.push(weapon);
+        }
+      }
+
+      return loot;
     };
 
 
@@ -106,7 +162,7 @@ app.service('WeaponService',
     ////////////////////////////////////////////////////
 
     firePatterns.SingleBullet = {
-      create: function(game, weaponData) {
+      create: function(game, weaponData, damage) {
         game.allPlayerBullets = game.add.group();
         this.nextFire = 0;
         this.bulletSpeed = 600;
@@ -114,7 +170,8 @@ app.service('WeaponService',
 
         for (var i = 0; i < 64; i++)
         {
-          game.allPlayerBullets.add(new Bullet(game, weaponData.spritesheet.key));
+          var bullet = game.allPlayerBullets.add(new Bullet(game, weaponData.spritesheet.key));
+          bullet.damage = damage;
         }
       },
       fire: function(game, source) {
@@ -133,7 +190,7 @@ app.service('WeaponService',
     /////////////////////////////////////////////////////////
 
     firePatterns.Radius = {
-      create: function(game, weaponData) {
+      create: function(game, weaponData, damage) {
         game.allPlayerBullets = game.add.group();
         this.nextFire = 0;
         this.bulletSpeed = 600;
@@ -141,7 +198,8 @@ app.service('WeaponService',
 
         for (var i = 0; i < 96; i++)
         {
-          game.allPlayerBullets.add(new Bullet(game, weaponData.spritesheet.key));
+          var bullet = game.allPlayerBullets.add(new Bullet(game, weaponData.spritesheet.key));
+          bullet.damage = damage;
         }
       },
       fire: function(game, source) {
@@ -169,13 +227,39 @@ app.service('WeaponService',
     function init() {
       $http.get('/api/weapons')
         .success(function(data) {
-          allWeapons = data.allWeaponData;
+          allWeaponData = data.allWeaponData;
+          allWeapons = formatWeapons(allWeaponData);
           LoaderService.weapon = true;
           LoaderService.loadHandler();
         })
         .error(function(data) {
           MessageService.setFlashMessage(data.message, true);
         });
+    }
+
+    function formatWeapons(allWeaponData) {
+      var weapons = {};
+      for (var playerClass in allWeaponData) {
+        if (allWeaponData.hasOwnProperty(playerClass)) {
+          var levelGroup = allWeaponData[playerClass];
+          for (var level in levelGroup) {
+            if (levelGroup.hasOwnProperty(level)) {
+              var rarityGroup = levelGroup[level];
+              for (var rarity in rarityGroup) {
+                if (rarityGroup.hasOwnProperty(rarity)) {
+                  var weaponGroup = rarityGroup[rarity];
+                  for (var weapon in weaponGroup) {
+                    if (weaponGroup.hasOwnProperty(weapon)) {
+                      weapons[weapon] = weaponGroup[weapon];
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+      return weapons;
     }
   }
 ]);

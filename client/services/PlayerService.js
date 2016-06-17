@@ -18,7 +18,7 @@ app.service('PlayerService',
     // PLAYER OBJECT DEF //
     ///////////////////////
 
-    self.Player = function(game, x, y, data) {
+    self.Player = function(game, x, y, data, weaponData) {
       this.game = game;
 
       // create sprite
@@ -58,7 +58,7 @@ app.service('PlayerService',
       this.acceleration = 1500;
 
       // weapon
-      this.weaponData = WeaponService.getWeapon('Wave of Knives');
+      this.weaponData = weaponData;
       this.weapon = WeaponService.getFirePattern(this.weaponData.firePattern);
       this.weapon.create(this.game, this.weaponData);
 
@@ -120,6 +120,7 @@ app.service('PlayerService',
       }
     };
 
+    // handle attack input
     self.Player.prototype.isAttacking = function() {
       return this.game.input.keyboard.isDown(Phaser.Keyboard.SPACEBAR);
     };

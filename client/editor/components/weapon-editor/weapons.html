@@ -2,20 +2,18 @@
 
   <div class="settings-frame">
 
-    <!-- DEBUG -->
-    <div class="settings-row">
-      <pre>{{ weaponData | json}}</pre>
-    </div>
-
-    <div class="settings-row">
-      <p><em>All weapons created here are only available to the player.  Enemies have their own attack configurations.</em></p>
-    </div>
-
     <!-- Save button -->
     <div class="btn-row">
       <div class="btn-wrap-right">
         <span class="dark-btn" ng-click="saveWeapon()">Save Weapon</span>
       </div>
+    </div>
+
+    <!-- instructions -->
+    <div class="settings-row">
+      <p><em>All weapons created here are only available to the player.  (Enemies have their own separate system of attack configurations.)</em></p>
+      <p><em>The class, rarity, and player level requirements are used in the random loot drop algorithm.</em></p>
+      <p><em>Players will only see weapons from their class, and weapons will be within a certain number of levels away from the player's current level.  Rarity reflects how often the weapons will drop.</em></p>
     </div>
 
     <div class="settings-row">
@@ -36,6 +34,14 @@
       <p><!-- Player class -->
         <label for="class">Class:</label>
         <select ng-model="weaponData.class" ng-options="name as name for (name, player) in getAllPlayers() track by name" id="class"></select>
+      </p>
+      <p><!-- Level -->
+        <label for="level">Player Level:</label>
+        <select ng-model="weaponData.level" ng-options="level for level in playerLevels"></select>
+      </p>
+      <p><!-- Damage Boost -->
+        <label for="damage">Damage Boost:</label>
+        <input ng-model="weaponData.damageBoost" id="damage" type="number" />
       </p>
       <p><!-- Fire pattern key -->
         <label for="pattern">Fire Pattern:</label>

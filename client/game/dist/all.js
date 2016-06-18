@@ -155,6 +155,9 @@ app.service('DamageService', function() {
     if (sprite.invincible) {
       return;
     }
+
+    var crit = Math.random() <= 0.2; // 20% crit chance (test)
+    if (crit) damage += (damage * 5);
     sprite.health -= damage;
 
     // show damage numbers
@@ -169,6 +172,12 @@ app.service('DamageService', function() {
         dmgText.grav = -0.1;
         dmgText.ydx = 3.5;
         dmgText.xdx = Math.random() * 1.5;
+        dmgText.tint = 0xffffff;
+        if (crit) {
+          dmgText.text = damage + ' CRIT!';
+          dmgText.ydx = 3.8;
+          dmgText.tint = 0x860000;
+        }
         if (Math.random() >= 0.5) dmgText.xdx *= -1;
         dmgText.update = function() {
           dmgText.x = dmgText.x + dmgText.xdx;

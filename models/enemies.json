@@ -79,17 +79,11 @@
     "moveSpeed": 250,
     "movePattern": "Follow",
     "attackPattern": {
-      "key": "Ranged",
-      "cooldown": 120,
-      "bullet": {
-        "type": "Bullets",
-        "name": "Red",
-        "width": 12,
-        "height": 12,
-        "key": "red-bullet",
-        "src": "../api/uploads/red-bullet.png"
-      },
-      "bulletSpeed": 350
+      "key": "Charge",
+      "cooldown": 250,
+      "chargeSpeed": 800,
+      "duration": 15,
+      "range": 300
     }
   }
 }
